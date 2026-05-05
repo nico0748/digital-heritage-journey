@@ -151,11 +151,6 @@ function Glass({
         />
       </mesh>
 
-      {/* Top rim (slight bevel) */}
-      <mesh position={[0, 0.95, 0]}>
-        <torusGeometry args={[0.85, 0.015, 12, 128]} />
-        <meshStandardMaterial color={c.body} roughness={0.1} metalness={0.3} />
-      </mesh>
     </group>
   );
 }
@@ -386,7 +381,7 @@ export function KirikoCanvas({
       <div className="aspect-square w-[min(90vw,34rem)] overflow-hidden rounded-[2rem] border border-washi-50/10 bg-gradient-to-br from-black/40 via-black/20 to-black/40 shadow-2xl shadow-black/50">
         <Canvas
           shadows
-          camera={{ position: [0, 0.4, 3.3], fov: 32 }}
+          camera={{ position: [0, 0.4, 6.5], fov: 19 }}
           gl={{
             preserveDrawingBuffer: true,
             antialias: true,

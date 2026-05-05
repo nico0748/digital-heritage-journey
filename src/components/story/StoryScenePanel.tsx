@@ -95,8 +95,12 @@ export function StoryScenePanel({
         )}
 
         {isLast && (
+          // `data-cta` (NOT `data-reveal`) — HorizontalStage drives this
+          // separately off the parent tween's progress, because the
+          // panel-level `data-reveal` trigger fires unreliably for the
+          // leftmost panel (the one that hosts scene 5).
           <Link
-            data-reveal
+            data-cta
             href="/archive"
             className="mt-10 inline-flex items-center gap-3 rounded-full bg-sumi px-6 py-3 text-sm uppercase tracking-[0.3em] text-washi-50 transition hover:bg-sumi/80"
           >
