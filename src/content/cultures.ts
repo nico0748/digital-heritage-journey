@@ -6,6 +6,7 @@ export const cultures: Culture[] = [
     name: "Edo Kiriko",
     jp: "江戸切子",
     region: "Tokyo",
+    prefectures: ["JP-13"],
     category: "craft",
     era: "Edo period (1834)",
     description:
@@ -21,6 +22,7 @@ export const cultures: Culture[] = [
     name: "Washi",
     jp: "和紙",
     region: "Gifu",
+    prefectures: ["JP-21"],
     category: "craft",
     era: "Nara period (8th c.)",
     description:
@@ -36,6 +38,7 @@ export const cultures: Culture[] = [
     name: "Hanabi",
     jp: "花火",
     region: "Sumida-gawa, Tokyo",
+    prefectures: ["JP-13"],
     category: "festival",
     era: "Edo period (1733)",
     description:
