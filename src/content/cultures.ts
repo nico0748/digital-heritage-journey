@@ -15,6 +15,13 @@ export const cultures: Culture[] = [
     accentKanji: "切",
     media: {},
     experience: "kiriko-cut",
+    realWorld: {
+      url: "https://www.edokiriko.or.jp/",
+      label: "Visit the Edo Kiriko Cooperative",
+      labelJp: "江戸切子協同組合へ",
+      kind: "association",
+      location: "Tokyo, Sumida",
+    },
   },
   {
     id: "washi",
@@ -30,6 +37,13 @@ export const cultures: Culture[] = [
     accentKanji: "紙",
     media: {},
     experience: "washi-scoop",
+    realWorld: {
+      url: "https://washinosato.net/",
+      label: "Mino Washi no Sato Hall",
+      labelJp: "美濃和紙の里会館へ",
+      kind: "museum",
+      location: "Mino, Gifu",
+    },
   },
   {
     id: "hanabi",
@@ -46,6 +60,13 @@ export const cultures: Culture[] = [
     accentKanji: "華",
     media: {},
     experience: "hanabi-launch",
+    realWorld: {
+      url: "https://www.sumidagawa-hanabi.com/",
+      label: "Sumida-gawa Fireworks Festival",
+      labelJp: "隅田川花火大会へ",
+      kind: "festival",
+      location: "Tokyo, Sumida",
+    },
   },
 ];
 
