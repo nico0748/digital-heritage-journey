@@ -50,6 +50,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "lantern",
+    name: "Chōchin",
+    jp: "提灯",
+    region: "Gifu / Mino",
+    category: "craft",
+    era: "Muromachi period",
+    description:
+      "Paper lanterns lit with a single flame, carried through summer streets.",
+    problem:
+      "Hand-shaped washi lanterns are losing makers as plastic replicas spread.",
+    palette: ["#1A0E0A", "#C03D2B", "#F9D976"],
+    accentKanji: "灯",
+    media: {},
+    experience: "lantern-light",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
