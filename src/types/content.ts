@@ -55,8 +55,11 @@ export interface Culture {
   jp: string;
   region: string;
   // Structured prefecture taxonomy. Empty array = nationwide / non-localised
-  // (e.g. festivals or practices common to all regions).
-  prefectures: PrefectureId[];
+  // (e.g. festivals or practices common to all regions). Optional so that
+  // in-flight PRs (#9 sensu, #10 lantern, #12 taiko) authored before this
+  // taxonomy landed don't break the type when they merge — they can
+  // backfill the field in a follow-up.
+  prefectures?: PrefectureId[];
   category: "craft" | "festival";
   era: string;
   description: string;

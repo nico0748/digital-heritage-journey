@@ -9,8 +9,9 @@ import { getPrefecture } from "@/content/prefectures";
 export function CultureCard({ culture }: { culture: Culture }) {
   const [c1, c2, c3] = culture.palette;
   // Show the primary prefecture as a top-corner pill. Cultures with no
-  // attached prefecture (nationwide festivals etc.) show "全国" instead.
-  const primaryPref = culture.prefectures[0]
+  // attached prefecture (nationwide festivals or pre-taxonomy entries)
+  // show "全国" instead.
+  const primaryPref = culture.prefectures?.[0]
     ? getPrefecture(culture.prefectures[0])
     : null;
   return (

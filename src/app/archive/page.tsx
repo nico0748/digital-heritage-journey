@@ -24,7 +24,7 @@ export default async function ArchivePage({
   const activePref = activeId ? getPrefecture(activeId) : null;
 
   const filtered = activeId
-    ? cultures.filter((c) => c.prefectures.includes(activeId))
+    ? cultures.filter((c) => c.prefectures?.includes(activeId) ?? false)
     : cultures;
 
   return (
