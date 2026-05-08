@@ -81,6 +81,21 @@ export const cultures: Culture[] = [
     media: {},
     experience: "taiko-strike",
   },
+  {
+    id: "sensu",
+    name: "Sensu",
+    jp: "扇子",
+    region: "Kyoto",
+    category: "craft",
+    era: "Heian period",
+    description:
+      "Folding fan whose pleated washi cools the air and frames a private gesture.",
+    problem: "Master fan-makers are aging without successors.",
+    palette: ["#2A1F18", "#A47C50", "#F5EFE6"],
+    accentKanji: "扇",
+    media: {},
+    experience: "sensu-paint",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
