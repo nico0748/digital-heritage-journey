@@ -9,6 +9,7 @@ import { useAppStore } from "@/stores/useAppStore";
 import { WashiCanvas } from "./WashiCanvas";
 import { HanabiStage } from "./HanabiStage";
 import { LanternStage } from "./LanternStage";
+import { TaikoStage } from "./TaikoStage";
 
 // Heavy: Three.js + R3F + drei. Load only when Kiriko is actually requested.
 const KirikoCanvas = dynamic(
@@ -75,6 +76,9 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
         )}
         {culture.experience === "lantern-light" && (
           <LanternStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "taiko-strike" && (
+          <TaikoStage onComplete={handleComplete} palette={culture.palette} />
         )}
       </section>
     </main>

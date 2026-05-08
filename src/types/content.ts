@@ -2,7 +2,8 @@ export type ExperienceType =
   | "kiriko-cut"
   | "washi-scoop"
   | "hanabi-launch"
-  | "lantern-light";
+  | "lantern-light"
+  | "taiko-strike";
 
 // ISO 3166-2:JP codes for the curated subset of prefectures we surface in
 // the archive. We don't enumerate all 47 — only the ones that anchor an

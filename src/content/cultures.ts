@@ -66,6 +66,21 @@ export const cultures: Culture[] = [
     media: {},
     experience: "lantern-light",
   },
+  {
+    id: "taiko",
+    name: "Wadaiko",
+    jp: "和太鼓",
+    region: "Nationwide",
+    category: "festival",
+    era: "Heian period",
+    description:
+      "Japanese drum at the heart of festivals, signalling gods and seasons.",
+    problem: "Local taiko troupes are losing players as villages depopulate.",
+    palette: ["#1A0E0A", "#7A3520", "#E8B860"],
+    accentKanji: "鼓",
+    media: {},
+    experience: "taiko-strike",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
