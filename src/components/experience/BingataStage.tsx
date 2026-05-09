@@ -235,11 +235,37 @@ export function BingataStage({
   const mountedRef = useRef(true);
   const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
+    // React 19 StrictMode runs effect twice in dev. The first cleanup
+    // sets mountedRef = false, and without re-arming on the second
+    // mount the setTimeout's `if (mountedRef.current)` guard would
+    // silent-skip — making step 2 → 3 fire only after a reload.
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
     };
   }, []);
+
+  // Declarative step transition: when step 2 (norioki) is active and
+  // every hole has been filled, advance to step 3. Replacing the
+  // imperative setTimeout chain with a useEffect kills the stale-
+  // closure / cleared-timer race that made the user have to reload.
+  useEffect(() => {
+    if (step !== 1 || !pattern) return;
+    if (paste.size < HOLES[pattern].length) return;
+    // Tiny defer so the last fill animation lands before the swap.
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    advanceTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setStep(2);
+      advanceTimerRef.current = null;
+    }, 350);
+    return () => {
+      if (advanceTimerRef.current) {
+        clearTimeout(advanceTimerRef.current);
+        advanceTimerRef.current = null;
+      }
+    };
+  }, [step, pattern, paste]);
 
   const pickPattern = useCallback(
     (id: PatternId) => {
@@ -265,15 +291,12 @@ export function BingataStage({
         const next = new Set(prev);
         next.add(idx);
         playClick({ mutedRef: muted, freq: 900 });
-        if (next.size >= HOLES[pattern].length) {
-          if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
-          advanceTimerRef.current = setTimeout(() => {
-            if (mountedRef.current) setStep(2);
-            advanceTimerRef.current = null;
-          }, 500);
-        }
         return next;
       });
+      // Step transition is handled by the declarative useEffect that
+      // watches `paste.size` — see above. Doing it here too caused a
+      // stale-closure race where the timer fired against the wrong
+      // pattern after navigation.
     },
     [muted, pattern],
   );
