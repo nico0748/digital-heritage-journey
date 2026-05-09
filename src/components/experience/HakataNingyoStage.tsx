@@ -440,7 +440,18 @@ export function HakataNingyoStage({
   const finalize = useCallback(
     (svgEl: SVGSVGElement | null) => {
       if (finalizingRef.current) return;
-      if (!svgEl || !kata) return;
+      // Defensive: if for any reason the SVG ref hasn't attached yet
+      // OR the user reached this state without picking a kata, do NOT
+      // silently bail — that's exactly the "目入れしてから進まない"
+      // dead-end the user reported. Fall back to onComplete with a
+      // tiny placeholder dataURL so the experience always advances.
+      if (!svgEl || !kata) {
+        const tinyPng =
+          "data:image/png;base64," +
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+        onComplete(tinyPng);
+        return;
+      }
       finalizingRef.current = true;
       setFinalizing(true);
       playChime({ mutedRef, freq: 880 });
@@ -453,6 +464,22 @@ export function HakataNingyoStage({
         finalizingRef.current = false;
         setFinalizing(false);
       };
+
+      // Last-resort safety net: if neither img.onload nor img.onerror
+      // fires within 4 s (e.g. a pathological SVG that decoders hang
+      // on), force-complete with a placeholder so the user is never
+      // stranded on the meire screen.
+      let safetyFired = false;
+      const safety = setTimeout(() => {
+        if (!mountedRef.current) return;
+        if (safetyFired) return;
+        safetyFired = true;
+        const tinyPng =
+          "data:image/png;base64," +
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+        onComplete(tinyPng);
+      }, 4000);
+      finaleTimersRef.current.push(safety);
 
       // Defer dataURL generation slightly so the chime + final flash
       // animations are visible before navigation.
@@ -497,14 +524,9 @@ export function HakataNingyoStage({
             ctx.drawImage(img, 0, 0, W, H);
             URL.revokeObjectURL(url);
             const dataUrl = canvas.toDataURL("image/png");
-            // Reset finalizing state on success too (not just on error).
-            // The component is about to unmount via router.push anyway,
-            // but a) the brief window before navigation lands shouldn't
-            // leave the back button disabled, and b) if onComplete
-            // throws or is wrapped to no-op, we don't want to lock the
-            // user out permanently.
             finalizingRef.current = false;
             setFinalizing(false);
+            safetyFired = true; // safety timer no longer needed
             onComplete(dataUrl);
           };
           img.onerror = () => {
