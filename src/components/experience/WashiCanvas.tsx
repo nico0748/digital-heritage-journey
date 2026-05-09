@@ -75,6 +75,24 @@ export function WashiCanvas({
   const step = STEPS[stepIdx];
   const [, , c3] = palette;
 
+  // Single tracked timer for "advance to next step after a short pause"
+  // — every step transition runs through `scheduleAdvance` so we can
+  // cancel it on unmount and avoid the stale-closure trap of capturing
+  // `stepIdx` from a setTimeout callback.
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleAdvance = useCallback((delayMs: number) => {
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    advanceTimerRef.current = setTimeout(() => {
+      setStepIdx((i) => i + 1);
+      advanceTimerRef.current = null;
+    }, delayMs);
+  }, []);
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    };
+  }, []);
+
   // Stir
   const stirRef = useRef(0);
   const [stirProgress, setStirProgress] = useState(0);
@@ -513,11 +531,11 @@ export function WashiCanvas({
       setDryProgress(dryRef.current);
       if (dryRef.current >= 1) {
         clearInterval(id);
-        setTimeout(() => setStepIdx(stepIdx + 1), 400);
+        scheduleAdvance(400);
       }
     }, 60);
     return () => clearInterval(id);
-  }, [step.id, stepIdx]);
+  }, [step.id]);
 
   // Press: hold-to-progress
   useEffect(() => {
@@ -537,7 +555,7 @@ export function WashiCanvas({
         setPressProgress(pressRef.current);
         if (pressRef.current >= 1) {
           isPressingRef.current = false;
-          setTimeout(() => setStepIdx(stepIdx + 1), 400);
+          scheduleAdvance(400);
           return;
         }
       }
@@ -545,7 +563,7 @@ export function WashiCanvas({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [step.id, stepIdx]);
+  }, [step.id]);
 
   // ─────────────────────────────────────────────────────────────────
   // Pointer interactions
@@ -558,7 +576,7 @@ export function WashiCanvas({
       setBeatCount((n) => {
         const next = Math.min(n + 1, BEAT_TARGET);
         if (next >= BEAT_TARGET) {
-          setTimeout(() => setStepIdx(stepIdx + 1), 500);
+          scheduleAdvance(500);
         }
         return next;
       });
@@ -583,7 +601,7 @@ export function WashiCanvas({
         setStirProgress(stirRef.current);
         if (stirRef.current >= 1) {
           lastStirPt.current = null;
-          setTimeout(() => setStepIdx(stepIdx + 1), 400);
+          scheduleAdvance(400);
           return;
         }
       }
@@ -602,7 +620,7 @@ export function WashiCanvas({
               setSweeps((n) => {
                 const next = n + 1;
                 if (next >= SCOOP_TARGET_SWEEPS) {
-                  setTimeout(() => setStepIdx(stepIdx + 1), 400);
+                  scheduleAdvance(400);
                 }
                 return Math.min(next, SCOOP_TARGET_SWEEPS);
               });

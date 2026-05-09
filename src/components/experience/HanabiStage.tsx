@@ -70,6 +70,19 @@ export function HanabiStage({
   const [chargeProgress, setChargeProgress] = useState(0);
   const [latestPattern, setLatestPattern] = useState<Pattern | null>(null);
   const finalizingRef = useRef(false);
+  const mountedRef = useRef(true);
+  // Tracks every setTimeout used by the finale so we can cancel them if
+  // the user navigates away mid-bloom — otherwise the deferred
+  // `onComplete` callback would fire against an unmounted component and
+  // trigger navigation/state updates after teardown.
+  const finaleTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      for (const id of finaleTimersRef.current) clearTimeout(id);
+      finaleTimersRef.current = [];
+    };
+  }, []);
 
   // Background — deterministic, generated once.
   const stars = useMemo<Star[]>(() => {
@@ -469,15 +482,27 @@ export function HanabiStage({
     if (!canvas) return;
     const w = canvas.clientWidth;
     finalizingRef.current = true;
-    // Grand finale — three overlapping bursts.
+    // Grand finale — three overlapping bursts. All deferred work is
+    // tracked in finaleTimersRef so we can cancel it on unmount and
+    // never call onComplete (which navigates) against a torn-down tree.
     spawnRocket(w * 0.22, 1);
-    setTimeout(() => spawnRocket(w * 0.5, 1), 160);
-    setTimeout(() => spawnRocket(w * 0.78, 1), 320);
-    // Wait for the bursts to bloom, then capture.
-    setTimeout(() => {
-      const dataUrl = canvas.toDataURL("image/png");
-      onComplete(dataUrl);
-    }, 1700);
+    finaleTimersRef.current.push(
+      setTimeout(() => {
+        if (mountedRef.current) spawnRocket(w * 0.5, 1);
+      }, 160),
+    );
+    finaleTimersRef.current.push(
+      setTimeout(() => {
+        if (mountedRef.current) spawnRocket(w * 0.78, 1);
+      }, 320),
+    );
+    finaleTimersRef.current.push(
+      setTimeout(() => {
+        if (!mountedRef.current) return;
+        const dataUrl = canvas.toDataURL("image/png");
+        onComplete(dataUrl);
+      }, 1700),
+    );
   }
 
   return (
