@@ -48,6 +48,7 @@ export interface Prefecture {
   highlights: string[];
 }
   | "tsugaru-polish";
+  | "tekki-cast";
 
 export interface CultureMedia {
   hero?: string;
