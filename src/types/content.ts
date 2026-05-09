@@ -47,6 +47,7 @@ export interface Prefecture {
   // culture entry exists yet.
   highlights: string[];
 }
+  | "tsugaru-polish";
 
 export interface CultureMedia {
   hero?: string;

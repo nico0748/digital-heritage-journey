@@ -11,6 +11,7 @@ import { HanabiStage } from "./HanabiStage";
 import { LanternStage } from "./LanternStage";
 import { TaikoStage } from "./TaikoStage";
 import { SensuStage } from "./SensuStage";
+import { TsugaruNuriStage } from "./TsugaruNuriStage";
 
 // Heavy: Three.js + R3F + drei. Load only when Kiriko is actually requested.
 const KirikoCanvas = dynamic(
@@ -83,6 +84,11 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
         )}
         {culture.experience === "sensu-paint" && (
           <SensuStage onComplete={handleComplete} palette={culture.palette} />
+        {culture.experience === "tsugaru-polish" && (
+          <TsugaruNuriStage
+            onComplete={handleComplete}
+            palette={culture.palette}
+          />
         )}
       </section>
     </main>
