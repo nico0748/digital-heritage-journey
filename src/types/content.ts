@@ -107,7 +107,6 @@ export interface Culture {
   experience: ExperienceType;
   accentKanji: string;
   // Optional pointer to where the user can experience the real thing.
-  realWorld?: RealWorldLink;
   // Accepts a single RealWorldLink for backward-compat, or an array
   // when a culture has multiple authoritative venues (e.g. Mino washi
   // has both the official shop and the Washi-no-Sato museum).
