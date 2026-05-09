@@ -1,4 +1,8 @@
-export type ExperienceType = "kiriko-cut" | "washi-scoop" | "hanabi-launch";
+export type ExperienceType =
+  | "kiriko-cut"
+  | "washi-scoop"
+  | "hanabi-launch"
+  | "awa-rhythm";
 
 export interface CultureMedia {
   hero?: string;
@@ -7,12 +11,18 @@ export interface CultureMedia {
   sounds?: string[];
 }
 
+export interface CultureRealWorld {
+  kind: "festival" | "workshop" | "museum" | "shop";
+  label: string;
+  url: string;
+}
+
 export interface Culture {
   id: string;
   name: string;
   jp: string;
   region: string;
-  category: "craft" | "festival";
+  category: "craft" | "festival" | "matsuri";
   era: string;
   description: string;
   problem: string;
@@ -20,6 +30,8 @@ export interface Culture {
   media: CultureMedia;
   experience: ExperienceType;
   accentKanji: string;
+  prefectures?: string[];
+  realWorld?: CultureRealWorld;
 }
 
 export interface StoryScene {
