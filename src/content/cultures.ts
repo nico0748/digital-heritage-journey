@@ -89,13 +89,22 @@ export const cultures: Culture[] = [
     accentKanji: "華",
     media: {},
     experience: "hanabi-launch",
-    realWorld: {
-      url: "https://www.sumidagawa-hanabi.com/",
-      label: "Sumida-gawa Fireworks Festival",
-      labelJp: "隅田川花火大会へ",
-      kind: "festival",
-      location: "Tokyo, Sumida",
-    },
+    realWorld: [
+      {
+        url: "https://www.sumidagawa-hanabi.com/",
+        label: "Sumida-gawa Fireworks Festival",
+        labelJp: "隅田川花火大会へ",
+        kind: "festival",
+        location: "Tokyo, Sumida",
+      },
+      {
+        url: "https://www.mushaenka.jp/fireworks-production-experience",
+        label: "Musha Enka — Firework Production Experience",
+        labelJp: "武者煙火 — 打ち上げ花火制作体験",
+        kind: "experience",
+        location: "Japan",
+      },
+    ],
   },
   {
     id: "lantern",
