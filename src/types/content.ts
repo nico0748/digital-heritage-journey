@@ -57,6 +57,7 @@ export interface Prefecture {
   | "bizen-fire";
   | "fude-craft";
   | "awa-rhythm";
+  | "ningyo-paint";
 
 export interface CultureMedia {
   hero?: string;
@@ -85,6 +86,8 @@ export interface CultureRealWorld {
   kind: "association" | "museum" | "shop" | "festival";
 export interface CultureRealWorld {
   kind: "festival" | "workshop" | "museum" | "shop";
+export interface RealWorldLink {
+  kind: "association" | "museum" | "shop" | "site";
   label: string;
   url: string;
 }
@@ -115,6 +118,8 @@ export interface Culture {
   realWorld?: RealWorldLink;
   prefectures?: string[];
   realWorld?: CultureRealWorld;
+  prefectures?: string[];
+  realWorld?: RealWorldLink;
 }
 
 export interface StoryScene {
