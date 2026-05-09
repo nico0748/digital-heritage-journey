@@ -747,7 +747,16 @@ function IkomiStep({
           1,
           pourBaseRef.current + elapsed / POUR_TARGET_MS,
         );
-        if (Math.abs(next - pourFillRefLocal.current) > 0.005) {
+        // Commit when the delta crosses the threshold OR when we've
+        // just hit the cap (next === 1) but the previous state hasn't
+        // — otherwise the ref/state can stall a hair below 1.0 and the
+        // "鋳込み完了" badge never lights up. Codex P1.
+        const justClampedFull =
+          next === 1 && pourFillRefLocal.current < 1;
+        if (
+          Math.abs(next - pourFillRefLocal.current) > 0.005 ||
+          justClampedFull
+        ) {
           pourFillRefLocal.current = next;
           setPourFill(next);
         }
