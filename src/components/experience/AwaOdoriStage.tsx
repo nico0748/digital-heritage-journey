@@ -532,9 +532,16 @@ function TaikoStep({
   const rafRef = useRef(0);
   const rippleIdRef = useRef(0);
   const mountedRef = useRef(true);
+  // The rAF loop closes over its initial scope (effect runs once with
+  // empty deps), so reading `done` from useState would always see the
+  // initial false. Track completion via ref so the loop can self-stop
+  // once the last beat is processed (Codex P2: prevents the rAF from
+  // running forever after the user finishes the rhythm).
+  const doneRef = useRef(false);
 
   useEffect(() => {
     mountedRef.current = true;
+    doneRef.current = false;
     // Schedule beats relative to a fixed start, then drive a rAF loop
     // that auto-marks any beat whose window has fully elapsed as a miss.
     const start = performance.now() + 1100;
@@ -562,10 +569,11 @@ function TaikoStep({
           );
           setProgress(fill);
         }
-      } else if (!done) {
+      } else if (!doneRef.current) {
+        doneRef.current = true;
         setDone(true);
       }
-      if (!done && mountedRef.current) {
+      if (!doneRef.current && mountedRef.current) {
         rafRef.current = requestAnimationFrame(loop);
       }
     };
