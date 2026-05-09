@@ -181,6 +181,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "mashiko-throw",
   },
+  {
+    id: "tsubame-sanjo",
+    name: "Tsubame-Sanjō Tsuiki",
+    jp: "鎚起銅器",
+    region: "Niigata / Tsubame-Sanjō",
+    category: "craft",
+    era: "Edo period (1700s-)",
+    description:
+      "One copper sheet hammered tens of thousands of times into a seamless vessel.",
+    problem:
+      "Younger metalsmiths are rare; world-class but aging master pool.",
+    palette: ["#1d130a", "#C5704A", "#5b3a20"],
+    accentKanji: "鎚",
+    media: {},
+    experience: "tsuiki-hammer",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {

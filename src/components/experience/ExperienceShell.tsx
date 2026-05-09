@@ -15,6 +15,7 @@ import { TsugaruNuriStage } from "./TsugaruNuriStage";
 import { NanbuTekkiStage } from "./NanbuTekkiStage";
 import { MagewappaStage } from "./MagewappaStage";
 import { MashikoYakiStage } from "./MashikoYakiStage";
+import { TsuikiStage } from "./TsuikiStage";
 
 // Heavy: Three.js + R3F + drei. Load only when Kiriko is actually requested.
 const KirikoCanvas = dynamic(
@@ -101,6 +102,8 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
             onComplete={handleComplete}
             palette={culture.palette}
           />
+        {culture.experience === "tsuiki-hammer" && (
+          <TsuikiStage onComplete={handleComplete} palette={culture.palette} />
         )}
       </section>
     </main>
