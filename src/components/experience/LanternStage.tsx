@@ -155,11 +155,46 @@ export function LanternStage({
         ctx.fill();
       }
 
-      // Hanging cord
+      // Festival mode hangs every lantern from a single horizontal
+      // hemp rope strung across the top of the canvas with a slight
+      // catenary sag, like real matsuri street decoration. Compute
+      // the rope geometry once so all hanging cords (centre + 4
+      // satellites) attach to it consistently.
+      const isFestival = stepRef.current === "done";
+      const ropeBaseY = 60;
+      const ropeSag = 14;
+      const ropeYAt = (xx: number) => {
+        if (!isFestival) return 0;
+        // Soft droop — 0 at the anchor poles, max sag at canvas centre.
+        const xn = xx / W;
+        return ropeBaseY + ropeSag * (1 - Math.cos(xn * Math.PI * 2)) * 0.5;
+      };
+
+      if (isFestival) {
+        // The rope itself — slightly wobbly hemp tone.
+        ctx.strokeStyle = "rgba(60,42,22,0.85)";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        for (let xx = 0; xx <= W; xx += 8) {
+          const yy = ropeYAt(xx);
+          if (xx === 0) ctx.moveTo(xx, yy);
+          else ctx.lineTo(xx, yy);
+        }
+        ctx.stroke();
+        // Pole anchors at each end so the rope reads as "hung between
+        // two posts" rather than floating from nothing.
+        ctx.fillStyle = "#3E2A1F";
+        ctx.fillRect(2, ropeYAt(0) - 14, 4, 26);
+        ctx.fillRect(W - 6, ropeYAt(W) - 14, 4, 26);
+      }
+
+      // Centre lantern's hanging cord — anchored to the rope in
+      // festival mode, otherwise straight up to the top of the canvas
+      // (the original "single isolated lantern" look while drawing).
       ctx.strokeStyle = "rgba(40,28,18,0.9)";
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(cx, 0);
+      ctx.moveTo(cx, isFestival ? ropeYAt(cx) : 0);
       ctx.lineTo(cx, cy - lh / 2 - 22);
       ctx.stroke();
 
@@ -196,34 +231,47 @@ export function LanternStage({
       ctx.arc(cx, cy + lh / 2 + 54, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Festival mode — once the user has completed their lantern,
-      // hang their work alongside several "祭" satellite lanterns so
-      // the final scene reads as a night street rather than one
-      // isolated piece. The satellites are smaller and stagger their
-      // sway / glow phase so the row feels alive.
-      if (stepRef.current === "done") {
+      // Festival mode — hang the user's lantern alongside four "祭"
+      // satellites along the same rope so the final scene reads as a
+      // matsuri street with lanterns evenly strung between two poles.
+      // Heights are nearly uniform (just a few px of organic stagger)
+      // and each lantern's cord goes UP to the rope, not to the top
+      // of the canvas — the previous "every lantern dangling from
+      // the sky" look was the surreal part the user flagged.
+      if (isFestival) {
         const satellites = [
-          { dx: -lw * 1.05, dy: 56, scale: 0.5, phase: 1.3 },
-          { dx: -lw * 0.62, dy: 22, scale: 0.62, phase: 0.6 },
-          { dx: lw * 0.62, dy: 28, scale: 0.62, phase: 1.7 },
-          { dx: lw * 1.05, dy: 60, scale: 0.5, phase: 2.2 },
+          { dx: -lw * 1.05, dyJitter: 8, scale: 0.6, phase: 1.3 },
+          { dx: -lw * 0.62, dyJitter: 4, scale: 0.74, phase: 0.6 },
+          { dx: lw * 0.62, dyJitter: 6, scale: 0.74, phase: 1.7 },
+          { dx: lw * 1.05, dyJitter: 10, scale: 0.6, phase: 2.2 },
         ];
         for (const sat of satellites) {
           const sway = Math.sin(tSec * 0.7 + sat.phase) * 3;
-          const sx = cx + sat.dx + sway;
-          const sy = cy + sat.dy + Math.sin(tSec * 0.45 + sat.phase) * 1.5;
+          const sxBase = cx + sat.dx;
+          const sx = sxBase + sway;
+          // All satellites hang at roughly the same y as the centre
+          // lantern, with only a few px of organic variation. Outer
+          // lanterns sit a hair lower than inner ones to mimic how a
+          // weighted rope sags toward its centre, but the spread is
+          // tiny (≤ 10px) — not the 56px chaos that made the previous
+          // version feel surreal.
+          const sy = cy + sat.dyJitter + Math.sin(tSec * 0.45 + sat.phase) * 1.5;
           const slw = lw * sat.scale;
           const slh = lh * sat.scale;
           const sg = Math.min(
             1,
-            glow * 0.85 + Math.sin(tSec * 1.1 + sat.phase * 2) * 0.06,
+            glow * 0.88 + Math.sin(tSec * 1.1 + sat.phase * 2) * 0.06,
           );
-          // Hanging cord for the satellite
-          ctx.strokeStyle = "rgba(40,28,18,0.65)";
-          ctx.lineWidth = 0.8;
+          // Cord from the rope down to the satellite's top cap.
+          const cordTopY = ropeYAt(sxBase);
+          const cordBottomY = sy - slh / 2 - slh * 0.06;
+          ctx.strokeStyle = "rgba(40,28,18,0.78)";
+          ctx.lineWidth = 0.9;
           ctx.beginPath();
-          ctx.moveTo(sx, 0);
-          ctx.lineTo(sx, sy - slh / 2 - slh * 0.06);
+          ctx.moveTo(sxBase, cordTopY);
+          // Cord follows the lantern's sway slightly so the bottom
+          // attachment moves with the body.
+          ctx.lineTo(sx, cordBottomY);
           ctx.stroke();
           // Halo
           if (sg > 0.05) {
@@ -233,16 +281,28 @@ export function LanternStage({
               slw * 0.3,
               sx,
               sy,
-              slw * 1.6,
+              slw * 1.7,
             );
-            const a = sg * 0.4;
+            const a = sg * 0.45;
             halo.addColorStop(0, `rgba(249, 217, 118, ${a})`);
             halo.addColorStop(1, "rgba(192, 61, 43, 0)");
             ctx.fillStyle = halo;
             ctx.beginPath();
-            ctx.arc(sx, sy, slw * 1.6, 0, Math.PI * 2);
+            ctx.arc(sx, sy, slw * 1.7, 0, Math.PI * 2);
             ctx.fill();
           }
+          // Top cap (matches the centre lantern style — gives the
+          // satellite a real hardware piece for the cord to attach to,
+          // instead of the cord disappearing into the paper).
+          const sCapW = slw * 0.46;
+          const sCapH = slh * 0.075;
+          ctx.fillStyle = "#3E2A1F";
+          ctx.fillRect(
+            sx - sCapW / 2,
+            sy - slh / 2 - sCapH - 2,
+            sCapW,
+            sCapH,
+          );
           drawLanternBody(ctx, sx, sy, slw, slh, sg);
           drawLanternRibs(ctx, sx, sy, slw, slh, sg);
           // "祭" calligraphy
@@ -256,11 +316,15 @@ export function LanternStage({
           ctx.textBaseline = "middle";
           ctx.fillText("祭", sx, sy);
           ctx.restore();
-          // Tiny bottom cap
-          const sCapW = slw * 0.46;
-          const sCapH = slh * 0.05;
+          // Bottom cap + tiny tassel — matches the centre lantern.
           ctx.fillStyle = "#3E2A1F";
           ctx.fillRect(sx - sCapW / 2, sy + slh / 2 + 2, sCapW, sCapH);
+          ctx.strokeStyle = "rgba(192, 61, 43, 0.8)";
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(sx, sy + slh / 2 + sCapH + 4);
+          ctx.lineTo(sx, sy + slh / 2 + sCapH + 14);
+          ctx.stroke();
         }
       }
 
