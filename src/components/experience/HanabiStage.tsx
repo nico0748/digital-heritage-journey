@@ -1226,7 +1226,7 @@ function LaunchStep({
     "star",
     "smiley",
     "senrin",
-    "kiku",
+    "chrysanthemum",
   ];
 
   function fireworkSound(
