@@ -6,6 +6,7 @@ export const cultures: Culture[] = [
     name: "Edo Kiriko",
     jp: "江戸切子",
     region: "Tokyo",
+    prefectures: ["JP-13"],
     category: "craft",
     era: "Edo period (1834)",
     description:
@@ -15,12 +16,20 @@ export const cultures: Culture[] = [
     accentKanji: "切",
     media: {},
     experience: "kiriko-cut",
+    realWorld: {
+      url: "https://www.edokiriko.or.jp/",
+      label: "Visit the Edo Kiriko Cooperative",
+      labelJp: "江戸切子協同組合へ",
+      kind: "association",
+      location: "Tokyo, Sumida",
+    },
   },
   {
     id: "washi",
     name: "Washi",
     jp: "和紙",
     region: "Gifu",
+    prefectures: ["JP-21"],
     category: "craft",
     era: "Nara period (8th c.)",
     description:
@@ -30,12 +39,29 @@ export const cultures: Culture[] = [
     accentKanji: "紙",
     media: {},
     experience: "washi-scoop",
+    realWorld: [
+      {
+        url: "https://minowashi.myshopify.com/",
+        label: "Mino Washi online shop",
+        labelJp: "美濃和紙オンラインショップ",
+        kind: "shop",
+        location: "Mino, Gifu",
+      },
+      {
+        url: "https://www.city.mino.gifu.jp/minogami/",
+        label: "Mino Washi-no-Sato Hall",
+        labelJp: "美濃和紙の里会館へ",
+        kind: "museum",
+        location: "Mino, Gifu",
+      },
+    ],
   },
   {
     id: "hanabi",
     name: "Hanabi",
     jp: "花火",
     region: "Sumida-gawa, Tokyo",
+    prefectures: ["JP-13"],
     category: "festival",
     era: "Edo period (1733)",
     description:
@@ -46,6 +72,28 @@ export const cultures: Culture[] = [
     accentKanji: "華",
     media: {},
     experience: "hanabi-launch",
+    realWorld: {
+      url: "https://www.sumidagawa-hanabi.com/",
+      label: "Sumida-gawa Fireworks Festival",
+      labelJp: "隅田川花火大会へ",
+      kind: "festival",
+      location: "Tokyo, Sumida",
+    },
+  },
+  {
+    id: "sensu",
+    name: "Sensu",
+    jp: "扇子",
+    region: "Kyoto",
+    category: "craft",
+    era: "Heian period",
+    description:
+      "Folding fan whose pleated washi cools the air and frames a private gesture.",
+    problem: "Master fan-makers are aging without successors.",
+    palette: ["#2A1F18", "#A47C50", "#F5EFE6"],
+    accentKanji: "扇",
+    media: {},
+    experience: "sensu-paint",
   },
   {
     id: "lantern",
