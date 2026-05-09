@@ -10,7 +10,14 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 
-type Pattern = "peony" | "chrysanthemum" | "willow" | "senrin";
+type Pattern =
+  | "peony"
+  | "chrysanthemum"
+  | "willow"
+  | "senrin"
+  // 型物 (katamono) — pictograph fireworks, modern artisan repertoire.
+  | "heart"
+  | "star";
 type Step = "design" | "color" | "launch";
 
 interface Particle {
@@ -53,50 +60,118 @@ interface SkylineSeg {
 const TARGET_BURSTS = 5;
 const MAX_CHARGE_MS = 1200;
 
-const ALL_PATTERNS: Pattern[] = ["peony", "chrysanthemum", "willow", "senrin"];
+const ALL_PATTERNS: Pattern[] = [
+  "peony",
+  "chrysanthemum",
+  "willow",
+  "senrin",
+  "heart",
+  "star",
+];
 
-// Each pattern is a kind of 割物 (warimono) — a category of shell construction.
+// 4 warimono (割物) + 2 katamono (型物). Real 花火師 distinguish between
+// "scatter shells" and "shape shells" — both are in our menu.
 const PATTERN_INFO: Record<
   Pattern,
-  { jp: string; en: string; desc: string }
+  { jp: string; en: string; desc: string; category: "warimono" | "katamono" }
 > = {
   peony: {
     jp: "牡丹",
     en: "Peony",
     desc: "中心から放射状に星が広がる、最も基本の型。",
+    category: "warimono",
   },
   chrysanthemum: {
     jp: "菊",
     en: "Chrysanthemum",
     desc: "尾を引きながら大輪に咲く、二重円の構造。",
+    category: "warimono",
   },
   willow: {
     jp: "柳",
     en: "Willow",
     desc: "重力に従って垂れ下がる、しだれ柳のような花火。",
+    category: "warimono",
   },
   senrin: {
     jp: "千輪",
     en: "Senrin",
     desc: "親玉が咲いた後、無数の小玉が一斉に開花する。",
+    category: "warimono",
+  },
+  heart: {
+    jp: "ハート",
+    en: "Heart (katamono)",
+    desc: "型物。星(色玉)をハート型に詰めて咲かせる、現代花火師の遊び心。",
+    category: "katamono",
+  },
+  star: {
+    jp: "星",
+    en: "Star (katamono)",
+    desc: "型物。五芒星の形に詰めて開花。祝祭でよく上がる。",
+    category: "katamono",
   },
 };
 
-// 6 hand-picked hues from the traditional palette: 朱・金・緑・藍・紫・紅.
-const HUE_PALETTE: { hue: number; name: string; en: string }[] = [
-  { hue: 16, name: "朱", en: "shu" },
-  { hue: 48, name: "金", en: "kin" },
-  { hue: 100, name: "緑", en: "midori" },
-  { hue: 205, name: "藍", en: "ai" },
-  { hue: 285, name: "紫", en: "murasaki" },
-  { hue: 340, name: "紅", en: "kurenai" },
+// 6 hand-picked hues from the traditional palette + the metal salt that
+// produces each colour in real pyrotechnics. Educational subtitle in the
+// color picker.
+const HUE_PALETTE: {
+  hue: number;
+  name: string;
+  en: string;
+  metal: string;
+  metalEn: string;
+}[] = [
+  { hue: 16, name: "朱", en: "shu", metal: "ストロンチウム", metalEn: "Sr" },
+  { hue: 48, name: "金", en: "kin", metal: "ナトリウム", metalEn: "Na" },
+  { hue: 100, name: "緑", en: "midori", metal: "バリウム", metalEn: "Ba" },
+  { hue: 205, name: "藍", en: "ai", metal: "銅", metalEn: "Cu" },
+  { hue: 285, name: "紫", en: "murasaki", metal: "Sr+Cu", metalEn: "Sr+Cu" },
+  { hue: 340, name: "紅", en: "kurenai", metal: "リチウム", metalEn: "Li" },
 ];
+
+// ─────────────────────────────────────────────────────────────────────
+// Katamono parametric curves — return a unit-vector (-1..1) representing
+// the direction each particle flies from the burst center to trace the
+// shape.
+// ─────────────────────────────────────────────────────────────────────
+function heartUnitPos(t: number): [number, number] {
+  // Classic mathematical heart. 16 sin³t / 18 keeps |x| ≤ ~1.
+  const x = (16 * Math.sin(t) ** 3) / 17;
+  const y =
+    -(13 * Math.cos(t) -
+      5 * Math.cos(2 * t) -
+      2 * Math.cos(3 * t) -
+      Math.cos(4 * t)) /
+    17;
+  return [x, y];
+}
+
+function starUnitPos(t: number): [number, number] {
+  // 5-pointed star, 10 alternating outer/inner vertices traversed linearly.
+  const segments = 10;
+  const s = (t / (Math.PI * 2)) * segments;
+  const i = Math.floor(s);
+  const frac = s - i;
+  const a1 = (i / segments) * Math.PI * 2 - Math.PI / 2;
+  const a2 = ((i + 1) / segments) * Math.PI * 2 - Math.PI / 2;
+  const r1 = i % 2 === 0 ? 1.0 : 0.4;
+  const r2 = (i + 1) % 2 === 0 ? 1.0 : 0.4;
+  const x1 = Math.cos(a1) * r1;
+  const y1 = Math.sin(a1) * r1;
+  const x2 = Math.cos(a2) * r2;
+  const y2 = Math.sin(a2) * r2;
+  return [x1 + (x2 - x1) * frac, y1 + (y2 - y1) * frac];
+}
 
 const PATTERN_NAMES: Record<Pattern, string> = {
   peony: "牡丹",
   chrysanthemum: "菊",
   willow: "柳",
   senrin: "千輪",
+  heart: "ハート",
+  star: "星",
 };
 
 export function HanabiStage({
@@ -252,8 +327,8 @@ function PatternPreview({ pattern }: { pattern: Pattern }) {
         opacity: 0.6 - i * 0.08,
       });
     }
-  } else {
-    // senrin — central cluster + small satellite clusters
+  } else if (pattern === "senrin") {
+    // central cluster + small satellite clusters
     for (let i = 0; i < 8; i++) {
       const a = (Math.PI * 2 * i) / 8;
       dots.push({
@@ -279,6 +354,30 @@ function PatternPreview({ pattern }: { pattern: Pattern }) {
           opacity: 0.7,
         });
       }
+    }
+  } else if (pattern === "heart") {
+    // Sample the heart parametric curve at 28 points.
+    for (let i = 0; i < 28; i++) {
+      const t = (Math.PI * 2 * i) / 28;
+      const [dx, dy] = heartUnitPos(t);
+      dots.push({
+        x: cx + dx * 26,
+        y: cy + dy * 26,
+        r: 1.8,
+        opacity: 0.85,
+      });
+    }
+  } else {
+    // star — sample the 5-point star at 30 points.
+    for (let i = 0; i < 30; i++) {
+      const t = (Math.PI * 2 * i) / 30;
+      const [dx, dy] = starUnitPos(t);
+      dots.push({
+        x: cx + dx * 26,
+        y: cy + dy * 26,
+        r: 1.6,
+        opacity: 0.85,
+      });
     }
   }
 
@@ -362,6 +461,11 @@ function ColorStep({
               <span className="text-[0.55rem] uppercase tracking-[0.3em] text-washi-50/40">
                 {h.en}
               </span>
+              {/* Educational subtitle: the metal salt that produces this
+                  colour in real pyrotechnics. */}
+              <span className="mt-0.5 text-[0.5rem] tracking-[0.15em] text-amber-200/45">
+                {h.metalEn} · {h.metal}
+              </span>
             </button>
           );
         })}
@@ -414,6 +518,20 @@ function LaunchStep({
   const [chargeProgress, setChargeProgress] = useState(0);
   const finalizingRef = useRef(false);
   const chargeProgressRef = useRef(0);
+  const mountedRef = useRef(true);
+  // Tracks every setTimeout used by the finale so we can cancel them
+  // if the user navigates away mid-bloom — otherwise the deferred
+  // `onComplete` callback would fire against an unmounted component
+  // and trigger router.push from ExperienceShell against a torn-down
+  // tree.
+  const finaleTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      for (const id of finaleTimersRef.current) clearTimeout(id);
+      finaleTimersRef.current = [];
+    };
+  }, []);
 
   const stars = useMemo<Star[]>(() => {
     let s = 17;
@@ -710,27 +828,62 @@ function LaunchStep({
       return;
     }
 
-    const count = 60 + Math.floor(charge * 100);
+    const count = 80 + Math.floor(charge * 140);
     const baseSpeed = 1.6 + charge * 2.6;
     const trailing = pat === "chrysanthemum" || pat === "willow";
 
+    // Katamono (pictograph) patterns — particles trace a parametric shape
+    // instead of distributing radially. Heart / star are real pyrotechnic
+    // 型物 used by modern 花火師.
+    if (pat === "heart" || pat === "star") {
+      for (let i = 0; i < count; i++) {
+        const t = (Math.PI * 2 * i) / count;
+        const [dx, dy] =
+          pat === "heart" ? heartUnitPos(t) : starUnitPos(t);
+        particles.current.push({
+          x,
+          y,
+          vx: dx * baseSpeed,
+          vy: dy * baseSpeed - 0.3,
+          life: 0,
+          maxLife: 55 + Math.random() * 25,
+          hue: hue + (Math.random() - 0.5) * 30,
+          trail: false,
+          size: 1.6,
+        });
+      }
+      return;
+    }
+
+    // 割物 (warimono) patterns — bloom in 3D and project to 2D so the
+    // burst reads as a SOLID DISK, not just a ring on the perimeter.
+    // Picking a uniform direction on the unit sphere and dropping the z
+    // component gives the natural "filled disk with edge falloff" look
+    // because particles with high |z| end up moving slowly on the screen
+    // (their motion is into / out of the page).
     for (let i = 0; i < count; i++) {
-      const a = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.05;
+      const u = 2 * Math.random() - 1; // unseen z component, [-1, 1]
+      const theta = Math.PI * 2 * Math.random();
+      const r2d = Math.sqrt(1 - u * u);
+      const dirX = r2d * Math.cos(theta);
+      const dirY = r2d * Math.sin(theta);
       const v =
         pat === "willow"
           ? baseSpeed * (0.4 + Math.random() * 0.3)
-          : baseSpeed * (0.85 + Math.random() * 0.3);
+          : baseSpeed * (0.9 + Math.random() * 0.2);
       const lifeFactor = pat === "willow" ? 1.5 : 1;
+      // Depth cue: particles moving mostly along z appear smaller in 2D.
+      const depthAttenuation = 1 - Math.abs(u) * 0.45;
       particles.current.push({
         x,
         y,
-        vx: Math.cos(a) * v,
-        vy: Math.sin(a) * v - (pat === "willow" ? 0 : 0.3),
+        vx: dirX * v,
+        vy: dirY * v - (pat === "willow" ? 0 : 0.3),
         life: 0,
         maxLife: (50 + Math.random() * 25) * lifeFactor,
         hue: hue + (Math.random() - 0.5) * 30,
         trail: trailing,
-        size: 1.6,
+        size: 1.7 * depthAttenuation,
       });
     }
   }
@@ -781,13 +934,27 @@ function LaunchStep({
     if (!canvas) return;
     const w = canvas.clientWidth;
     finalizingRef.current = true;
+    // Track every deferred call so we can cancel it on unmount and
+    // never call `onComplete` (which router.push'es) against a
+    // torn-down tree.
     spawnRocket(w * 0.22, 1);
-    setTimeout(() => spawnRocket(w * 0.5, 1), 160);
-    setTimeout(() => spawnRocket(w * 0.78, 1), 320);
-    setTimeout(() => {
-      const dataUrl = canvas.toDataURL("image/png");
-      onComplete(dataUrl);
-    }, 1700);
+    finaleTimersRef.current.push(
+      setTimeout(() => {
+        if (mountedRef.current) spawnRocket(w * 0.5, 1);
+      }, 160),
+    );
+    finaleTimersRef.current.push(
+      setTimeout(() => {
+        if (mountedRef.current) spawnRocket(w * 0.78, 1);
+      }, 320),
+    );
+    finaleTimersRef.current.push(
+      setTimeout(() => {
+        if (!mountedRef.current) return;
+        const dataUrl = canvas.toDataURL("image/png");
+        onComplete(dataUrl);
+      }, 1700),
+    );
   }
 
   return (
