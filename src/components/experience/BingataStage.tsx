@@ -289,6 +289,13 @@ export function BingataStage({
 
   const goBack = useCallback(() => {
     playClick({ mutedRef: muted, freq: 700 });
+    // Cancel the 500ms norioki→saishiki auto-advance if it's still
+    // pending, otherwise it would force-advance after the user has
+    // navigated away (Codex P2).
+    if (advanceTimerRef.current) {
+      clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
     setStep((s) => Math.max(0, s - 1));
   }, [muted]);
 
