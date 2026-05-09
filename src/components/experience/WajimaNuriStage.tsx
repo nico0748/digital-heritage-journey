@@ -87,11 +87,38 @@ export function WajimaNuriStage({
   const [lacquerLayers, setLacquerLayers] = useState(0);
   const [technique, setTechnique] = useState<Technique | null>(null);
 
+  // Tracks the deferred goNext from the technique-selection step so we
+  // can cancel it if the user navigates away before it fires (Codex P2).
+  const techniqueAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  useEffect(() => {
+    return () => {
+      if (techniqueAdvanceTimerRef.current) {
+        clearTimeout(techniqueAdvanceTimerRef.current);
+      }
+    };
+  }, []);
+
   const goNext = useCallback(() => {
     setStepIdx((i) => Math.min(i + 1, TOTAL_STEPS - 1));
   }, []);
   const goBack = useCallback(() => {
-    setStepIdx((i) => Math.max(i - 1, 0));
+    // Cancel any pending technique auto-advance and clear the technique
+    // selection if we're stepping back out of the decoration canvas
+    // (Codex P1: stale technique value would otherwise cause the
+    // wrong canvas to render on re-entry).
+    if (techniqueAdvanceTimerRef.current) {
+      clearTimeout(techniqueAdvanceTimerRef.current);
+      techniqueAdvanceTimerRef.current = null;
+    }
+    setStepIdx((i) => {
+      const prev = Math.max(i - 1, 0);
+      // Stepping back from "kashoku" (step 3) → "kashoku-tech" (step 2):
+      // forget the previously-picked technique so the user can re-decide.
+      if (i === 3) setTechnique(null);
+      return prev;
+    });
   }, []);
 
   return (
@@ -138,8 +165,15 @@ export function WajimaNuriStage({
           selected={technique}
           onSelect={(t) => {
             setTechnique(t);
-            // Tiny delay so the selection visual lands before the step swap.
-            window.setTimeout(goNext, 320);
+            // Tiny delay so the selection visual lands before the step
+            // swap. Tracked so goBack/unmount can cancel it.
+            if (techniqueAdvanceTimerRef.current) {
+              clearTimeout(techniqueAdvanceTimerRef.current);
+            }
+            techniqueAdvanceTimerRef.current = window.setTimeout(() => {
+              techniqueAdvanceTimerRef.current = null;
+              goNext();
+            }, 320);
           }}
         />
       )}
