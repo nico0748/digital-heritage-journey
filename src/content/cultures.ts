@@ -167,7 +167,7 @@ export const cultures: Culture[] = [
       "48-step lacquer with multi-color layers polished to reveal speckled 唐塗 patterns.",
     problem:
       "2-month per-piece process; ~30 active masters remain in Hirosaki.",
-    palette: ["#1A0E0A", "#5C0E1B", "#7B9B5A"],
+    palette: ["#1A0E0A", "#5C0E1B", "#F0E4D0"],
     accentKanji: "塗",
     media: {},
     experience: "tsugaru-polish",
