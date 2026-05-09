@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type TouchEvent as ReactTouchEvent,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import clsx from "clsx";
@@ -73,7 +67,18 @@ export function PaginatedStage({ scenes }: { scenes: StoryScene[] }) {
       const target = e.target;
       if (target instanceof HTMLElement) {
         const tag = target.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable) {
+        // Skip if focus is in a text-entry control or on a button/link.
+        // Native buttons activate on Space (keyup); intercepting Space
+        // here would suppress the click and stop on-screen prev/next/menu
+        // buttons from working when focused via Tab.
+        if (
+          tag === "INPUT" ||
+          tag === "TEXTAREA" ||
+          target.isContentEditable ||
+          tag === "BUTTON" ||
+          tag === "A" ||
+          target.getAttribute("role") === "button"
+        ) {
           return;
         }
       }
@@ -94,26 +99,13 @@ export function PaginatedStage({ scenes }: { scenes: StoryScene[] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [next, prev, jumpToStart, canNext, isLastScene]);
 
-  // Real touch hardware (iPad / iPhone).
-  const touchStartXRef = useRef<number | null>(null);
-  const handleTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
-    touchStartXRef.current = e.touches[0]?.clientX ?? null;
-  };
-  const handleTouchEnd = (e: ReactTouchEvent<HTMLDivElement>) => {
-    const start = touchStartXRef.current;
-    touchStartXRef.current = null;
-    if (start === null) return;
-    const delta = (e.changedTouches[0]?.clientX ?? start) - start;
-    // Swipe right → next (current card flies off right, matching the
-    // horizontal-scroll RTL flow). At the last scene a right swipe wraps
-    // back to scene 0. Swipe left → prev.
-    if (delta > SWIPE_THRESHOLD_PX) {
-      if (canNext) next();
-      else if (isLastScene) jumpToStart();
-    } else if (delta < -SWIPE_THRESHOLD_PX && canPrev) {
-      prev();
-    }
-  };
+  // NOTE: native touchstart / touchend handlers were removed in favour of
+  // framer-motion's `drag` (which uses pointer events and covers both
+  // mouse and touch). Wiring both caused a single touch swipe to advance
+  // TWO scenes — once via the touch handler and again via onDragEnd.
+  // The drag handler in the per-card motion.div below is the single
+  // source of truth for swipe gestures. Trackpad horizontal swipe still
+  // goes through onWheel below.
 
   // Trackpad two-finger horizontal swipe (fires `wheel` events, not touch).
   // Accumulate deltaX with a short cooldown so a single fling doesn't blow
@@ -182,8 +174,6 @@ export function PaginatedStage({ scenes }: { scenes: StoryScene[] }) {
   return (
     <div
       className="relative h-screen w-full overflow-hidden bg-washi-200"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
     >
       {/* Render in reverse story order — same as HorizontalStage's DOM:
