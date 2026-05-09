@@ -1,9 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Palette,
+  Sparkles,
+} from "lucide-react";
+import clsx from "clsx";
 
-type Pattern = "peony" | "chrysanthemum" | "willow" | "senrin";
+type Pattern =
+  | "peony"
+  | "chrysanthemum"
+  | "willow"
+  | "senrin"
+  // 型物 (katamono) — pictograph fireworks, modern artisan repertoire.
+  | "heart"
+  | "star";
+type Step = "design" | "color" | "launch";
 
 interface Particle {
   x: number;
@@ -20,7 +35,7 @@ interface Particle {
 
 interface Rocket {
   x: number;
-  yNorm: number; // 0..1 (1 at bottom of canvas, decreases as it rises)
+  yNorm: number;
   vyNorm: number;
   targetYNorm: number;
   hue: number;
@@ -29,8 +44,8 @@ interface Rocket {
 }
 
 interface Star {
-  x: number; // 0..1
-  y: number; // 0..1 (upper portion only)
+  x: number;
+  y: number;
   size: number;
   phase: number;
 }
@@ -44,13 +59,127 @@ interface SkylineSeg {
 
 const TARGET_BURSTS = 5;
 const MAX_CHARGE_MS = 1200;
-// Edo-fireworks-friendly hues. 朱(red)・金(gold)・藍(indigo)・紅(crimson)・紫(purple)・緑(green).
-const HUES = [16, 48, 205, 340, 285, 100];
+
+// Round to 3 decimals — used for any computed value that lands inside
+// JSX as an SVG attribute. Math.cos / Math.sin can produce slightly
+// different last-bit floats between SSR (Node) and CSR (browser),
+// which React 19 surfaces as a hydration mismatch ("57.896733171588906"
+// vs "57.89673317158891"). Rounding to a fixed precision keeps the
+// serialised string identical between the two passes.
+const r3 = (n: number) => Math.round(n * 1000) / 1000;
+
+const ALL_PATTERNS: Pattern[] = [
+  "peony",
+  "chrysanthemum",
+  "willow",
+  "senrin",
+  "heart",
+  "star",
+];
+
+// 4 warimono (割物) + 2 katamono (型物). Real 花火師 distinguish between
+// "scatter shells" and "shape shells" — both are in our menu.
+const PATTERN_INFO: Record<
+  Pattern,
+  { jp: string; en: string; desc: string; category: "warimono" | "katamono" }
+> = {
+  peony: {
+    jp: "牡丹",
+    en: "Peony",
+    desc: "中心から放射状に星が広がる、最も基本の型。",
+    category: "warimono",
+  },
+  chrysanthemum: {
+    jp: "菊",
+    en: "Chrysanthemum",
+    desc: "尾を引きながら大輪に咲く、二重円の構造。",
+    category: "warimono",
+  },
+  willow: {
+    jp: "柳",
+    en: "Willow",
+    desc: "重力に従って垂れ下がる、しだれ柳のような花火。",
+    category: "warimono",
+  },
+  senrin: {
+    jp: "千輪",
+    en: "Senrin",
+    desc: "親玉が咲いた後、無数の小玉が一斉に開花する。",
+    category: "warimono",
+  },
+  heart: {
+    jp: "ハート",
+    en: "Heart (katamono)",
+    desc: "型物。星(色玉)をハート型に詰めて咲かせる、現代花火師の遊び心。",
+    category: "katamono",
+  },
+  star: {
+    jp: "星",
+    en: "Star (katamono)",
+    desc: "型物。五芒星の形に詰めて開花。祝祭でよく上がる。",
+    category: "katamono",
+  },
+};
+
+// 6 hand-picked hues from the traditional palette + the metal salt that
+// produces each colour in real pyrotechnics. Educational subtitle in the
+// color picker.
+const HUE_PALETTE: {
+  hue: number;
+  name: string;
+  en: string;
+  metal: string;
+  metalEn: string;
+}[] = [
+  { hue: 16, name: "朱", en: "shu", metal: "ストロンチウム", metalEn: "Sr" },
+  { hue: 48, name: "金", en: "kin", metal: "ナトリウム", metalEn: "Na" },
+  { hue: 100, name: "緑", en: "midori", metal: "バリウム", metalEn: "Ba" },
+  { hue: 205, name: "藍", en: "ai", metal: "銅", metalEn: "Cu" },
+  { hue: 285, name: "紫", en: "murasaki", metal: "Sr+Cu", metalEn: "Sr+Cu" },
+  { hue: 340, name: "紅", en: "kurenai", metal: "リチウム", metalEn: "Li" },
+];
+
+// ─────────────────────────────────────────────────────────────────────
+// Katamono parametric curves — return a unit-vector (-1..1) representing
+// the direction each particle flies from the burst center to trace the
+// shape.
+// ─────────────────────────────────────────────────────────────────────
+function heartUnitPos(t: number): [number, number] {
+  // Classic mathematical heart. 16 sin³t / 18 keeps |x| ≤ ~1.
+  const x = (16 * Math.sin(t) ** 3) / 17;
+  const y =
+    -(13 * Math.cos(t) -
+      5 * Math.cos(2 * t) -
+      2 * Math.cos(3 * t) -
+      Math.cos(4 * t)) /
+    17;
+  return [x, y];
+}
+
+function starUnitPos(t: number): [number, number] {
+  // 5-pointed star, 10 alternating outer/inner vertices traversed linearly.
+  const segments = 10;
+  const s = (t / (Math.PI * 2)) * segments;
+  const i = Math.floor(s);
+  const frac = s - i;
+  const a1 = (i / segments) * Math.PI * 2 - Math.PI / 2;
+  const a2 = ((i + 1) / segments) * Math.PI * 2 - Math.PI / 2;
+  const r1 = i % 2 === 0 ? 1.0 : 0.4;
+  const r2 = (i + 1) % 2 === 0 ? 1.0 : 0.4;
+  const x1 = Math.cos(a1) * r1;
+  const y1 = Math.sin(a1) * r1;
+  const x2 = Math.cos(a2) * r2;
+  const y2 = Math.sin(a2) * r2;
+  return [x1 + (x2 - x1) * frac, y1 + (y2 - y1) * frac];
+}
+
 const PATTERN_NAMES: Record<Pattern, string> = {
   peony: "牡丹",
   chrysanthemum: "菊",
   willow: "柳",
   senrin: "千輪",
+  heart: "ハート",
+  star: "星",
 };
 
 export function HanabiStage({
@@ -60,34 +189,356 @@ export function HanabiStage({
   onComplete: (dataUrl: string) => void;
   palette: [string, string, string];
 }) {
+  // ─────────────────────────────────────────────────────────────────
+  // 3-step craft flow: design (pick pattern) → color (pick 3 hues)
+  //                    → launch (charge & release with locked recipe)
+  // ─────────────────────────────────────────────────────────────────
+  const [step, setStep] = useState<Step>("design");
+  const [pattern, setPattern] = useState<Pattern | null>(null);
+  const [hues, setHues] = useState<number[]>([]);
+
+  if (step === "design") {
+    return (
+      <DesignStep
+        onPick={(p) => {
+          setPattern(p);
+          setStep("color");
+        }}
+      />
+    );
+  }
+  if (step === "color") {
+    return (
+      <ColorStep
+        pattern={pattern!}
+        selected={hues}
+        onToggle={(h) =>
+          setHues((prev) =>
+            prev.includes(h)
+              ? prev.filter((x) => x !== h)
+              : prev.length < 3
+                ? [...prev, h]
+                : prev,
+          )
+        }
+        onConfirm={() => setStep("launch")}
+        onBack={() => {
+          setHues([]);
+          setStep("design");
+        }}
+      />
+    );
+  }
+  return (
+    <LaunchStep
+      pattern={pattern!}
+      hues={hues}
+      onComplete={onComplete}
+      onBack={() => setStep("color")}
+    />
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// Step 1 — Design (pattern selection)
+// ═════════════════════════════════════════════════════════════════════
+function DesignStep({ onPick }: { onPick: (p: Pattern) => void }) {
+  return (
+    <div className="flex w-full flex-col items-center gap-6 text-washi-50">
+      <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
+        <Sparkles size={14} /> Step 1 · 花火玉を作る
+      </p>
+      <h2 className="text-center font-serif text-3xl font-light leading-tight">
+        どの割物にする？
+      </h2>
+      <p className="max-w-md text-center text-sm italic text-washi-50/70">
+        花火師は星(色玉)の配置で花火の咲き方を決める。あなたが今夜咲かせる型を選んでください。
+      </p>
+
+      <div className="grid w-[min(92vw,42rem)] grid-cols-1 gap-3 sm:grid-cols-2">
+        {ALL_PATTERNS.map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => onPick(p)}
+            className="group relative flex flex-col items-start gap-3 rounded-lg border border-washi-50/10 bg-white/5 p-5 text-left transition hover:border-amber-300/60 hover:bg-amber-300/5"
+          >
+            <PatternPreview pattern={p} />
+            <div>
+              <h3 className="font-jp text-2xl tracking-wider">
+                {PATTERN_INFO[p].jp}
+              </h3>
+              <p className="text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/55">
+                {PATTERN_INFO[p].en}
+              </p>
+            </div>
+            <p className="text-xs leading-relaxed text-washi-50/70">
+              {PATTERN_INFO[p].desc}
+            </p>
+            <span className="mt-1 inline-flex items-center gap-1 text-[0.6rem] uppercase tracking-[0.3em] text-amber-200/80 opacity-0 transition group-hover:opacity-100">
+              選ぶ <ArrowRight size={10} />
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PatternPreview({ pattern }: { pattern: Pattern }) {
+  const cx = 40;
+  const cy = 40;
+  const dots: { x: number; y: number; r: number; opacity: number }[] = [];
+
+  if (pattern === "peony") {
+    for (let i = 0; i < 12; i++) {
+      const a = (Math.PI * 2 * i) / 12;
+      dots.push({
+        x: cx + Math.cos(a) * 22,
+        y: cy + Math.sin(a) * 22,
+        r: 2,
+        opacity: 0.85,
+      });
+    }
+  } else if (pattern === "chrysanthemum") {
+    for (let i = 0; i < 16; i++) {
+      const a = (Math.PI * 2 * i) / 16;
+      dots.push({
+        x: cx + Math.cos(a) * 14,
+        y: cy + Math.sin(a) * 14,
+        r: 1.6,
+        opacity: 0.75,
+      });
+      dots.push({
+        x: cx + Math.cos(a) * 28,
+        y: cy + Math.sin(a) * 28,
+        r: 2,
+        opacity: 0.85,
+      });
+    }
+  } else if (pattern === "willow") {
+    for (let i = 0; i < 10; i++) {
+      const a = -Math.PI + (Math.PI * i) / 9;
+      dots.push({
+        x: cx + Math.cos(a) * 22,
+        y: cy + Math.sin(a) * 22,
+        r: 2,
+        opacity: 0.85,
+      });
+    }
+    // trailing droplets
+    for (let i = 0; i < 6; i++) {
+      dots.push({
+        x: cx - 14 + i * 5.5,
+        y: cy + 22 + i * 4,
+        r: 1.4,
+        opacity: 0.6 - i * 0.08,
+      });
+    }
+  } else if (pattern === "senrin") {
+    // central cluster + small satellite clusters
+    for (let i = 0; i < 8; i++) {
+      const a = (Math.PI * 2 * i) / 8;
+      dots.push({
+        x: cx + Math.cos(a) * 6,
+        y: cy + Math.sin(a) * 6,
+        r: 1.4,
+        opacity: 0.8,
+      });
+    }
+    const cores = [
+      [-22, -16],
+      [22, -14],
+      [-18, 18],
+      [20, 20],
+    ];
+    for (const [ox, oy] of cores) {
+      for (let i = 0; i < 6; i++) {
+        const a = (Math.PI * 2 * i) / 6;
+        dots.push({
+          x: cx + ox + Math.cos(a) * 5,
+          y: cy + oy + Math.sin(a) * 5,
+          r: 1.1,
+          opacity: 0.7,
+        });
+      }
+    }
+  } else if (pattern === "heart") {
+    // Sample the heart parametric curve at 28 points.
+    for (let i = 0; i < 28; i++) {
+      const t = (Math.PI * 2 * i) / 28;
+      const [dx, dy] = heartUnitPos(t);
+      dots.push({
+        x: cx + dx * 26,
+        y: cy + dy * 26,
+        r: 1.8,
+        opacity: 0.85,
+      });
+    }
+  } else {
+    // star — sample the 5-point star at 30 points.
+    for (let i = 0; i < 30; i++) {
+      const t = (Math.PI * 2 * i) / 30;
+      const [dx, dy] = starUnitPos(t);
+      dots.push({
+        x: cx + dx * 26,
+        y: cy + dy * 26,
+        r: 1.6,
+        opacity: 0.85,
+      });
+    }
+  }
+
+  return (
+    <svg
+      width="80"
+      height="80"
+      viewBox="0 0 80 80"
+      className="opacity-90 transition group-hover:opacity-100"
+      aria-hidden
+    >
+      <circle cx={cx} cy={cy} r="34" fill="rgba(0,0,0,0.4)" />
+      {dots.map((d, i) => (
+        <circle
+          key={i}
+          cx={r3(d.x)}
+          cy={r3(d.y)}
+          r={d.r}
+          fill="rgba(252, 232, 170, 1)"
+          opacity={d.opacity}
+        />
+      ))}
+    </svg>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// Step 2 — Color (pick 3 hues)
+// ═════════════════════════════════════════════════════════════════════
+function ColorStep({
+  pattern,
+  selected,
+  onToggle,
+  onConfirm,
+  onBack,
+}: {
+  pattern: Pattern;
+  selected: number[];
+  onToggle: (hue: number) => void;
+  onConfirm: () => void;
+  onBack: () => void;
+}) {
+  const ready = selected.length === 3;
+  return (
+    <div className="flex w-full flex-col items-center gap-6 text-washi-50">
+      <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
+        <Palette size={14} /> Step 2 · 色を選ぶ
+      </p>
+      <h2 className="text-center font-serif text-3xl font-light leading-tight">
+        {PATTERN_INFO[pattern].jp}に込める色を 3 つ
+      </h2>
+      <p className="text-sm italic text-washi-50/70">
+        星(色玉)に使う色を選ぶ。順番は問わない。 ({selected.length} / 3)
+      </p>
+
+      <div className="grid w-[min(92vw,32rem)] grid-cols-3 gap-3 sm:grid-cols-6">
+        {HUE_PALETTE.map((h) => {
+          const isSelected = selected.includes(h.hue);
+          return (
+            <button
+              key={h.hue}
+              type="button"
+              onClick={() => onToggle(h.hue)}
+              className={clsx(
+                "flex flex-col items-center gap-1.5 rounded-lg border p-3 transition",
+                isSelected
+                  ? "border-washi-50 bg-washi-50/10"
+                  : "border-washi-50/15 hover:border-washi-50/40",
+              )}
+            >
+              <span
+                className="h-12 w-12 rounded-full"
+                style={{
+                  background: `radial-gradient(circle at 35% 35%, hsl(${h.hue}, 100%, 78%), hsl(${h.hue}, 90%, 45%) 70%)`,
+                  boxShadow: isSelected
+                    ? `0 0 24px hsla(${h.hue}, 100%, 70%, 0.7)`
+                    : "none",
+                }}
+              />
+              <span className="font-jp text-sm">{h.name}</span>
+              <span className="text-[0.55rem] uppercase tracking-[0.3em] text-washi-50/40">
+                {h.en}
+              </span>
+              {/* Educational subtitle: the metal salt that produces this
+                  colour in real pyrotechnics. */}
+              <span className="mt-0.5 text-[0.5rem] tracking-[0.15em] text-amber-200/45">
+                {h.metalEn} · {h.metal}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
+        >
+          <ArrowLeft size={12} /> 作り直す
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={!ready}
+          className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
+        >
+          打ち上げ準備
+          <ArrowRight size={12} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// Step 3 — Launch (charge & release with locked recipe)
+// ═════════════════════════════════════════════════════════════════════
+function LaunchStep({
+  pattern,
+  hues,
+  onComplete,
+  onBack,
+}: {
+  pattern: Pattern;
+  hues: number[];
+  onComplete: (dataUrl: string) => void;
+  onBack: () => void;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
   const rockets = useRef<Rocket[]>([]);
   const chargeRef = useRef<{ x: number; start: number } | null>(null);
+  const rocketCycleRef = useRef(0);
 
   const [bursts, setBursts] = useState(0);
   const burstsRef = useRef(0);
   const [chargeProgress, setChargeProgress] = useState(0);
-  const [latestPattern, setLatestPattern] = useState<Pattern | null>(null);
-  // Two halves of the same flag: the ref so the rAF loop and the
-  // `complete()` guard can read the latest value synchronously, and
-  // the state so the Finale button can re-render to its disabled
-  // appearance.
   const finalizingRef = useRef(false);
+  // Mirrors finalizingRef in React state so we can disable the Finale
+  // button after the first click. Without this, a rapid double-click
+  // queues two finale chains and onComplete fires twice (router.push
+  // gets called against an unmounted tree on the second invocation).
   const [finalizing, setFinalizing] = useState(false);
+  const chargeProgressRef = useRef(0);
   const mountedRef = useRef(true);
-  // Tracks every setTimeout used by the finale so we can cancel them if
-  // the user navigates away mid-bloom — otherwise the deferred
-  // `onComplete` callback would fire against an unmounted component and
-  // trigger navigation/state updates after teardown.
+  // Tracks every setTimeout used by the finale so we can cancel them
+  // if the user navigates away mid-bloom — otherwise the deferred
+  // `onComplete` callback would fire against an unmounted component
+  // and trigger router.push from ExperienceShell against a torn-down
+  // tree.
   const finaleTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   useEffect(() => {
-    // Re-arm on every (re-)mount. Without this, React 19 StrictMode's
-    // double-mount in dev leaves mountedRef = false after the first
-    // cleanup, and the finale's setTimeout chain then silent-skips
-    // because every callback gates on `mountedRef.current` — Finale
-    // appears to do nothing.
-    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       for (const id of finaleTimersRef.current) clearTimeout(id);
@@ -95,13 +546,12 @@ export function HanabiStage({
     };
   }, []);
 
-  // Background — deterministic, generated once.
   const stars = useMemo<Star[]>(() => {
     let s = 17;
     const rng = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
     return Array.from({ length: 90 }, () => ({
       x: rng(),
-      y: rng() * 0.55, // stars only in upper sky
+      y: rng() * 0.55,
       size: 0.4 + rng() * 1.6,
       phase: rng() * Math.PI * 2,
     }));
@@ -127,8 +577,7 @@ export function HanabiStage({
     return segs;
   }, []);
 
-  // Single, stable animation loop. Reads everything via refs so it
-  // doesn't restart when React state changes.
+  // Animation loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -151,19 +600,15 @@ export function HanabiStage({
       const h = canvas.clientHeight;
       const tSec = (performance.now() - start) / 1000;
 
-      // Sky gradient
       const sky = ctx.createLinearGradient(0, 0, 0, h);
       sky.addColorStop(0, "#070b1d");
       sky.addColorStop(0.7, "#0e1535");
       sky.addColorStop(1, "#1a2245");
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, w, h);
-
-      // Motion-blur veil — softens trails, builds up the bloom afterglow.
       ctx.fillStyle = "rgba(7,11,29,0.18)";
       ctx.fillRect(0, 0, w, h);
 
-      // Stars
       for (const star of stars) {
         const alpha = 0.4 + Math.sin(tSec * 1.5 + star.phase) * 0.3;
         ctx.fillStyle = `rgba(255,255,255,${alpha})`;
@@ -172,7 +617,6 @@ export function HanabiStage({
         ctx.fill();
       }
 
-      // Skyline silhouette
       const baseline = h * 0.92;
       ctx.fillStyle = "#02050d";
       ctx.beginPath();
@@ -184,13 +628,11 @@ export function HanabiStage({
         ctx.lineTo(sx0, baseline);
         ctx.lineTo(sx0, sy);
         if (seg.isTower) {
-          // Pagoda eaves silhouette
           const cx = (sx0 + sx1) / 2;
           ctx.lineTo(sx0 - 4, sy);
           ctx.lineTo(cx, sy - 10);
           ctx.lineTo(sx1 + 4, sy);
         } else {
-          // Sloped roof
           ctx.lineTo((sx0 + sx1) / 2, sy - 4);
         }
         ctx.lineTo(sx1, sy);
@@ -202,7 +644,6 @@ export function HanabiStage({
       ctx.closePath();
       ctx.fill();
 
-      // Water reflection band
       const waterTop = baseline + 4;
       const waterGrad = ctx.createLinearGradient(0, waterTop, 0, h);
       waterGrad.addColorStop(0, "rgba(20,30,80,0.6)");
@@ -219,7 +660,6 @@ export function HanabiStage({
         ctx.stroke();
       }
 
-      // Charge indicator (glow at the bottom under the cursor)
       const charging = chargeRef.current;
       if (charging) {
         const cx = charging.x;
@@ -237,7 +677,10 @@ export function HanabiStage({
           cy,
           pulseR * 2.4,
         );
-        pulseGrad.addColorStop(0, `hsla(50, 100%, 75%, ${0.55 + charge * 0.35})`);
+        pulseGrad.addColorStop(
+          0,
+          `hsla(50, 100%, 75%, ${0.55 + charge * 0.35})`,
+        );
         pulseGrad.addColorStop(1, "hsla(50, 100%, 75%, 0)");
         ctx.fillStyle = pulseGrad;
         ctx.beginPath();
@@ -249,12 +692,10 @@ export function HanabiStage({
         ctx.fill();
       }
 
-      // Rockets
       for (const r of rockets.current) {
         r.yNorm += r.vyNorm;
         r.vyNorm *= 0.998;
         const ry = r.yNorm * h;
-        // Trail sparks
         if (Math.random() < 0.7) {
           particles.current.push({
             x: r.x + (Math.random() - 0.5) * 4,
@@ -268,7 +709,6 @@ export function HanabiStage({
             size: 1.1,
           });
         }
-        // Rocket head
         ctx.fillStyle = "rgba(255, 240, 180, 0.95)";
         ctx.beginPath();
         ctx.arc(r.x, ry, 2.4, 0, Math.PI * 2);
@@ -281,18 +721,16 @@ export function HanabiStage({
         ctx.shadowBlur = 0;
 
         if (r.yNorm <= r.targetYNorm) {
-          spawnBurst(r.x, ry, r.charge, r.hue, r.pattern, w, h);
+          spawnBurst(r.x, ry, r.charge, r.hue, r.pattern);
           r.yNorm = -1;
           if (!finalizingRef.current) {
             burstsRef.current = Math.min(TARGET_BURSTS, burstsRef.current + 1);
             setBursts(burstsRef.current);
-            setLatestPattern(r.pattern);
           }
         }
       }
       rockets.current = rockets.current.filter((r) => r.yNorm >= 0);
 
-      // Particles physics + trails
       for (const p of particles.current) {
         p.life += 1;
         p.x += p.vx;
@@ -319,14 +757,7 @@ export function HanabiStage({
       for (const p of particles.current) {
         const a = 1 - p.life / p.maxLife;
         if (p.isFlash) {
-          const grd = ctx.createRadialGradient(
-            p.x,
-            p.y,
-            0,
-            p.x,
-            p.y,
-            p.size,
-          );
+          const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
           grd.addColorStop(0, `hsla(${p.hue}, 100%, 80%, ${a * 0.9})`);
           grd.addColorStop(0.5, `hsla(${p.hue}, 100%, 65%, ${a * 0.4})`);
           grd.addColorStop(1, `hsla(${p.hue}, 100%, 60%, 0)`);
@@ -342,7 +773,6 @@ export function HanabiStage({
         }
       }
 
-      // Update charge progress for the React-driven UI bar.
       if (charging) {
         const c = Math.min(
           1,
@@ -367,19 +797,13 @@ export function HanabiStage({
     };
   }, [stars, skyline]);
 
-  // Local ref for charge progress so the loop can avoid setState spam.
-  const chargeProgressRef = useRef(0);
-
   function spawnBurst(
     x: number,
     y: number,
     charge: number,
     hue: number,
-    pattern: Pattern,
-    _w: number,
-    _h: number,
+    pat: Pattern,
   ) {
-    // Central glow flash
     particles.current.push({
       x,
       y,
@@ -393,8 +817,7 @@ export function HanabiStage({
       isFlash: true,
     });
 
-    if (pattern === "senrin") {
-      // 千輪 — many small simultaneous mini-bursts.
+    if (pat === "senrin") {
       const cores = 5 + Math.floor(charge * 4);
       for (let m = 0; m < cores; m++) {
         const ox = (Math.random() - 0.5) * 90;
@@ -418,40 +841,71 @@ export function HanabiStage({
       return;
     }
 
-    const count = 60 + Math.floor(charge * 100);
+    const count = 80 + Math.floor(charge * 140);
     const baseSpeed = 1.6 + charge * 2.6;
-    const trailing = pattern === "chrysanthemum" || pattern === "willow";
+    const trailing = pat === "chrysanthemum" || pat === "willow";
 
+    // Katamono (pictograph) patterns — particles trace a parametric shape
+    // instead of distributing radially. Heart / star are real pyrotechnic
+    // 型物 used by modern 花火師.
+    if (pat === "heart" || pat === "star") {
+      for (let i = 0; i < count; i++) {
+        const t = (Math.PI * 2 * i) / count;
+        const [dx, dy] =
+          pat === "heart" ? heartUnitPos(t) : starUnitPos(t);
+        particles.current.push({
+          x,
+          y,
+          vx: dx * baseSpeed,
+          vy: dy * baseSpeed - 0.3,
+          life: 0,
+          maxLife: 55 + Math.random() * 25,
+          hue: hue + (Math.random() - 0.5) * 30,
+          trail: false,
+          size: 1.6,
+        });
+      }
+      return;
+    }
+
+    // 割物 (warimono) patterns — bloom in 3D and project to 2D so the
+    // burst reads as a SOLID DISK, not just a ring on the perimeter.
+    // Picking a uniform direction on the unit sphere and dropping the z
+    // component gives the natural "filled disk with edge falloff" look
+    // because particles with high |z| end up moving slowly on the screen
+    // (their motion is into / out of the page).
     for (let i = 0; i < count; i++) {
-      const a = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.05;
+      const u = 2 * Math.random() - 1; // unseen z component, [-1, 1]
+      const theta = Math.PI * 2 * Math.random();
+      const r2d = Math.sqrt(1 - u * u);
+      const dirX = r2d * Math.cos(theta);
+      const dirY = r2d * Math.sin(theta);
       const v =
-        pattern === "willow"
+        pat === "willow"
           ? baseSpeed * (0.4 + Math.random() * 0.3)
-          : baseSpeed * (0.85 + Math.random() * 0.3);
-      const lifeFactor = pattern === "willow" ? 1.5 : 1;
+          : baseSpeed * (0.9 + Math.random() * 0.2);
+      const lifeFactor = pat === "willow" ? 1.5 : 1;
+      // Depth cue: particles moving mostly along z appear smaller in 2D.
+      const depthAttenuation = 1 - Math.abs(u) * 0.45;
       particles.current.push({
         x,
         y,
-        vx: Math.cos(a) * v,
-        vy: Math.sin(a) * v - (pattern === "willow" ? 0 : 0.3),
+        vx: dirX * v,
+        vy: dirY * v - (pat === "willow" ? 0 : 0.3),
         life: 0,
         maxLife: (50 + Math.random() * 25) * lifeFactor,
         hue: hue + (Math.random() - 0.5) * 30,
         trail: trailing,
-        size: 1.6,
+        size: 1.7 * depthAttenuation,
       });
     }
   }
 
   function spawnRocket(canvasX: number, charge: number) {
-    const hue = HUES[Math.floor(Math.random() * HUES.length)];
-    const patterns: Pattern[] = [
-      "peony",
-      "chrysanthemum",
-      "willow",
-      "senrin",
-    ];
-    const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+    // Locked recipe: pattern + hues chosen during Steps 1-2, hues cycle
+    // through the 3 chosen so each rocket alternates colour deterministically.
+    const hue = hues[rocketCycleRef.current % hues.length] ?? 48;
+    rocketCycleRef.current++;
     rockets.current.push({
       x: canvasX,
       yNorm: 1,
@@ -489,20 +943,17 @@ export function HanabiStage({
   }
 
   function complete() {
-    // Re-entrancy guard: a rapid double-click on Finale (or repeated
-    // Enter while focused) would otherwise queue multiple chains of
-    // timeouts and call onComplete more than once — and onComplete
-    // saves work + router.push, so duplicates cause race conditions
-    // and stray writes.
+    // Re-entry guard: a double-click would otherwise queue a second
+    // finale chain and call onComplete twice.
     if (finalizingRef.current) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const w = canvas.clientWidth;
     finalizingRef.current = true;
     setFinalizing(true);
-    // Grand finale — three overlapping bursts. All deferred work is
-    // tracked in finaleTimersRef so we can cancel it on unmount and
-    // never call onComplete (which navigates) against a torn-down tree.
+    // Track every deferred call so we can cancel it on unmount and
+    // never call `onComplete` (which router.push'es) against a
+    // torn-down tree.
     spawnRocket(w * 0.22, 1);
     finaleTimersRef.current.push(
       setTimeout(() => {
@@ -526,7 +977,7 @@ export function HanabiStage({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> 押して溜める · 離して打ち上げる
+        <Sparkles size={14} /> Step 3 · 押して溜める · 離して打ち上げる
       </p>
 
       <div
@@ -541,17 +992,24 @@ export function HanabiStage({
           className="absolute inset-0 h-full w-full cursor-crosshair touch-none"
         />
 
-        {/* Latest pattern badge — subtle indicator of the bloom kind */}
-        {latestPattern && (
-          <div className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/40 px-3 py-1 text-[0.55rem] uppercase tracking-[0.4em] text-amber-200/85 backdrop-blur">
-            <span className="font-jp tracking-wider">
-              {PATTERN_NAMES[latestPattern]}
-            </span>
-          </div>
-        )}
+        {/* Recipe badge — shows the locked pattern + colours */}
+        <div className="pointer-events-none absolute right-3 top-3 flex items-center gap-2 rounded-full bg-black/40 px-3 py-1 backdrop-blur">
+          <span className="font-jp text-[0.65rem] tracking-wider text-amber-200/85">
+            {PATTERN_NAMES[pattern]}
+          </span>
+          <span className="text-amber-200/30">·</span>
+          {hues.map((h) => (
+            <span
+              key={h}
+              className="block h-2 w-2 rounded-full"
+              style={{
+                background: `hsl(${h}, 90%, 65%)`,
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Charge bar */}
       <div className="h-[2px] w-56 overflow-hidden rounded-full bg-washi-50/20">
         <div
           className="h-full bg-amber-300 transition-[width] duration-100"
@@ -559,7 +1017,6 @@ export function HanabiStage({
         />
       </div>
 
-      {/* Burst counter */}
       <div className="flex items-center gap-2">
         {Array.from({ length: TARGET_BURSTS }).map((_, i) => (
           <span
@@ -571,14 +1028,23 @@ export function HanabiStage({
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={complete}
-        disabled={bursts < TARGET_BURSTS || finalizing}
-        className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
-      >
-        <Check size={12} /> Finale
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
+        >
+          <ArrowLeft size={12} /> 色を選び直す
+        </button>
+        <button
+          type="button"
+          onClick={complete}
+          disabled={bursts < TARGET_BURSTS || finalizing}
+          className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
+        >
+          <Check size={12} /> Finale
+        </button>
+      </div>
     </div>
   );
 }
