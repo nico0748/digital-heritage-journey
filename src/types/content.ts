@@ -55,6 +55,7 @@ export interface Prefecture {
   | "wajima-decorate";
   | "blade-forge";
   | "bizen-fire";
+  | "fude-craft";
 
 export interface CultureMedia {
   hero?: string;
@@ -79,6 +80,10 @@ export interface RealWorldLink {
   labelJp: string; // 日本語ラベル, e.g. "江戸切子協同組合へ"
   kind: RealWorldKind;
   location?: string; // optional, e.g. "Tokyo, Sumida"
+export interface CultureRealWorld {
+  kind: "association" | "museum" | "shop" | "festival";
+  label: string;
+  url: string;
 }
 
 export interface Culture {
@@ -104,6 +109,8 @@ export interface Culture {
   // Optional so cultures added before this taxonomy don't break and so
   // future cultures can opt in incrementally.
   realWorld?: RealWorldLink;
+  prefectures?: string[];
+  realWorld?: CultureRealWorld;
 }
 
 export interface StoryScene {
