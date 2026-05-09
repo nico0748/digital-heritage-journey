@@ -8,6 +8,22 @@ import type { Culture } from "@/types/content";
 import { useAppStore } from "@/stores/useAppStore";
 import { WashiCanvas } from "./WashiCanvas";
 import { HanabiStage } from "./HanabiStage";
+import { LanternStage } from "./LanternStage";
+import { TaikoStage } from "./TaikoStage";
+import { SensuStage } from "./SensuStage";
+import { TsugaruNuriStage } from "./TsugaruNuriStage";
+import { NanbuTekkiStage } from "./NanbuTekkiStage";
+import { MagewappaStage } from "./MagewappaStage";
+import { MashikoYakiStage } from "./MashikoYakiStage";
+import { TsuikiStage } from "./TsuikiStage";
+import { WajimaNuriStage } from "./WajimaNuriStage";
+import { EchizenBladeStage } from "./EchizenBladeStage";
+import { BizenYakiStage } from "./BizenYakiStage";
+import { KumanoFudeStage } from "./KumanoFudeStage";
+import { AwaOdoriStage } from "./AwaOdoriStage";
+import { HakataNingyoStage } from "./HakataNingyoStage";
+import { AritaYakiStage } from "./AritaYakiStage";
+import { BingataStage } from "./BingataStage";
 
 // Heavy: Three.js + R3F + drei. Load only when Kiriko is actually requested.
 const KirikoCanvas = dynamic(
@@ -132,6 +148,54 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
         )}
         {culture.experience === "hanabi-launch" && (
           <HanabiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "lantern-light" && (
+          <LanternStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "taiko-strike" && (
+          <TaikoStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "sensu-paint" && (
+          <SensuStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "tsugaru-polish" && (
+          <TsugaruNuriStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "tekki-cast" && (
+          <NanbuTekkiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "magewappa-bend" && (
+          <MagewappaStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "mashiko-throw" && (
+          <MashikoYakiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "tsuiki-hammer" && (
+          <TsuikiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "wajima-decorate" && (
+          <WajimaNuriStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "blade-forge" && (
+          <EchizenBladeStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "bizen-fire" && (
+          <BizenYakiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "fude-craft" && (
+          <KumanoFudeStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "awa-rhythm" && (
+          <AwaOdoriStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "ningyo-paint" && (
+          <HakataNingyoStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "arita-paint" && (
+          <AritaYakiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
+        {culture.experience === "bingata-dye" && (
+          <BingataStage onComplete={handleComplete} palette={culture.palette} />
         )}
       </section>
     </main>
