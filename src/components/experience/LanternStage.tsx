@@ -173,14 +173,14 @@ export function LanternStage({
       ctx.fillStyle = "rgba(255,200,140,0.18)";
       ctx.fillRect(cx - capW / 2 + 4, cy - lh / 2 - 21, capW - 8, 3);
 
-      // Lantern body + ribs + calligraphy
+      // Center lantern body + ribs + calligraphy
       drawLanternBody(ctx, cx, cy, lw, lh, glow);
       drawLanternRibs(ctx, cx, cy, lw, lh, glow);
       if (strokesRef.current.length > 0 || currentStrokeRef.current) {
         drawCalligraphy(ctx, cx, cy, lw, lh, glow);
       }
 
-      // Bottom cap + tassel
+      // Bottom cap + tassel for the centre lantern
       ctx.fillStyle = "#3E2A1F";
       ctx.beginPath();
       ctx.roundRect(cx - capW / 2, cy + lh / 2 + 4, capW, capH, 4);
@@ -195,6 +195,74 @@ export function LanternStage({
       ctx.beginPath();
       ctx.arc(cx, cy + lh / 2 + 54, 4, 0, Math.PI * 2);
       ctx.fill();
+
+      // Festival mode — once the user has completed their lantern,
+      // hang their work alongside several "祭" satellite lanterns so
+      // the final scene reads as a night street rather than one
+      // isolated piece. The satellites are smaller and stagger their
+      // sway / glow phase so the row feels alive.
+      if (stepRef.current === "done") {
+        const satellites = [
+          { dx: -lw * 1.05, dy: 56, scale: 0.5, phase: 1.3 },
+          { dx: -lw * 0.62, dy: 22, scale: 0.62, phase: 0.6 },
+          { dx: lw * 0.62, dy: 28, scale: 0.62, phase: 1.7 },
+          { dx: lw * 1.05, dy: 60, scale: 0.5, phase: 2.2 },
+        ];
+        for (const sat of satellites) {
+          const sway = Math.sin(tSec * 0.7 + sat.phase) * 3;
+          const sx = cx + sat.dx + sway;
+          const sy = cy + sat.dy + Math.sin(tSec * 0.45 + sat.phase) * 1.5;
+          const slw = lw * sat.scale;
+          const slh = lh * sat.scale;
+          const sg = Math.min(
+            1,
+            glow * 0.85 + Math.sin(tSec * 1.1 + sat.phase * 2) * 0.06,
+          );
+          // Hanging cord for the satellite
+          ctx.strokeStyle = "rgba(40,28,18,0.65)";
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.moveTo(sx, 0);
+          ctx.lineTo(sx, sy - slh / 2 - slh * 0.06);
+          ctx.stroke();
+          // Halo
+          if (sg > 0.05) {
+            const halo = ctx.createRadialGradient(
+              sx,
+              sy,
+              slw * 0.3,
+              sx,
+              sy,
+              slw * 1.6,
+            );
+            const a = sg * 0.4;
+            halo.addColorStop(0, `rgba(249, 217, 118, ${a})`);
+            halo.addColorStop(1, "rgba(192, 61, 43, 0)");
+            ctx.fillStyle = halo;
+            ctx.beginPath();
+            ctx.arc(sx, sy, slw * 1.6, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          drawLanternBody(ctx, sx, sy, slw, slh, sg);
+          drawLanternRibs(ctx, sx, sy, slw, slh, sg);
+          // "祭" calligraphy
+          ctx.save();
+          ctx.beginPath();
+          drawLanternPath(ctx, sx, sy, slw, slh);
+          ctx.clip();
+          ctx.fillStyle = `rgba(20,10,5,${0.82 - sg * 0.1})`;
+          ctx.font = `bold ${Math.floor(slh * 0.5)}px "Hiragino Mincho ProN", "Yu Mincho", serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("祭", sx, sy);
+          ctx.restore();
+          // Tiny bottom cap
+          const sCapW = slw * 0.46;
+          const sCapH = slh * 0.05;
+          ctx.fillStyle = "#3E2A1F";
+          ctx.fillRect(sx - sCapW / 2, sy + slh / 2 + 2, sCapW, sCapH);
+        }
+      }
 
       // Spawn embers when lit
       if (glow > 0.22 && Math.random() < 0.12 + glow * 0.45) {
@@ -449,20 +517,23 @@ export function LanternStage({
       if (e.currentTarget.hasPointerCapture(e.pointerId)) {
         e.currentTarget.releasePointerCapture(e.pointerId);
       }
-      if (
-        drawLengthRef.current >= DRAW_TARGET &&
-        stepRef.current === "draw"
-      ) {
-        if (advanceTimerRef.current !== null) {
-          window.clearTimeout(advanceTimerRef.current);
-        }
-        advanceTimerRef.current = window.setTimeout(() => {
-          setStep("done");
-          advanceTimerRef.current = null;
-        }, 500);
-      }
+      // Auto-advance was here — removed because a single confident
+      // stroke crossed the threshold before the user was done drawing,
+      // jumping to "done" against their will. The user now decides
+      // when to finish via the explicit "提灯を完成させる" button
+      // below the canvas (enabled once drawLength >= DRAW_TARGET).
     }
   }
+
+  const drawDone = drawProgress >= 1;
+  const finishDrawing = () => {
+    if (stepRef.current !== "draw") return;
+    if (advanceTimerRef.current !== null) {
+      window.clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
+    setStep("done");
+  };
 
   function complete() {
     const canvas = canvasRef.current;
@@ -542,6 +613,18 @@ export function LanternStage({
         <p className="text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55">
           {lights} / {LIGHT_TARGET}
         </p>
+      )}
+
+      {step === "draw" && (
+        <button
+          type="button"
+          onClick={finishDrawing}
+          disabled={!drawDone}
+          className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Check size={12} />{" "}
+          <span className="font-jp">提灯を完成させる</span>
+        </button>
       )}
 
       {step === "done" && (
