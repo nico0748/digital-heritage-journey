@@ -170,7 +170,7 @@ export function WajimaNuriStage({
             if (techniqueAdvanceTimerRef.current) {
               clearTimeout(techniqueAdvanceTimerRef.current);
             }
-            techniqueAdvanceTimerRef.current = window.setTimeout(() => {
+            techniqueAdvanceTimerRef.current = setTimeout(() => {
               techniqueAdvanceTimerRef.current = null;
               goNext();
             }, 320);
@@ -815,7 +815,7 @@ function KashokuStep({
       }
       // Gold sprinkle ticks — short bright ticks evoke 金粉撒き.
       for (let i = 0; i < 8; i++) {
-        window.setTimeout(() => {
+        setTimeout(() => {
           if (!mountedRef.current) return;
           playClick({ mutedRef, freq: 2000, duration: 0.04, volume: 0.4 });
         }, i * 90);
