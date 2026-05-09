@@ -47,6 +47,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "bizen-yaki",
+    name: "Bizen-yaki",
+    jp: "備前焼",
+    region: "Okayama / Bizen",
+    category: "craft",
+    era: "Heian period (1000s-)",
+    description:
+      "Unglazed pottery — fire and ash from 14-day firings create unique 景色 patterns.",
+    problem:
+      "Long firing cycles unprofitable; many youth potters move to faster glazed styles.",
+    palette: ["#1d130a", "#5b3a20", "#3a2614"],
+    accentKanji: "焼",
+    media: {},
+    experience: "bizen-fire",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
