@@ -69,7 +69,12 @@ export function HanabiStage({
   const burstsRef = useRef(0);
   const [chargeProgress, setChargeProgress] = useState(0);
   const [latestPattern, setLatestPattern] = useState<Pattern | null>(null);
+  // Two halves of the same flag: the ref so the rAF loop and the
+  // `complete()` guard can read the latest value synchronously, and
+  // the state so the Finale button can re-render to its disabled
+  // appearance.
   const finalizingRef = useRef(false);
+  const [finalizing, setFinalizing] = useState(false);
   const mountedRef = useRef(true);
   // Tracks every setTimeout used by the finale so we can cancel them if
   // the user navigates away mid-bloom — otherwise the deferred
@@ -478,10 +483,17 @@ export function HanabiStage({
   }
 
   function complete() {
+    // Re-entrancy guard: a rapid double-click on Finale (or repeated
+    // Enter while focused) would otherwise queue multiple chains of
+    // timeouts and call onComplete more than once — and onComplete
+    // saves work + router.push, so duplicates cause race conditions
+    // and stray writes.
+    if (finalizingRef.current) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const w = canvas.clientWidth;
     finalizingRef.current = true;
+    setFinalizing(true);
     // Grand finale — three overlapping bursts. All deferred work is
     // tracked in finaleTimersRef so we can cancel it on unmount and
     // never call onComplete (which navigates) against a torn-down tree.
@@ -556,7 +568,7 @@ export function HanabiStage({
       <button
         type="button"
         onClick={complete}
-        disabled={bursts < TARGET_BURSTS}
+        disabled={bursts < TARGET_BURSTS || finalizing}
         className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
       >
         <Check size={12} /> Finale
