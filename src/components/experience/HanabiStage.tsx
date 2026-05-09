@@ -1215,8 +1215,16 @@ function LaunchStep({
   // (chrysanthemum crackle, willow whoosh, senrin pops, etc.) but the
   // user asked to keep it consistent. Volume + frequency still scale
   // with sizeFactor so 尺玉 lands deeper / louder than 三号.
+  // Every pattern's burst now plays the same clean pitched thump
+  // (transient + rumble stripped via playBoom flags below). The
+  // user's earlier request to silence small / decorative patterns
+  // (kobana / heart / star / smiley) was actually about the
+  // transient + rumble layers, not the boom itself — once those are
+  // stripped, every burst can stay audible without feeling noisy.
+  const SILENT_BURST_PATTERNS: Pattern[] = [];
+
   function fireworkSound(
-    _pat: Pattern,
+    pat: Pattern,
     phase: "launch" | "burst",
     sizeFactor: number,
   ) {
@@ -1231,11 +1239,17 @@ function LaunchStep({
       });
       return;
     }
+    if (SILENT_BURST_PATTERNS.includes(pat)) return;
+    // Hanabi bursts use only the pitched sub-bass thump — transient
+    // crack and rumble tail are stripped so the user hears one clean
+    // boom per burst instead of boom + ancillary noise layers.
     playBoom({
       mutedRef: m,
       freq: 80 - sizeFactor * 12,
       duration: 0.85 + sizeFactor * 0.15,
       volume: vol,
+      transient: false,
+      rumble: false,
     });
   }
 
@@ -1521,11 +1535,7 @@ function LaunchStep({
     sizeFactor: number,
   ) {
     // Initial flash uses the OUTERMOST layer hue — that's what burns
-    // first when the bursting charge ignites the stars. Stack two
-    // overlapping flashes so the burst centre reads as a hot, dense
-    // core instead of a single soft halo: the wide outer flash
-    // provides the gradient bloom, the smaller white-hot core makes
-    // the very centre look bright + concentrated.
+    // first when the bursting charge ignites the stars.
     const flashHue = layersForBurst[layersForBurst.length - 1] ?? 48;
     particles.current.push({
       x,
@@ -1536,20 +1546,7 @@ function LaunchStep({
       maxLife: 22,
       hue: flashHue,
       trail: false,
-      size: (95 + charge * 95) * sizeFactor,
-      isFlash: true,
-    });
-    // White-hot core flash — smaller radius, shorter life, brighter.
-    particles.current.push({
-      x,
-      y,
-      vx: 0,
-      vy: 0,
-      life: 0,
-      maxLife: 14,
-      hue: flashHue,
-      trail: false,
-      size: (40 + charge * 40) * sizeFactor,
+      size: (70 + charge * 70) * sizeFactor,
       isFlash: true,
     });
     // Pattern-specific burst audio fires on impact — common boom plus
@@ -1571,7 +1568,9 @@ function LaunchStep({
             vx: Math.cos(a) * speed,
             vy: Math.sin(a) * speed,
             life: 0,
-            maxLife: 38 + Math.random() * 20,
+            // Senrin sub-cores: bumped from 38+20 to 60+30 so the
+            // many small flowers stay visible long enough to read.
+            maxLife: 60 + Math.random() * 30,
             hue: flashHue,
             hueLayers: layersForBurst,
             hueJitter: (Math.random() - 0.5) * 30,
@@ -1583,13 +1582,7 @@ function LaunchStep({
       return;
     }
 
-    // Bumped from 80 + 140·charge (max 220) to 150 + 250·charge (max
-    // 400 at full charge) so the bloom reads as a solid disk rather
-    // than a sparse cloud of dots. Trailing patterns
-    // (chrysanthemum / willow / yashi) effectively double via their
-    // trail children, but the visible per-frame count is what
-    // controls perceived density at the burst moment.
-    const count = 150 + Math.floor(charge * 250);
+    const count = 80 + Math.floor(charge * 140);
     const baseSpeed = (1.6 + charge * 2.6) * sizeFactor;
     const trailing =
       pat === "chrysanthemum" || pat === "willow" || pat === "yashi";
@@ -1608,8 +1601,10 @@ function LaunchStep({
           vx: Math.cos(theta) * v,
           vy: Math.sin(theta) * v - 0.5,
           life: 0,
-          // ~1.6× chrysanthemum lifespan so leaves visibly droop down.
-          maxLife: 70 + Math.random() * 30,
+          // Yashi (palm) leaves drop further now — bumped from 70+30
+          // to 110+40 so the falling fronds linger at the bottom of
+          // the canvas, matching willow's new 2.6× life multiplier.
+          maxLife: 110 + Math.random() * 40,
           hue: flashHue,
           hueLayers: layersForBurst,
           hueJitter: (Math.random() - 0.5) * 24,
@@ -1620,47 +1615,31 @@ function LaunchStep({
       return;
     }
 
-    // Yaeshin (八重芯) — three-tier concentric expansion. Fire the outer
-    // shell now, then two more shells on a 200ms / 400ms delay. Each
-    // shell uses a slightly different size + life so they read as
-    // distinct rings rather than one fat blur.
+    // Yaeshin (八重芯) — single dense ring burst. Originally fired three
+    // staggered rings (220 ms / 440 ms follow-ups) for a layered
+    // expansion effect, but the user found the repeated booms
+    // distracting. Now fires only the initial ring; the dense
+    // count + smaller hueJitter still gives it a more uniform look
+    // than peony so the pattern stays distinct visually.
     if (pat === "yaeshin") {
-      const fireRing = (
-        radiusScale: number,
-        countScale: number,
-        speedScale: number,
-        hueShift: number,
-      ) => {
-        const c = Math.floor(count * countScale);
-        for (let i = 0; i < c; i++) {
-          const theta = (Math.PI * 2 * i) / c + Math.random() * 0.05;
-          const v = baseSpeed * speedScale * (0.92 + Math.random() * 0.16);
-          particles.current.push({
-            x,
-            y,
-            vx: Math.cos(theta) * v * radiusScale,
-            vy: Math.sin(theta) * v * radiusScale - 0.2,
-            life: 0,
-            maxLife: (40 + Math.random() * 20) * (0.9 + radiusScale * 0.2),
-            hue: flashHue + hueShift,
-            hueLayers: layersForBurst,
-            hueJitter: (Math.random() - 0.5) * 18,
-            trail: false,
-            size: 1.5,
-          });
-        }
-      };
-      fireRing(1.0, 0.55, 1.0, 0);
-      finaleTimersRef.current.push(
-        setTimeout(() => {
-          if (mountedRef.current) fireRing(0.62, 0.4, 0.95, 30);
-        }, 220),
-      );
-      finaleTimersRef.current.push(
-        setTimeout(() => {
-          if (mountedRef.current) fireRing(0.32, 0.3, 0.9, -30);
-        }, 440),
-      );
+      const c = Math.floor(count * 0.85);
+      for (let i = 0; i < c; i++) {
+        const theta = (Math.PI * 2 * i) / c + Math.random() * 0.05;
+        const v = baseSpeed * (0.92 + Math.random() * 0.16);
+        particles.current.push({
+          x,
+          y,
+          vx: Math.cos(theta) * v,
+          vy: Math.sin(theta) * v - 0.2,
+          life: 0,
+          maxLife: (50 + Math.random() * 25) * 1.4,
+          hue: flashHue,
+          hueLayers: layersForBurst,
+          hueJitter: (Math.random() - 0.5) * 18,
+          trail: false,
+          size: 1.7,
+        });
+      }
       return;
     }
 
@@ -1684,7 +1663,10 @@ function LaunchStep({
           vx: dirX * v,
           vy: dirY * v - 0.3,
           life: 0,
-          maxLife: 50 + Math.random() * 25,
+          // Kobana main bloom — 1.4× life so it lingers for the
+          // satellite mini-bursts to land while the main is still
+          // visible.
+          maxLife: (50 + Math.random() * 25) * 1.4,
           hue: flashHue,
           hueLayers: layersForBurst,
           hueJitter: (Math.random() - 0.5) * 30,
@@ -1712,7 +1694,10 @@ function LaunchStep({
                 vx: Math.cos(a) * v,
                 vy: Math.sin(a) * v,
                 life: 0,
-                maxLife: 30 + Math.random() * 15,
+                // Kobana satellite mini-flowers — bumped from 30+15
+                // to 50+20 so each little bloom stays visible long
+                // enough to register before the next pops.
+                maxLife: 50 + Math.random() * 20,
                 hue: flashHue + (Math.random() - 0.5) * 60,
                 hueLayers: layersForBurst,
                 hueJitter: (Math.random() - 0.5) * 30,
@@ -1744,7 +1729,10 @@ function LaunchStep({
           vx: dx * baseSpeed,
           vy: dy * baseSpeed - 0.3,
           life: 0,
-          maxLife: 55 + Math.random() * 25,
+          // Katamono shapes (heart / star / smiley) — bumped 1.6× so
+          // the parametric shape stays legible long enough to read
+          // instead of dissipating before the eye locks onto it.
+          maxLife: (55 + Math.random() * 25) * 1.6,
           hue: flashHue,
           hueLayers: layersForBurst,
           hueJitter: (Math.random() - 0.5) * 30,
@@ -1771,7 +1759,12 @@ function LaunchStep({
         pat === "willow"
           ? baseSpeed * (0.4 + Math.random() * 0.3)
           : baseSpeed * (0.9 + Math.random() * 0.2);
-      const lifeFactor = pat === "willow" ? 1.5 : 1;
+      // Willow's signature is the long droop — bumped from 1.5× to
+      // 2.6× so the leaves visibly fall well after every other
+      // pattern has faded. All other warimono patterns get a 1.4×
+      // bump so the bloom lingers in the night sky instead of
+      // snapping out instantly.
+      const lifeFactor = pat === "willow" ? 2.6 : 1.4;
       // Depth cue: particles moving mostly along z appear smaller in 2D.
       const depthAttenuation = 1 - Math.abs(u) * 0.45;
       particles.current.push({
@@ -1885,7 +1878,12 @@ function LaunchStep({
     const SHOWCASE_SPACING = 220; // ms between showcase rockets
     const SHOWCASE_COUNT = SHOWCASE_PATTERNS.length;
     const PAUSE_BEFORE_GRAND = 1200;
-    const GRAND_TO_CAPTURE = 2200;
+    // Time from grand-finale launch to canvas capture. Was 2200ms which
+    // landed mid-fadeout on the snapshot — by then the chrysanthemum
+    // had dimmed and the saved image looked half-empty. 1400ms catches
+    // the bloom right at peak, with the showcase blooms still glowing
+    // in the background.
+    const GRAND_TO_CAPTURE = 1400;
 
     // Phase 1: showcase — fire from i=0 (immediate) through i=7
     for (let i = 0; i < SHOWCASE_COUNT; i++) {
@@ -1916,12 +1914,31 @@ function LaunchStep({
       }, grandDelay),
     );
 
-    // Phase 4: capture + onComplete after grand bloom matures
+    // Phase 4: capture + onComplete after grand bloom matures.
+    // The live canvas is rectangular (~42rem × 32rem) but the ending
+    // screen displays a SQUARE preview with object-cover, which chops
+    // off the left and right edges of the showcase row. Render the
+    // rectangular canvas onto a square offscreen canvas (letterboxed
+    // top/bottom on the night-sky background colour) before encoding,
+    // so the saved snapshot keeps every showcase bloom in frame.
     finaleTimersRef.current.push(
       setTimeout(() => {
         if (!mountedRef.current) return;
-        const dataUrl = canvas.toDataURL("image/png");
-        onComplete(dataUrl);
+        const sw = canvas.width;
+        const sh = canvas.height;
+        const side = Math.max(sw, sh);
+        const out = document.createElement("canvas");
+        out.width = side;
+        out.height = side;
+        const octx = out.getContext("2d");
+        if (!octx) {
+          onComplete(canvas.toDataURL("image/png"));
+          return;
+        }
+        octx.fillStyle = "#070b1d";
+        octx.fillRect(0, 0, side, side);
+        octx.drawImage(canvas, (side - sw) / 2, (side - sh) / 2);
+        onComplete(out.toDataURL("image/png"));
       }, grandDelay + GRAND_TO_CAPTURE),
     );
   }
