@@ -149,6 +149,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "tekki-cast",
   },
+  {
+    id: "magewappa",
+    name: "Magewappa",
+    jp: "曲げわっぱ",
+    region: "Akita / Ōdate",
+    category: "craft",
+    era: "Edo period (1600s-)",
+    description:
+      "Bent Akita cedar boxes stitched with cherry bark thread; antibacterial and feather-light.",
+    problem:
+      "Akita cedar supply is dwindling; only about eleven master craftsmen remain.",
+    palette: ["#1d130a", "#C9A227", "#FBF7F0"],
+    accentKanji: "曲",
+    media: {},
+    experience: "magewappa-bend",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
