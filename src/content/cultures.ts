@@ -47,6 +47,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "wajima-nuri",
+    name: "Wajima-nuri",
+    jp: "輪島塗",
+    region: "Ishikawa / Wajima",
+    category: "craft",
+    era: "Muromachi period (1400s-)",
+    description:
+      "124-step lacquerware with 沈金 / 蒔絵 gold decoration; Noto's earthquake-stricken treasure.",
+    problem:
+      "The 2024 Noto Peninsula earthquake devastated workshops; recovery uncertain.",
+    palette: ["#0A0604", "#1C120A", "#C9A227"],
+    accentKanji: "輪",
+    media: {},
+    experience: "wajima-decorate",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
