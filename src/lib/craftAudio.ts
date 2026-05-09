@@ -19,7 +19,7 @@
 // captures a stale value across renders. Each play function gates on
 // `mutedRef.current` so toggling 🔇 takes effect immediately.
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import type { RefObject } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 
@@ -46,20 +46,61 @@ function getCtx(): AudioContext | null {
 }
 
 // Hook for components to track useAppStore.muted as a ref. The ref
-// value updates synchronously each render, so play functions can read
-// `mutedRef.current` and respect the latest mute state.
+// value is updated SYNCHRONOUSLY during render so any handler that
+// fires before the next paint (e.g. an immediate event-handler call
+// after the toggle) sees the latest value. Codex flagged the previous
+// useEffect-based update as a stale-read bug.
 export function useMutedRef(): RefObject<boolean> {
   const muted = useAppStore((s) => s.muted);
   const ref = useRef(muted);
-  useEffect(() => {
-    ref.current = muted;
-  }, [muted]);
+  ref.current = muted;
   return ref;
 }
 
 interface BaseOpts {
   mutedRef?: RefObject<boolean>;
   volume?: number; // 0..1, default 1
+}
+
+// Track every gain node we hand out so we can fade them to silence
+// when the user toggles mute mid-playback. Without this, calling mute
+// only blocks NEW sounds — anything already in the AudioContext keeps
+// playing through to its natural decay. The set is pruned on each
+// gain's natural end so it doesn't grow unbounded.
+const activeGains: Set<GainNode> = new Set();
+
+function trackGain(g: GainNode, c: AudioContext, endTime: number) {
+  activeGains.add(g);
+  const remainingMs = Math.max(0, (endTime - c.currentTime) * 1000) + 100;
+  setTimeout(() => activeGains.delete(g), remainingMs);
+}
+
+function silenceAll() {
+  const c = ctx;
+  if (!c) return;
+  const now = c.currentTime;
+  for (const g of activeGains) {
+    try {
+      g.gain.cancelScheduledValues(now);
+      g.gain.setValueAtTime(g.gain.value, now);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+    } catch {
+      /* best-effort */
+    }
+  }
+  activeGains.clear();
+}
+
+// One-time subscription so toggling 🔇 in the UI silences any sound
+// that's currently in flight, not just future sounds. Lives at module
+// scope and fires once on the false→true transition.
+if (typeof window !== "undefined") {
+  let prevMuted = useAppStore.getState().muted;
+  useAppStore.subscribe((state) => {
+    const next = state.muted;
+    if (next && !prevMuted) silenceAll();
+    prevMuted = next;
+  });
 }
 
 function gate(opts: BaseOpts | undefined): AudioContext | null {
@@ -101,6 +142,7 @@ export function playThud(
     gain.gain.exponentialRampToValueAtTime(0.55 * volume, now + 0.012);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     osc.connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     osc.start(now);
     osc.stop(now + duration + 0.05);
   } catch {
@@ -125,6 +167,7 @@ export function playClick(
     gain.gain.exponentialRampToValueAtTime(0.18 * volume, now + 0.005);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     osc.connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     osc.start(now);
     osc.stop(now + duration + 0.02);
   } catch {
@@ -152,6 +195,7 @@ export function playWoodCrack(opts: BaseOpts = {}) {
     gain.gain.exponentialRampToValueAtTime(0.4 * volume, now + 0.005);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
     src.connect(filter).connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     src.start(now);
     // Pitched transient on top adds the "crack" pitch.
     const osc = c.createOscillator();
@@ -163,6 +207,7 @@ export function playWoodCrack(opts: BaseOpts = {}) {
     ogain.gain.exponentialRampToValueAtTime(0.15 * volume, now + 0.003);
     ogain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
     osc.connect(ogain).connect(c.destination);
+    trackGain(ogain, c, now + 1.5);
     osc.start(now);
     osc.stop(now + 0.08);
   } catch {
@@ -189,6 +234,7 @@ export function playMetalRing(
     sgain.gain.exponentialRampToValueAtTime(0.25 * volume, now + 0.003);
     sgain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
     src.connect(sgain).connect(c.destination);
+    trackGain(sgain, c, now + 1.5);
     src.start(now);
     // Ring tone (fundamental + 5th harmonic for metallic colour).
     for (const [mult, vol] of [
@@ -204,6 +250,7 @@ export function playMetalRing(
       gain.gain.exponentialRampToValueAtTime(vol * volume, now + 0.008);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
       osc.connect(gain).connect(c.destination);
+      trackGain(gain, c, now + 1.5);
       osc.start(now);
       osc.stop(now + duration + 0.05);
     }
@@ -240,6 +287,7 @@ export function playWhistle(
     gain.gain.setValueAtTime(0.18 * volume, now + duration - 0.1);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     osc.connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     osc.start(now);
     osc.stop(now + duration + 0.05);
   } catch {
@@ -279,6 +327,7 @@ export function playCrackle(
     gain.gain.exponentialRampToValueAtTime(0.12 * volume, now + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     src.connect(filter).connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     src.start(now);
   } catch {
     /* best-effort */
@@ -306,6 +355,7 @@ export function playBrush(
     gain.gain.exponentialRampToValueAtTime(0.07 * volume, now + 0.04);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     src.connect(filter).connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     src.start(now);
   } catch {
     /* best-effort */
@@ -334,6 +384,7 @@ export function playChime(
       gain.gain.exponentialRampToValueAtTime(vol * volume, now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
       osc.connect(gain).connect(c.destination);
+      trackGain(gain, c, now + 1.5);
       osc.start(now);
       osc.stop(now + dur + 0.05);
     }
@@ -362,6 +413,7 @@ export function playPour(opts: BaseOpts & { duration?: number } = {}) {
     gain.gain.setValueAtTime(0.12 * volume, now + duration * 0.7);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     src.connect(filter).connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     src.start(now);
   } catch {
     /* best-effort */
@@ -387,6 +439,7 @@ export function playFold(opts: BaseOpts = {}) {
     gain.gain.exponentialRampToValueAtTime(0.08 * volume, now + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
     src.connect(filter).connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     src.start(now);
   } catch {
     /* best-effort */
@@ -412,6 +465,7 @@ export function playWater(opts: BaseOpts & { duration?: number } = {}) {
     gain.gain.exponentialRampToValueAtTime(0.1 * volume, now + 0.1);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     src.connect(filter).connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     src.start(now);
   } catch {
     /* best-effort */
@@ -438,6 +492,7 @@ export function playFire(opts: BaseOpts & { duration?: number } = {}) {
     gain.gain.setValueAtTime(0.15 * volume, now + duration * 0.6);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     src.connect(filter).connect(gain).connect(c.destination);
+    trackGain(gain, c, now + 1.5);
     src.start(now);
   } catch {
     /* best-effort */
