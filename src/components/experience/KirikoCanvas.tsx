@@ -93,16 +93,21 @@ function Glass({
 
   const c = glassColors[color];
 
+  // THREE's cylinder UV runs counter-clockwise viewed from above. On the
+  // front face that maps to "drag right → u DECREASES", which the user
+  // experiences as "the cut is drawn opposite to my mouse." Invert u at
+  // the source so the stroke follows the mouse; this also keeps the
+  // mirror-symmetry logic in mapU intact (both passes still render).
   const handleDown = (e: ThreeEvent<PointerEvent>) => {
     if (!e.uv) return;
     e.stopPropagation();
     (e.target as Element).setPointerCapture?.(e.pointerId);
     cuttingRef.current = true;
-    onCutStart({ u: e.uv.x, v: e.uv.y });
+    onCutStart({ u: 1 - e.uv.x, v: e.uv.y });
   };
   const handleMove = (e: ThreeEvent<PointerEvent>) => {
     if (!cuttingRef.current || !e.uv) return;
-    onCutMove({ u: e.uv.x, v: e.uv.y });
+    onCutMove({ u: 1 - e.uv.x, v: e.uv.y });
   };
   const handleUp = () => {
     if (!cuttingRef.current) return;
