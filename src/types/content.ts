@@ -2,6 +2,7 @@ export type ExperienceType =
   | "kiriko-cut"
   | "washi-scoop"
   | "hanabi-launch"
+  | "taiko-strike";
   | "lantern-light";
   | "sensu-paint";
 

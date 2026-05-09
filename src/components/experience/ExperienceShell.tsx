@@ -8,6 +8,7 @@ import type { Culture } from "@/types/content";
 import { useAppStore } from "@/stores/useAppStore";
 import { WashiCanvas } from "./WashiCanvas";
 import { HanabiStage } from "./HanabiStage";
+import { TaikoStage } from "./TaikoStage";
 import { LanternStage } from "./LanternStage";
 import { SensuStage } from "./SensuStage";
 
@@ -74,6 +75,8 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
         {culture.experience === "hanabi-launch" && (
           <HanabiStage onComplete={handleComplete} palette={culture.palette} />
         )}
+        {culture.experience === "taiko-strike" && (
+          <TaikoStage onComplete={handleComplete} palette={culture.palette} />
         {culture.experience === "lantern-light" && (
           <LanternStage onComplete={handleComplete} palette={culture.palette} />
         {culture.experience === "sensu-paint" && (
