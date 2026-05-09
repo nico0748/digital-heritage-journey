@@ -967,6 +967,12 @@ function LaunchStep({
   // tree.
   const finaleTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   useEffect(() => {
+    // Re-arm on every (re-)mount. Without this, React 19 StrictMode's
+    // double-mount in dev leaves mountedRef = false after the first
+    // cleanup, and the finale's setTimeout chain then silent-skips
+    // because every callback gates on `mountedRef.current` — Finale
+    // appears to do nothing.
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       for (const id of finaleTimersRef.current) clearTimeout(id);
