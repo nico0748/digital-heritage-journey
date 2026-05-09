@@ -1,4 +1,8 @@
-export type ExperienceType = "kiriko-cut" | "washi-scoop" | "hanabi-launch";
+export type ExperienceType =
+  | "kiriko-cut"
+  | "washi-scoop"
+  | "hanabi-launch"
+  | "blade-forge";
 
 export interface CultureMedia {
   hero?: string;

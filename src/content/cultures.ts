@@ -47,6 +47,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "echizen-uchihamono",
+    name: "Echizen Uchihamono",
+    jp: "越前打刃物",
+    region: "Fukui / Echizen",
+    category: "craft",
+    era: "Nanboku-chō period (1330s-)",
+    description:
+      "700-year forging tradition; 二枚広げ + 廻し鋼着け produces thin, resilient blades.",
+    problem:
+      "Industrial knives dominate market; only ~30 active forges remain.",
+    palette: ["#0A0604", "#C03D2B", "#C9A227"],
+    accentKanji: "鍛",
+    media: {},
+    experience: "blade-forge",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
