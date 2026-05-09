@@ -967,20 +967,27 @@ function TojiStep({
   const ready = placed >= TOJI_STITCHES;
 
   // Stitch positions along a vertical seam at the right side of the
-  // ring. Computed once so React 19 hydration sees identical SVG-style
-  // coordinates between server & client.
+  // The finished magewappa is now drawn as a 和風お弁当箱 (Japanese
+  // lunchbox): a rounded-corner rectangle ~1.5:1 with a center
+  // partition, instead of the previous round bowl. Stitch points sit
+  // along the bottom seam where the lid meets the base.
+  const BOX_W_FACTOR = 0.6;  // box width = SIZE * 0.6 → ~1.5:1 with height
+  const BOX_H_FACTOR = 0.4;
   const stitchPoints = useMemo(() => {
     const cx = SIZE / 2;
     const cy = SIZE * 0.55;
-    const r = SIZE * 0.3;
-    // The seam is a short radial gap centred on angle 0 (3 o'clock).
+    const w = SIZE * BOX_W_FACTOR;
+    const h = SIZE * BOX_H_FACTOR;
+    const seamY = cy + h / 2; // bottom edge = lid/base seam
+    // 5 stitches evenly spaced across the seam, with insets so the
+    // outermost stitches sit just inside the rounded corners.
+    const inset = w * 0.08;
     return Array.from({ length: TOJI_STITCHES }, (_, i) => {
-      // Distribute markers along an arc spanning -22°..+22° around 0.
       const tNorm = i / (TOJI_STITCHES - 1);
-      const angle = (-22 + 44 * tNorm) * (Math.PI / 180);
+      const x = cx - w / 2 + inset + (w - 2 * inset) * tNorm;
       return {
-        x: Math.round(cx + Math.cos(angle) * r),
-        y: Math.round(cy + Math.sin(angle) * r),
+        x: Math.round(x),
+        y: Math.round(seamY),
       };
     });
   }, []);
@@ -1002,35 +1009,73 @@ function TojiStep({
 
     const cx = w / 2;
     const cy = h * 0.55;
-    const rOuter = w * 0.3 + 7;
-    const rInner = w * 0.3 - 7;
+    const boxW = w * BOX_W_FACTOR;
+    const boxH = h * BOX_H_FACTOR;
+    const x0 = cx - boxW / 2;
+    const y0 = cy - boxH / 2;
+    const radius = 14;
 
-    // The bent cedar ring viewed from above.
+    // Bento box body — rounded-corner rectangle viewed from above.
     ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, cy, rOuter, 0, Math.PI * 2);
-    ctx.arc(cx, cy, rInner, 0, Math.PI * 2, true);
-    ctx.fillStyle = "#9a6a32";
-    ctx.fill("evenodd");
-    // Wood grain — concentric arcs, faint.
-    ctx.strokeStyle = "rgba(40,24,10,0.35)";
-    ctx.lineWidth = 0.7;
-    for (let i = 0; i < 4; i++) {
-      const r = rInner + 3 + i * 3;
+    ctx.roundRect(x0, y0, boxW, boxH, radius);
+    // Cedar wood gradient (lighter on the lit upper-left edge).
+    const grad = ctx.createLinearGradient(x0, y0, x0 + boxW, y0 + boxH);
+    grad.addColorStop(0, "#b88554");
+    grad.addColorStop(0.55, "#9a6a32");
+    grad.addColorStop(1, "#6e4a22");
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(40,24,10,0.55)";
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    ctx.restore();
+
+    // Wood grain — long horizontal strokes following the cedar plank.
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(x0 + 2, y0 + 2, boxW - 4, boxH - 4, radius - 2);
+    ctx.clip();
+    ctx.strokeStyle = "rgba(40,24,10,0.18)";
+    ctx.lineWidth = 0.8;
+    for (let yy = y0 + 6; yy < y0 + boxH - 4; yy += 6) {
+      const wobble = Math.sin(yy * 0.21) * 1.5;
       ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.moveTo(x0 + 4, yy + wobble);
+      ctx.lineTo(x0 + boxW - 4, yy - wobble);
       ctx.stroke();
     }
     ctx.restore();
 
-    // Seam — slim dark line where the two ends overlap (right side).
+    // Center partition (おかず / ご飯 仕切り) — the divider that gives
+    // the box its bento identity.
     ctx.save();
-    ctx.strokeStyle = "rgba(20,12,5,0.65)";
+    ctx.strokeStyle = "rgba(40,24,10,0.32)";
     ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.moveTo(Math.round(cx + rInner - 1), Math.round(cy));
-    ctx.lineTo(Math.round(cx + rOuter + 1), Math.round(cy));
+    ctx.moveTo(Math.round(cx), Math.round(y0 + 8));
+    ctx.lineTo(Math.round(cx), Math.round(y0 + boxH - 8));
     ctx.stroke();
+    // Partition wall thin shadow line for depth.
+    ctx.strokeStyle = "rgba(40,24,10,0.16)";
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(Math.round(cx + 1), Math.round(y0 + 9));
+    ctx.lineTo(Math.round(cx + 1), Math.round(y0 + boxH - 7));
+    ctx.stroke();
+    ctx.restore();
+
+    // Seam — horizontal line along the bottom edge where the lid
+    // meets the base. The cherry-bark stitches sit on this line.
+    ctx.save();
+    ctx.strokeStyle = "rgba(20,12,5,0.55)";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(Math.round(x0 + 6), Math.round(y0 + boxH));
+    ctx.lineTo(Math.round(x0 + boxW - 6), Math.round(y0 + boxH));
+    ctx.stroke();
+    ctx.setLineDash([]);
     ctx.restore();
 
     // Stitch markers — pulsing dashed rings at unplaced points.
@@ -1071,11 +1116,13 @@ function TojiStep({
       }
     }
 
-    // Centre callout — kanji label on the wood, faint.
-    ctx.fillStyle = "rgba(252,232,170,0.18)";
-    ctx.font = "italic 36px serif";
+    // 弁 kanji watermark inside each compartment so the bento intent
+    // reads even at thumbnail sizes.
+    ctx.fillStyle = "rgba(252,232,170,0.14)";
+    ctx.font = "italic 28px serif";
     ctx.textAlign = "center";
-    ctx.fillText("曲", cx, cy + 12);
+    ctx.fillText("飯", cx - boxW / 4, cy + 10);
+    ctx.fillText("菜", cx + boxW / 4, cy + 10);
 
     // HUD
     ctx.fillStyle = "rgba(252,232,170,0.7)";
