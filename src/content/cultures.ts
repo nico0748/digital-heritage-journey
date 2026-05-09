@@ -348,7 +348,7 @@ export const cultures: Culture[] = [
     description:
       "Hand-painted bisque clay dolls; 目入れ (eye-painting) gives them their soul.",
     problem: "Modern decor demand falling; ~50 master craftsmen remain.",
-    palette: ["#2A1F1A", "#E5A8A0", "#F0D5B8"],
+    palette: ["#2D2218", "#A8553C", "#E8D5A8"],
     accentKanji: "人",
     prefectures: ["JP-40"],
     realWorld: {
