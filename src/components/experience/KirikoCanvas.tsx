@@ -19,6 +19,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import {
   Check,
   Eraser,
+  Layers,
   Palette,
   Sparkles,
   Undo2,
@@ -46,6 +47,132 @@ interface Stroke {
 
 const TEX_W = 2048;
 const TEX_H = 1024;
+
+// ─────────────────────────────────────────────────────────────────────
+// Traditional Edo Kiriko (江戸切子) pattern templates.
+//
+// Each generator returns strokes in UV space confined to a single
+// "sector" of width 1/symmetry — the existing render loop rotates and
+// mirrors them around the cylinder, so defining one cell is enough to
+// tile the whole glass. Re-applying after a symmetry change is the
+// expected workflow (we don't auto-regenerate; templates are a starting
+// point, not a live binding).
+// ─────────────────────────────────────────────────────────────────────
+type Template = "kikutsunagi" | "yarai" | "shippo" | "asanoha";
+
+const TEMPLATE_INFO: Record<Template, { jp: string; en: string }> = {
+  kikutsunagi: { jp: "菊繋ぎ", en: "Kikutsunagi" },
+  yarai: { jp: "矢来", en: "Yarai" },
+  shippo: { jp: "七宝", en: "Shippō" },
+  asanoha: { jp: "麻の葉", en: "Asanoha" },
+};
+
+function kikutsunagiStrokes(sym: number): Stroke[] {
+  // Small chrysanthemum centred in the sector — 8 short radial petals.
+  const sector = 1 / sym;
+  const cx = sector * 0.5;
+  const cy = 0.5;
+  const r = Math.min(sector * 0.42, 0.16);
+  const petals = 8;
+  const out: Stroke[] = [];
+  for (let i = 0; i < petals; i++) {
+    const a = (Math.PI * 2 * i) / petals;
+    out.push({
+      points: [
+        { u: cx, v: cy },
+        { u: cx + Math.cos(a) * r, v: cy + Math.sin(a) * r },
+      ],
+    });
+  }
+  // A second, smaller chrysanthemum stacked above — gives the dense
+  // "繋ぎ" (chain) feel when the sector is rotated around the cylinder.
+  const cy2 = cy - r * 1.6;
+  if (cy2 > 0.05) {
+    const r2 = r * 0.5;
+    for (let i = 0; i < petals; i++) {
+      const a = (Math.PI * 2 * i) / petals;
+      out.push({
+        points: [
+          { u: cx, v: cy2 },
+          { u: cx + Math.cos(a) * r2, v: cy2 + Math.sin(a) * r2 },
+        ],
+      });
+    }
+  }
+  return out;
+}
+
+function yaraiStrokes(sym: number): Stroke[] {
+  // Bamboo-fence diagonals. The mirror pass inside the renderer turns
+  // each forward diagonal into a cross, so we only need one direction.
+  const sector = 1 / sym;
+  const lines = 5;
+  const slope = 0.45;
+  const out: Stroke[] = [];
+  for (let i = 0; i < lines; i++) {
+    const startV = (i / lines) - slope * 0.4;
+    out.push({
+      points: [
+        { u: 0, v: startV },
+        { u: sector, v: startV + slope },
+      ],
+    });
+  }
+  return out;
+}
+
+function shippoStrokes(sym: number): Stroke[] {
+  // Two overlapping circles — when tiled, the overlap forms the
+  // four-petal "seven treasures" motif.
+  const sector = 1 / sym;
+  const cx = sector * 0.5;
+  const r = Math.min(sector * 0.5, 0.2);
+  const segs = 28;
+  const out: Stroke[] = [];
+  for (const cy of [0.32, 0.68]) {
+    const points: UV[] = [];
+    for (let i = 0; i <= segs; i++) {
+      const a = (Math.PI * 2 * i) / segs;
+      points.push({ u: cx + Math.cos(a) * r, v: cy + Math.sin(a) * r });
+    }
+    out.push({ points });
+  }
+  return out;
+}
+
+function asanohaStrokes(sym: number): Stroke[] {
+  // Hexagon outline + 6 spokes from centre — the classic "hemp leaf"
+  // star, considered an auspicious motif in Edo period textiles and
+  // glasswork.
+  const sector = 1 / sym;
+  const cx = sector * 0.5;
+  const cy = 0.5;
+  const r = Math.min(sector * 0.5, 0.2);
+  const out: Stroke[] = [];
+  const hexPts: UV[] = [];
+  for (let i = 0; i <= 6; i++) {
+    const a = (Math.PI * 2 * i) / 6;
+    hexPts.push({ u: cx + Math.cos(a) * r, v: cy + Math.sin(a) * r });
+  }
+  out.push({ points: hexPts });
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI * 2 * i) / 6;
+    out.push({
+      points: [
+        { u: cx, v: cy },
+        { u: cx + Math.cos(a) * r, v: cy + Math.sin(a) * r },
+      ],
+    });
+  }
+  return out;
+}
+
+const TEMPLATE_GENERATORS: Record<Template, (sym: number) => Stroke[]> = {
+  kikutsunagi: kikutsunagiStrokes,
+  yarai: yaraiStrokes,
+  shippo: shippoStrokes,
+  asanoha: asanohaStrokes,
+};
 
 /** Procedural studio env baked from three's RoomEnvironment — no CDN fetch. */
 function RoomEnv() {
@@ -300,6 +427,17 @@ export function KirikoCanvas({
     redraw();
   }, [redraw]);
 
+  const applyTemplate = useCallback(
+    (t: Template) => {
+      const generator = TEMPLATE_GENERATORS[t];
+      const strokes = generator(symmetry);
+      strokesRef.current.push(...strokes);
+      setHasStrokes(true);
+      redraw();
+    },
+    [redraw, symmetry],
+  );
+
   const undo = () => {
     strokesRef.current.pop();
     setHasStrokes(strokesRef.current.length > 0);
@@ -369,6 +507,23 @@ export function KirikoCanvas({
               )}
             >
               {n}-fold
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.3em]">
+          <Layers size={12} className="text-washi-50/60" />
+          {(Object.keys(TEMPLATE_INFO) as Template[]).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => applyTemplate(t)}
+              title={`${TEMPLATE_INFO[t].en} を重ねる`}
+              className="rounded-full border border-washi-50/20 px-3 py-1 text-washi-50/60 transition hover:border-washi-50/60 hover:bg-washi-50/5 hover:text-washi-50"
+            >
+              <span className="font-jp tracking-wider">
+                {TEMPLATE_INFO[t].jp}
+              </span>
             </button>
           ))}
         </div>
