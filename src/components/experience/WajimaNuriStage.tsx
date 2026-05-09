@@ -170,7 +170,7 @@ export function WajimaNuriStage({
             if (techniqueAdvanceTimerRef.current) {
               clearTimeout(techniqueAdvanceTimerRef.current);
             }
-            techniqueAdvanceTimerRef.current = window.setTimeout(() => {
+            techniqueAdvanceTimerRef.current = setTimeout(() => {
               techniqueAdvanceTimerRef.current = null;
               goNext();
             }, 320);
