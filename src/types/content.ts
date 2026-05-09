@@ -111,6 +111,11 @@ export interface Culture {
   // when a culture has multiple authoritative venues (e.g. Mino washi
   // has both the official shop and the Washi-no-Sato museum).
   realWorld?: RealWorldLink | RealWorldLink[];
+  // Hides the experience interaction. Archive shows a "準備中" badge
+  // and clicking it does nothing; /experience/{id} renders a
+  // placeholder card instead of the Stage. Used to keep an unreleased
+  // culture in the catalogue while signalling it's not yet playable.
+  comingSoon?: boolean;
 }
 
 export interface StoryScene {
