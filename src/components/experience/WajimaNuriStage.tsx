@@ -590,6 +590,12 @@ function KashokuStep({
   const [finalizing, setFinalizing] = useState(false);
 
   useEffect(() => {
+    // Re-arm on mount: React 19 StrictMode dev double-mounts the
+    // effect, the first cleanup sets mountedRef=false, and without
+    // re-arming the second mount inherits that false. The Complete
+    // button's deferred onComplete (in finaleTimerRef chain) then
+    // silent-skips and the user is stuck on the kashoku canvas.
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       if (finaleTimerRef.current) clearTimeout(finaleTimerRef.current);
