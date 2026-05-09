@@ -423,6 +423,13 @@ export function HakataNingyoStage({
   const mountedRef = useRef(true);
   const finaleTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   useEffect(() => {
+    // React 19 StrictMode dev double-mount: the first cleanup sets
+    // mountedRef = false, and without re-arming on the second mount
+    // every `if (!mountedRef.current) return` guard inside finalize()
+    // silent-skips. The eye-in tap then triggers finalize, which sets
+    // finalizing=true (disabling the back button), but onComplete is
+    // never called — user is stuck unable to advance OR go back.
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       for (const id of finaleTimersRef.current) clearTimeout(id);
@@ -490,6 +497,14 @@ export function HakataNingyoStage({
             ctx.drawImage(img, 0, 0, W, H);
             URL.revokeObjectURL(url);
             const dataUrl = canvas.toDataURL("image/png");
+            // Reset finalizing state on success too (not just on error).
+            // The component is about to unmount via router.push anyway,
+            // but a) the brief window before navigation lands shouldn't
+            // leave the back button disabled, and b) if onComplete
+            // throws or is wrapped to no-op, we don't want to lock the
+            // user out permanently.
+            finalizingRef.current = false;
+            setFinalizing(false);
             onComplete(dataUrl);
           };
           img.onerror = () => {
