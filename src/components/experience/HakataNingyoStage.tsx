@@ -438,6 +438,15 @@ export function HakataNingyoStage({
       setFinalizing(true);
       playChime({ mutedRef, freq: 880 });
 
+      // If anything goes wrong with the SVG → PNG path (decode error,
+      // missing 2D context, etc.), reset finalizing state so the user
+      // can retry instead of being stuck staring at a disabled button.
+      const recover = () => {
+        if (!mountedRef.current) return;
+        finalizingRef.current = false;
+        setFinalizing(false);
+      };
+
       // Defer dataURL generation slightly so the chime + final flash
       // animations are visible before navigation.
       const t = setTimeout(() => {
@@ -462,6 +471,7 @@ export function HakataNingyoStage({
             const ctx = canvas.getContext("2d");
             if (!ctx) {
               URL.revokeObjectURL(url);
+              recover();
               return;
             }
             // Dark cinematic backdrop matching the stage style.
@@ -484,10 +494,11 @@ export function HakataNingyoStage({
           };
           img.onerror = () => {
             URL.revokeObjectURL(url);
+            recover();
           };
           img.src = url;
         } catch {
-          /* best-effort */
+          recover();
         }
       }, 1200);
       finaleTimersRef.current.push(t);
@@ -1021,12 +1032,10 @@ function MeireStep({
   const [flash, setFlash] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const completeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
       if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
-      if (completeTimerRef.current) clearTimeout(completeTimerRef.current);
     };
   }, []);
 
@@ -1062,13 +1071,13 @@ function MeireStep({
     setShakeKey((k) => k + 1);
     if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
     flashTimerRef.current = setTimeout(() => setFlash(false), 200);
+    playClick({ mutedRef, freq: 2200 });
     if (next === 2) {
-      playClick({ mutedRef, freq: 2200 });
-      // chime + completion handled by parent finalize
-      if (completeTimerRef.current) clearTimeout(completeTimerRef.current);
-      completeTimerRef.current = setTimeout(() => onAllEyesIn(), 350);
-    } else {
-      playClick({ mutedRef, freq: 2200 });
+      // Fire completion synchronously — the parent finalize() already
+      // defers the dataURL generation by 1.2s for the chime/flash to
+      // play, so adding another 350ms here is redundant and just
+      // creates a window where double-tap could re-trigger.
+      onAllEyesIn();
     }
   };
 
