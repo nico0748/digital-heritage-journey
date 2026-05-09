@@ -327,28 +327,47 @@ export function playWhistle(
 // a sine ramp, which sounded synthetic — adding the transient and
 // rumble layers makes it read as a real explosion.
 export function playBoom(
-  opts: BaseOpts & { freq?: number; duration?: number } = {},
+  opts: BaseOpts & {
+    freq?: number;
+    duration?: number;
+    // Components — all default true (drum-style boom). Hanabi bursts
+    // pass transient:false + rumble:false so the user only hears the
+    // pitched sub-bass thump without the high-frequency noise crack
+    // or the lingering low-frequency tail (those layers were what
+    // the user described as "effect sounds playing alongside the
+    // boom" for senrin / chrysanthemum bursts).
+    transient?: boolean;
+    rumble?: boolean;
+  } = {},
 ) {
   const c = gate(opts);
   if (!c) return;
-  const { freq = 70, duration = 0.9, volume = 1 } = opts;
+  const {
+    freq = 70,
+    duration = 0.9,
+    volume = 1,
+    transient = true,
+    rumble = true,
+  } = opts;
   try {
     const now = c.currentTime;
 
     // 1. Initial transient — short noise burst, the "crack".
-    const transient = createNoiseBuffer(c, 0.05);
-    const tSrc = c.createBufferSource();
-    tSrc.buffer = transient;
-    const tFilter = c.createBiquadFilter();
-    tFilter.type = "lowpass";
-    tFilter.frequency.value = 2000;
-    const tGain = c.createGain();
-    tGain.gain.setValueAtTime(0.0001, now);
-    tGain.gain.exponentialRampToValueAtTime(0.5 * volume, now + 0.003);
-    tGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-    tSrc.connect(tFilter).connect(tGain).connect(c.destination);
-    trackGain(tGain, c, now + 0.06);
-    tSrc.start(now);
+    if (transient) {
+      const transientBuf = createNoiseBuffer(c, 0.05);
+      const tSrc = c.createBufferSource();
+      tSrc.buffer = transientBuf;
+      const tFilter = c.createBiquadFilter();
+      tFilter.type = "lowpass";
+      tFilter.frequency.value = 2000;
+      const tGain = c.createGain();
+      tGain.gain.setValueAtTime(0.0001, now);
+      tGain.gain.exponentialRampToValueAtTime(0.5 * volume, now + 0.003);
+      tGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+      tSrc.connect(tFilter).connect(tGain).connect(c.destination);
+      trackGain(tGain, c, now + 0.06);
+      tSrc.start(now);
+    }
 
     // 2. Sub-bass body — pitched sine with slow downward sweep.
     const osc = c.createOscillator();
@@ -370,21 +389,23 @@ export function playBoom(
     // 3. Rumble tail — low-pass-filtered noise for the outdoor reverb
     //    that lingers after the thump. ~1.6× the sine duration so the
     //    boom keeps echoing after the pitched body fades.
-    const rumbleDur = duration * 1.6;
-    const rumble = createNoiseBuffer(c, rumbleDur);
-    const rSrc = c.createBufferSource();
-    rSrc.buffer = rumble;
-    const rFilter = c.createBiquadFilter();
-    rFilter.type = "lowpass";
-    rFilter.frequency.value = 220;
-    rFilter.Q.value = 0.5;
-    const rGain = c.createGain();
-    rGain.gain.setValueAtTime(0.0001, now);
-    rGain.gain.exponentialRampToValueAtTime(0.32 * volume, now + 0.06);
-    rGain.gain.exponentialRampToValueAtTime(0.0001, now + rumbleDur);
-    rSrc.connect(rFilter).connect(rGain).connect(c.destination);
-    trackGain(rGain, c, now + rumbleDur);
-    rSrc.start(now);
+    if (rumble) {
+      const rumbleDur = duration * 1.6;
+      const rumbleBuf = createNoiseBuffer(c, rumbleDur);
+      const rSrc = c.createBufferSource();
+      rSrc.buffer = rumbleBuf;
+      const rFilter = c.createBiquadFilter();
+      rFilter.type = "lowpass";
+      rFilter.frequency.value = 220;
+      rFilter.Q.value = 0.5;
+      const rGain = c.createGain();
+      rGain.gain.setValueAtTime(0.0001, now);
+      rGain.gain.exponentialRampToValueAtTime(0.32 * volume, now + 0.06);
+      rGain.gain.exponentialRampToValueAtTime(0.0001, now + rumbleDur);
+      rSrc.connect(rFilter).connect(rGain).connect(c.destination);
+      trackGain(rGain, c, now + rumbleDur);
+      rSrc.start(now);
+    }
   } catch {
     /* best-effort */
   }

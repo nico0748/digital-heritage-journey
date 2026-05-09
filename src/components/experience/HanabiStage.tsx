@@ -1217,16 +1217,16 @@ function LaunchStep({
   // with sizeFactor so 尺玉 lands deeper / louder than 三号.
   // Patterns whose bursts intentionally play silently. The launch
   // whistle still fires for these (so you hear the rocket go up), but
-  // the burst itself is silent. Per-pattern call: the user asked to
-  // keep this list broad so the soundscape stays focused on a few
-  // headline booms rather than every shell crackling.
+  // the burst itself is silent — used for the small / decorative
+  // patterns (kobana, heart, star, smiley) where a boom would feel
+  // out of proportion to the gentle visual. Senrin / chrysanthemum
+  // keep their booms but use the transient/rumble-stripped variant
+  // below so only the pitched thump plays.
   const SILENT_BURST_PATTERNS: Pattern[] = [
     "kobana",
     "heart",
     "star",
     "smiley",
-    "senrin",
-    "chrysanthemum",
   ];
 
   function fireworkSound(
@@ -1246,11 +1246,16 @@ function LaunchStep({
       return;
     }
     if (SILENT_BURST_PATTERNS.includes(pat)) return;
+    // Hanabi bursts use only the pitched sub-bass thump — transient
+    // crack and rumble tail are stripped so the user hears one clean
+    // boom per burst instead of boom + ancillary noise layers.
     playBoom({
       mutedRef: m,
       freq: 80 - sizeFactor * 12,
       duration: 0.85 + sizeFactor * 0.15,
       volume: vol,
+      transient: false,
+      rumble: false,
     });
   }
 
@@ -1536,11 +1541,7 @@ function LaunchStep({
     sizeFactor: number,
   ) {
     // Initial flash uses the OUTERMOST layer hue — that's what burns
-    // first when the bursting charge ignites the stars. Stack two
-    // overlapping flashes so the burst centre reads as a hot, dense
-    // core instead of a single soft halo: the wide outer flash
-    // provides the gradient bloom, the smaller white-hot core makes
-    // the very centre look bright + concentrated.
+    // first when the bursting charge ignites the stars.
     const flashHue = layersForBurst[layersForBurst.length - 1] ?? 48;
     particles.current.push({
       x,
@@ -1551,20 +1552,7 @@ function LaunchStep({
       maxLife: 22,
       hue: flashHue,
       trail: false,
-      size: (95 + charge * 95) * sizeFactor,
-      isFlash: true,
-    });
-    // White-hot core flash — smaller radius, shorter life, brighter.
-    particles.current.push({
-      x,
-      y,
-      vx: 0,
-      vy: 0,
-      life: 0,
-      maxLife: 14,
-      hue: flashHue,
-      trail: false,
-      size: (40 + charge * 40) * sizeFactor,
+      size: (70 + charge * 70) * sizeFactor,
       isFlash: true,
     });
     // Pattern-specific burst audio fires on impact — common boom plus
@@ -1600,13 +1588,7 @@ function LaunchStep({
       return;
     }
 
-    // Bumped from 80 + 140·charge (max 220) to 150 + 250·charge (max
-    // 400 at full charge) so the bloom reads as a solid disk rather
-    // than a sparse cloud of dots. Trailing patterns
-    // (chrysanthemum / willow / yashi) effectively double via their
-    // trail children, but the visible per-frame count is what
-    // controls perceived density at the burst moment.
-    const count = 150 + Math.floor(charge * 250);
+    const count = 80 + Math.floor(charge * 140);
     const baseSpeed = (1.6 + charge * 2.6) * sizeFactor;
     const trailing =
       pat === "chrysanthemum" || pat === "willow" || pat === "yashi";
