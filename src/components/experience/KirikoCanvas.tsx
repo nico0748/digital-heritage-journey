@@ -93,16 +93,21 @@ function Glass({
 
   const c = glassColors[color];
 
+  // THREE's cylinder UV runs counter-clockwise viewed from above. On the
+  // front face that maps to "drag right → u DECREASES", which the user
+  // experiences as "the cut is drawn opposite to my mouse." Invert u at
+  // the source so the stroke follows the mouse; this also keeps the
+  // mirror-symmetry logic in mapU intact (both passes still render).
   const handleDown = (e: ThreeEvent<PointerEvent>) => {
     if (!e.uv) return;
     e.stopPropagation();
     (e.target as Element).setPointerCapture?.(e.pointerId);
     cuttingRef.current = true;
-    onCutStart({ u: e.uv.x, v: e.uv.y });
+    onCutStart({ u: 1 - e.uv.x, v: e.uv.y });
   };
   const handleMove = (e: ThreeEvent<PointerEvent>) => {
     if (!cuttingRef.current || !e.uv) return;
-    onCutMove({ u: e.uv.x, v: e.uv.y });
+    onCutMove({ u: 1 - e.uv.x, v: e.uv.y });
   };
   const handleUp = () => {
     if (!cuttingRef.current) return;
@@ -151,11 +156,6 @@ function Glass({
         />
       </mesh>
 
-      {/* Top rim (slight bevel) */}
-      <mesh position={[0, 0.95, 0]}>
-        <torusGeometry args={[0.85, 0.015, 12, 128]} />
-        <meshStandardMaterial color={c.body} roughness={0.1} metalness={0.3} />
-      </mesh>
     </group>
   );
 }
@@ -386,7 +386,7 @@ export function KirikoCanvas({
       <div className="aspect-square w-[min(90vw,34rem)] overflow-hidden rounded-[2rem] border border-washi-50/10 bg-gradient-to-br from-black/40 via-black/20 to-black/40 shadow-2xl shadow-black/50">
         <Canvas
           shadows
-          camera={{ position: [0, 0.4, 3.3], fov: 32 }}
+          camera={{ position: [0, 0.4, 6.5], fov: 19 }}
           gl={{
             preserveDrawingBuffer: true,
             antialias: true,

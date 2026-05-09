@@ -1,10 +1,12 @@
-import { HorizontalStage } from "@/components/story/HorizontalStage";
+import { StoryStage } from "@/components/story/StoryStage";
+import { StorySettingsMenu } from "@/components/story/StorySettingsMenu";
 import { storyScenes } from "@/content/story";
 
 export default function StoryPage() {
   return (
     <main className="relative w-full bg-washi-100">
-      <HorizontalStage scenes={storyScenes} />
+      <StoryStage scenes={storyScenes} />
+      <StorySettingsMenu />
     </main>
   );
 }

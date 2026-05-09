@@ -32,19 +32,20 @@ export const cultures: Culture[] = [
     experience: "washi-scoop",
   },
   {
-    id: "matsuri",
-    name: "Matsuri",
-    jp: "祭",
-    region: "Nationwide",
+    id: "hanabi",
+    name: "Hanabi",
+    jp: "花火",
+    region: "Sumida-gawa, Tokyo",
     category: "festival",
-    era: "Ancient",
+    era: "Edo period (1733)",
     description:
-      "Local festivals binding community, gods, and the passing of seasons.",
-    problem: "Depopulated towns cannot sustain the ritual.",
-    palette: ["#1A0E0A", "#C03D2B", "#C9A227"],
-    accentKanji: "祭",
+      "Traditional Japanese fireworks blooming as chrysanthemums in the night sky.",
+    problem:
+      "Master pyrotechnicians (花火師) are aging, and shrinking communities can no longer fund summer festivals.",
+    palette: ["#070B1D", "#7D8EFF", "#FFD76A"],
+    accentKanji: "華",
     media: {},
-    experience: "matsuri-drum",
+    experience: "hanabi-launch",
   },
 ];
 

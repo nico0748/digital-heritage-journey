@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import type { Culture } from "@/types/content";
 import { useAppStore } from "@/stores/useAppStore";
 import { WashiCanvas } from "./WashiCanvas";
-import { MatsuriStage } from "./MatsuriStage";
+import { HanabiStage } from "./HanabiStage";
 
 // Heavy: Three.js + R3F + drei. Load only when Kiriko is actually requested.
 const KirikoCanvas = dynamic(
@@ -69,8 +69,8 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
         {culture.experience === "washi-scoop" && (
           <WashiCanvas onComplete={handleComplete} palette={culture.palette} />
         )}
-        {culture.experience === "matsuri-drum" && (
-          <MatsuriStage onComplete={handleComplete} palette={culture.palette} />
+        {culture.experience === "hanabi-launch" && (
+          <HanabiStage onComplete={handleComplete} palette={culture.palette} />
         )}
       </section>
     </main>
