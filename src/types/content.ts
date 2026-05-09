@@ -53,6 +53,7 @@ export interface Prefecture {
   | "mashiko-throw";
   | "tsuiki-hammer";
   | "wajima-decorate";
+  | "blade-forge";
 
 export interface CultureMedia {
   hero?: string;
