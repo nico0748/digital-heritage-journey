@@ -61,6 +61,7 @@ export const cultures: Culture[] = [
     name: "Bingata",
     jp: "紅型",
     region: "Okinawa / Ryūkyū",
+    prefectures: ["JP-47"],
     category: "craft",
     era: "Ryūkyū kingdom (1500s-)",
     description:
@@ -101,6 +102,7 @@ export const cultures: Culture[] = [
     name: "Chōchin",
     jp: "提灯",
     region: "Gifu / Mino",
+    prefectures: ["JP-21"],
     category: "craft",
     era: "Muromachi period",
     description:
@@ -117,6 +119,7 @@ export const cultures: Culture[] = [
     name: "Wadaiko",
     jp: "和太鼓",
     region: "Nationwide",
+    prefectures: [],
     category: "festival",
     era: "Heian period",
     description:
@@ -132,6 +135,7 @@ export const cultures: Culture[] = [
     name: "Sensu",
     jp: "扇子",
     region: "Kyoto",
+    prefectures: ["JP-26"],
     category: "craft",
     era: "Heian period",
     description:
@@ -147,6 +151,7 @@ export const cultures: Culture[] = [
     name: "Tsugaru-nuri",
     jp: "津軽塗",
     region: "Aomori / Tsugaru",
+    prefectures: ["JP-02"],
     category: "craft",
     era: "Edo period (1660s-)",
     description:
@@ -163,6 +168,7 @@ export const cultures: Culture[] = [
     name: "Nanbu Tekki",
     jp: "南部鉄器",
     region: "Iwate / Morioka",
+    prefectures: ["JP-03"],
     category: "craft",
     era: "Early Edo period (1600s-)",
     description:
@@ -179,6 +185,7 @@ export const cultures: Culture[] = [
     name: "Magewappa",
     jp: "曲げわっぱ",
     region: "Akita / Ōdate",
+    prefectures: ["JP-05"],
     category: "craft",
     era: "Edo period (1600s-)",
     description:
@@ -195,6 +202,7 @@ export const cultures: Culture[] = [
     name: "Mashiko-yaki",
     jp: "益子焼",
     region: "Tochigi / Mashiko",
+    prefectures: ["JP-09"],
     category: "craft",
     era: "Late Edo period (1850s-)",
     description:
@@ -212,6 +220,7 @@ export const cultures: Culture[] = [
     name: "Tsubame-Sanjō Tsuiki",
     jp: "鎚起銅器",
     region: "Niigata / Tsubame-Sanjō",
+    prefectures: ["JP-15"],
     category: "craft",
     era: "Edo period (1700s-)",
     description:
@@ -228,6 +237,7 @@ export const cultures: Culture[] = [
     name: "Wajima-nuri",
     jp: "輪島塗",
     region: "Ishikawa / Wajima",
+    prefectures: ["JP-17"],
     category: "craft",
     era: "Muromachi period (1400s-)",
     description:
@@ -244,6 +254,7 @@ export const cultures: Culture[] = [
     name: "Echizen Uchihamono",
     jp: "越前打刃物",
     region: "Fukui / Echizen",
+    prefectures: ["JP-18"],
     category: "craft",
     era: "Nanboku-chō period (1330s-)",
     description:
@@ -260,6 +271,7 @@ export const cultures: Culture[] = [
     name: "Bizen-yaki",
     jp: "備前焼",
     region: "Okayama / Bizen",
+    prefectures: ["JP-33"],
     category: "craft",
     era: "Heian period (1000s-)",
     description:
