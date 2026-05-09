@@ -47,6 +47,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "arita-yaki",
+    name: "Arita-yaki",
+    jp: "有田焼",
+    region: "Saga / Arita",
+    category: "craft",
+    era: "Early Edo period (1610s-)",
+    description:
+      "Japan's first porcelain — white body with iconic cobalt 染付 underglaze.",
+    problem:
+      "Many small kilns closed; competing with mass-produced China porcelain.",
+    palette: ["#FBF7F0", "#2B4A6F", "#1d130a"],
+    accentKanji: "磁",
+    media: {},
+    experience: "arita-paint",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
