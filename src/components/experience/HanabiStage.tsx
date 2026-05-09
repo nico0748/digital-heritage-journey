@@ -1878,12 +1878,15 @@ function LaunchStep({
     const SHOWCASE_SPACING = 220; // ms between showcase rockets
     const SHOWCASE_COUNT = SHOWCASE_PATTERNS.length;
     const PAUSE_BEFORE_GRAND = 1200;
-    // Time from grand-finale launch to canvas capture. Was 2200ms which
-    // landed mid-fadeout on the snapshot — by then the chrysanthemum
-    // had dimmed and the saved image looked half-empty. 1400ms catches
-    // the bloom right at peak, with the showcase blooms still glowing
-    // in the background.
-    const GRAND_TO_CAPTURE = 1400;
+    // Time from grand-finale launch to canvas capture. The grand 尺玉
+    // takes ~860ms to rise (vyNorm × heightFactor maths), then bursts.
+    // 1900ms after launch == ~1040ms after burst, which is when the
+    // chrysanthemum / peony bloom is visually widest (lifeFactor 1.4
+    // pushes peak past the original 1.5s window). Earlier timings
+    // (1400ms) caught the bloom while it was still expanding outward
+    // and looked tiny + truncated; later timings (2200ms) landed in
+    // the fade-out and looked half-empty.
+    const GRAND_TO_CAPTURE = 1900;
 
     // Phase 1: showcase — fire from i=0 (immediate) through i=7
     for (let i = 0; i < SHOWCASE_COUNT; i++) {
@@ -1915,12 +1918,20 @@ function LaunchStep({
     );
 
     // Phase 4: capture + onComplete after grand bloom matures.
-    // The live canvas is rectangular (~42rem × 32rem) but the ending
-    // screen displays a SQUARE preview with object-cover, which chops
-    // off the left and right edges of the showcase row. Render the
-    // rectangular canvas onto a square offscreen canvas (letterboxed
-    // top/bottom on the night-sky background colour) before encoding,
-    // so the saved snapshot keeps every showcase bloom in frame.
+    // The live canvas is rectangular (~42rem × 32rem) and the ending
+    // screen displays a SQUARE preview with object-cover. Two issues
+    // had to be solved together:
+    //   1. Naive object-cover would chop off the left/right showcase
+    //      blooms (canvas wider than the square frame).
+    //   2. Bursts happen high in the canvas (yNorm 0.14–0.27), so
+    //      a vertically-centred letterbox left the burst near the
+    //      square's TOP edge and looked clipped.
+    // Fix: bottom-align the source canvas inside a square the size
+    // of the canvas WIDTH, with a letterbox of the night-sky colour
+    // filling the top. The grand bloom now sits roughly in the
+    // square's vertical middle, every showcase shell stays in frame,
+    // and the letterbox blends seamlessly into the canvas's own
+    // top-of-sky gradient.
     finaleTimersRef.current.push(
       setTimeout(() => {
         if (!mountedRef.current) return;
@@ -1935,9 +1946,18 @@ function LaunchStep({
           onComplete(canvas.toDataURL("image/png"));
           return;
         }
-        octx.fillStyle = "#070b1d";
+        // Same vertical gradient as the live sky so the letterbox top
+        // doesn't read as a black bar.
+        const grad = octx.createLinearGradient(0, 0, 0, side);
+        grad.addColorStop(0, "#070b1d");
+        grad.addColorStop(1, "#070b1d");
+        octx.fillStyle = grad;
         octx.fillRect(0, 0, side, side);
-        octx.drawImage(canvas, (side - sw) / 2, (side - sh) / 2);
+        // Bottom-align the canvas so the burst lands near the
+        // square's centre instead of its top edge.
+        const dy = side - sh;
+        const dx = (side - sw) / 2;
+        octx.drawImage(canvas, dx, dy);
         onComplete(out.toDataURL("image/png"));
       }, grandDelay + GRAND_TO_CAPTURE),
     );
