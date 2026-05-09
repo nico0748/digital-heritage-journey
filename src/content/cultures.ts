@@ -68,7 +68,7 @@ export const cultures: Culture[] = [
       "Stencil-and-resist dye craft of the Ryūkyū court; vivid tropical motifs.",
     problem:
       "Few young craftsmen learning the multi-stage stencil + resist technique.",
-    palette: ["#FBF7F0", "#C03D2B", "#C9A227"],
+    palette: ["#FBF7F0", "#E0532E", "#F0B82B"],
     accentKanji: "紅",
     media: {},
     experience: "bingata-dye",
@@ -118,7 +118,7 @@ export const cultures: Culture[] = [
       "Paper lanterns lit with a single flame, carried through summer streets.",
     problem:
       "Hand-shaped washi lanterns are losing makers as plastic replicas spread.",
-    palette: ["#1A0E0A", "#C03D2B", "#F9D976"],
+    palette: ["#1A0E0A", "#E04A1F", "#F9D976"],
     accentKanji: "灯",
     media: {},
     experience: "lantern-light",
@@ -150,7 +150,7 @@ export const cultures: Culture[] = [
     description:
       "Folding fan whose pleated washi cools the air and frames a private gesture.",
     problem: "Master fan-makers are aging without successors.",
-    palette: ["#2A1F18", "#A47C50", "#F5EFE6"],
+    palette: ["#241830", "#8C6FA8", "#F2E8D5"],
     accentKanji: "扇",
     media: {},
     experience: "sensu-paint",
@@ -167,7 +167,7 @@ export const cultures: Culture[] = [
       "48-step lacquer with multi-color layers polished to reveal speckled 唐塗 patterns.",
     problem:
       "2-month per-piece process; ~30 active masters remain in Hirosaki.",
-    palette: ["#1A0E0A", "#3a2614", "#C03D2B"],
+    palette: ["#1A0E0A", "#5C0E1B", "#7B9B5A"],
     accentKanji: "塗",
     media: {},
     experience: "tsugaru-polish",
@@ -184,7 +184,7 @@ export const cultures: Culture[] = [
       "Cast iron kettles with regular 霰文 raised pattern; iron leaching mellows tea.",
     problem:
       "Foundries closing as gas/electric replaces traditional charcoal kettles.",
-    palette: ["#0A0604", "#5B3A20", "#C9A227"],
+    palette: ["#0A0604", "#3D403E", "#B87333"],
     accentKanji: "鉄",
     media: {},
     experience: "tekki-cast",
@@ -201,7 +201,7 @@ export const cultures: Culture[] = [
       "Bent Akita cedar boxes stitched with cherry bark thread; antibacterial and feather-light.",
     problem:
       "Akita cedar supply is dwindling; only about eleven master craftsmen remain.",
-    palette: ["#1d130a", "#C9A227", "#FBF7F0"],
+    palette: ["#1F2E1D", "#A8C29A", "#F4E8C8"],
     accentKanji: "曲",
     media: {},
     experience: "magewappa-bend",
@@ -236,7 +236,7 @@ export const cultures: Culture[] = [
       "One copper sheet hammered tens of thousands of times into a seamless vessel.",
     problem:
       "Younger metalsmiths are rare; world-class but aging master pool.",
-    palette: ["#1d130a", "#C5704A", "#5b3a20"],
+    palette: ["#1d130a", "#B66838", "#4A8A7A"],
     accentKanji: "鎚",
     media: {},
     experience: "tsuiki-hammer",
@@ -253,7 +253,7 @@ export const cultures: Culture[] = [
       "124-step lacquerware with 沈金 / 蒔絵 gold decoration; Noto's earthquake-stricken treasure.",
     problem:
       "The 2024 Noto Peninsula earthquake devastated workshops; recovery uncertain.",
-    palette: ["#0A0604", "#1C120A", "#C9A227"],
+    palette: ["#0A0604", "#2A0E10", "#E5B83A"],
     accentKanji: "輪",
     media: {},
     experience: "wajima-decorate",
@@ -270,7 +270,7 @@ export const cultures: Culture[] = [
       "700-year forging tradition; 二枚広げ + 廻し鋼着け produces thin, resilient blades.",
     problem:
       "Industrial knives dominate market; only ~30 active forges remain.",
-    palette: ["#0A0604", "#C03D2B", "#C9A227"],
+    palette: ["#1A1F26", "#D14A1F", "#7A8A99"],
     accentKanji: "鍛",
     media: {},
     experience: "blade-forge",
@@ -326,7 +326,7 @@ export const cultures: Culture[] = [
       "400-year-old summer festival dance with 2-beat rhythm; ~1.3M visitors/year.",
     problem:
       "Younger ren shrinking; pandemic-era cancellations broke continuity.",
-    palette: ["#0A0604", "#C03D2B", "#C9A227"],
+    palette: ["#1A2A4A", "#C8253D", "#F0E6D2"],
     accentKanji: "踊",
     prefectures: ["JP-36"],
     realWorld: {
@@ -348,7 +348,7 @@ export const cultures: Culture[] = [
     description:
       "Hand-painted bisque clay dolls; 目入れ (eye-painting) gives them their soul.",
     problem: "Modern decor demand falling; ~50 master craftsmen remain.",
-    palette: ["#1d130a", "#C03D2B", "#C9A227"],
+    palette: ["#2A1F1A", "#E5A8A0", "#F0D5B8"],
     accentKanji: "人",
     prefectures: ["JP-40"],
     realWorld: {
