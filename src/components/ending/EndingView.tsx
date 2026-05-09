@@ -13,17 +13,19 @@ import {
   Landmark,
   HandMetal,
   Sparkle,
+  Store,
 } from "lucide-react";
 import { useAppStore } from "@/stores/useAppStore";
 import type { Culture, RealWorldKind } from "@/types/content";
 
 function RealWorldKindIcon({ kind }: { kind: RealWorldKind }) {
-  const map = {
+  const map: Record<RealWorldKind, typeof Building2> = {
     association: Building2,
     museum: Landmark,
     experience: HandMetal,
     festival: Sparkle,
-  } as const;
+    shop: Store,
+  };
   const Icon = map[kind];
   return <Icon size={14} />;
 }
@@ -113,33 +115,51 @@ export function EndingView({ culture }: { culture: Culture }) {
           <span className="text-washi-50">This culture needs successors.</span>
         </motion.p>
 
-        {culture.realWorld && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.7 }}
-            className="mt-10 flex flex-col items-center gap-2"
-          >
-            <p className="text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55">
-              Visit the real thing · 本物に触れる
-            </p>
-            <a
-              href={culture.realWorld.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 rounded-full bg-shu px-6 py-3 text-sm tracking-wider text-washi-50 shadow-lg shadow-shu/20 transition hover:bg-shu/85"
+        {(() => {
+          // Normalise realWorld to a list — single object stays
+          // backward-compat for existing entries, arrays are unwrapped.
+          const links = Array.isArray(culture.realWorld)
+            ? culture.realWorld
+            : culture.realWorld
+              ? [culture.realWorld]
+              : [];
+          if (links.length === 0) return null;
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.7 }}
+              className="mt-10 flex flex-col items-center gap-3"
             >
-              <RealWorldKindIcon kind={culture.realWorld.kind} />
-              <span className="font-jp">{culture.realWorld.labelJp}</span>
-              <ExternalLink size={14} className="opacity-70" />
-            </a>
-            {culture.realWorld.location && (
-              <p className="text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/45">
-                {culture.realWorld.location}
+              <p className="text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55">
+                Visit the real thing · 本物に触れる
               </p>
-            )}
-          </motion.div>
-        )}
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {links.map((link) => (
+                  <a
+                    key={link.url}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 rounded-full bg-shu px-6 py-3 text-sm tracking-wider text-washi-50 shadow-lg shadow-shu/20 transition hover:bg-shu/85"
+                  >
+                    <RealWorldKindIcon kind={link.kind} />
+                    <span className="font-jp">{link.labelJp}</span>
+                    <ExternalLink size={14} className="opacity-70" />
+                  </a>
+                ))}
+              </div>
+              {links.some((l) => l.location) && (
+                <p className="text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/45">
+                  {links
+                    .map((l) => l.location)
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              )}
+            </motion.div>
+          );
+        })()}
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}

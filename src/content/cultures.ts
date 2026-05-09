@@ -37,13 +37,22 @@ export const cultures: Culture[] = [
     accentKanji: "紙",
     media: {},
     experience: "washi-scoop",
-    realWorld: {
-      url: "https://washinosato.net/",
-      label: "Mino Washi no Sato Hall",
-      labelJp: "美濃和紙の里会館へ",
-      kind: "museum",
-      location: "Mino, Gifu",
-    },
+    realWorld: [
+      {
+        url: "https://minowashi.myshopify.com/",
+        label: "Mino Washi online shop",
+        labelJp: "美濃和紙オンラインショップ",
+        kind: "shop",
+        location: "Mino, Gifu",
+      },
+      {
+        url: "https://www.city.mino.gifu.jp/minogami/",
+        label: "Mino Washi-no-Sato Hall",
+        labelJp: "美濃和紙の里会館へ",
+        kind: "museum",
+        location: "Mino, Gifu",
+      },
+    ],
   },
   {
     id: "hanabi",

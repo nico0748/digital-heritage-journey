@@ -15,7 +15,8 @@ export type RealWorldKind =
   | "association" // 協同組合 / 公式団体
   | "museum"      // 博物館 / 文化センター
   | "experience"  // 体験施設 / 工房
-  | "festival";   // 祭・イベント
+  | "festival"    // 祭・イベント
+  | "shop";       // 公式オンラインショップ / 直営店
 
 export interface RealWorldLink {
   url: string;
@@ -39,9 +40,10 @@ export interface Culture {
   experience: ExperienceType;
   accentKanji: string;
   // Optional pointer to where the user can experience the real thing.
-  // Optional so cultures added before this taxonomy don't break and so
-  // future cultures can opt in incrementally.
-  realWorld?: RealWorldLink;
+  // Accepts a single RealWorldLink for backward-compat, or an array
+  // when a culture has multiple authoritative venues (e.g. Mino washi
+  // has both the official shop and the Washi-no-Sato museum).
+  realWorld?: RealWorldLink | RealWorldLink[];
 }
 
 export interface StoryScene {
