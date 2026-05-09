@@ -1217,16 +1217,16 @@ function LaunchStep({
   // with sizeFactor so 尺玉 lands deeper / louder than 三号.
   // Patterns whose bursts intentionally play silently. The launch
   // whistle still fires for these (so you hear the rocket go up), but
-  // the burst itself is silent. Per-pattern call: the user asked to
-  // keep this list broad so the soundscape stays focused on a few
-  // headline booms rather than every shell crackling.
+  // the burst itself is silent — used for the small / decorative
+  // patterns (kobana, heart, star, smiley) where a boom would feel
+  // out of proportion to the gentle visual. Senrin / chrysanthemum
+  // keep their booms but use the transient/rumble-stripped variant
+  // below so only the pitched thump plays.
   const SILENT_BURST_PATTERNS: Pattern[] = [
     "kobana",
     "heart",
     "star",
     "smiley",
-    "senrin",
-    "kiku",
   ];
 
   function fireworkSound(
@@ -1246,11 +1246,16 @@ function LaunchStep({
       return;
     }
     if (SILENT_BURST_PATTERNS.includes(pat)) return;
+    // Hanabi bursts use only the pitched sub-bass thump — transient
+    // crack and rumble tail are stripped so the user hears one clean
+    // boom per burst instead of boom + ancillary noise layers.
     playBoom({
       mutedRef: m,
       freq: 80 - sizeFactor * 12,
       duration: 0.85 + sizeFactor * 0.15,
       volume: vol,
+      transient: false,
+      rumble: false,
     });
   }
 
