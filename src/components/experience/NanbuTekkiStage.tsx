@@ -113,6 +113,12 @@ export function NanbuTekkiStage({
   const [finalizing, setFinalizing] = useState(false);
   const mountedRef = useRef(true);
   useEffect(() => {
+    // Re-arm on every (re-)mount so React 19 StrictMode's dev-only
+    // double-mount can't leave mountedRef = false after the first
+    // cleanup. Without this, the finalize() setTimeout chain's
+    // `if (!mountedRef.current) return` guard silent-skips and the
+    // Complete button does nothing.
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
     };
