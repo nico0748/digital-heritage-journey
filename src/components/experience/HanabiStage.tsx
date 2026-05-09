@@ -11,15 +11,7 @@ import {
   Undo2,
 } from "lucide-react";
 import clsx from "clsx";
-import {
-  playBoom,
-  playChime,
-  playClick,
-  playCrackle,
-  playFire,
-  playWhistle,
-  useMutedRef,
-} from "@/lib/craftAudio";
+import { playBoom, playWhistle, useMutedRef } from "@/lib/craftAudio";
 
 type Pattern =
   | "peony"
@@ -744,6 +736,45 @@ function HoshiStep({
       {/* Cross-section visualization of the star being built. */}
       <HoshiCrossSection layers={layers} />
 
+      {/* 星の作り方 — real-world process explanation. The interactive
+          tap below abstracts a 4-stage artisan workflow: each tap
+          stands in for the slow loop of slurry-coat → tumble → dry
+          → inspect that real 花火師 repeat dozens of times per star. */}
+      <div className="w-[min(92vw,34rem)] rounded-lg border border-amber-200/15 bg-black/30 p-3 backdrop-blur-sm">
+        <p className="mb-2 flex items-center gap-2 text-[0.55rem] uppercase tracking-[0.4em] text-amber-200/80">
+          <Sparkles size={10} /> 星の作り方 · How fireworks stars are made
+        </p>
+        <ol className="grid grid-cols-2 gap-x-4 gap-y-1 font-jp text-[0.7rem] leading-relaxed text-washi-50/80 sm:grid-cols-4">
+          <li>
+            <span className="text-amber-200/85">①種 (tane)</span>
+            <span className="block text-[0.6rem] text-washi-50/55">
+              粟粒大の小核
+            </span>
+          </li>
+          <li>
+            <span className="text-amber-200/85">②掛け (kake)</span>
+            <span className="block text-[0.6rem] text-washi-50/55">
+              火薬と色素を塗布
+            </span>
+          </li>
+          <li>
+            <span className="text-amber-200/85">③乾燥 (kansō)</span>
+            <span className="block text-[0.6rem] text-washi-50/55">
+              一晩乾かす
+            </span>
+          </li>
+          <li>
+            <span className="text-amber-200/85">④検品 (kenpin)</span>
+            <span className="block text-[0.6rem] text-washi-50/55">
+              径と重さを揃える
+            </span>
+          </li>
+        </ol>
+        <p className="mt-2 text-[0.6rem] leading-relaxed text-washi-50/55">
+          実物は ②③ を 30〜80 回繰り返して 1cm 弱の星に育てる。本体験では各タップが「もう一層掛ける」一回分。
+        </p>
+      </div>
+
       <div className="text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/55">
         {layers.length} / {MAX_HOSHI_LAYERS} 層 ·{" "}
         {layers.length === 0
@@ -1179,19 +1210,18 @@ function LaunchStep({
     };
   }, []);
 
-  // Pattern-specific sound dispatch. Each pattern shares a common
-  // launch whistle + initial boom but layers a different tail so the
-  // ear can tell 椰子 from 八重芯 from 小花 even with eyes closed.
-  // Volume scales with sizeFactor so 二尺玉 lands louder than 三号.
+  // Unified firework audio — a single normal launch whistle + burst
+  // boom for every pattern. Earlier we layered pattern-specific tails
+  // (chrysanthemum crackle, willow whoosh, senrin pops, etc.) but the
+  // user asked to keep it consistent. Volume + frequency still scale
+  // with sizeFactor so 尺玉 lands deeper / louder than 三号.
   function fireworkSound(
-    pat: Pattern,
+    _pat: Pattern,
     phase: "launch" | "burst",
     sizeFactor: number,
   ) {
     const m = mutedRef;
     const vol = Math.min(1, 0.55 + sizeFactor * 0.4);
-    const pushTimer = (id: ReturnType<typeof setTimeout>) =>
-      finaleTimersRef.current.push(id);
 
     if (phase === "launch") {
       playWhistle({
@@ -1201,143 +1231,12 @@ function LaunchStep({
       });
       return;
     }
-    // Common burst boom — frequency drops a touch as size grows so
-    // the bigger shells thump deeper.
     playBoom({
       mutedRef: m,
       freq: 80 - sizeFactor * 12,
       duration: 0.85 + sizeFactor * 0.15,
       volume: vol,
     });
-
-    switch (pat) {
-      case "peony":
-        // No tail — classic.
-        break;
-      case "chrysanthemum":
-        pushTimer(
-          setTimeout(() => {
-            if (mountedRef.current)
-              playCrackle({ mutedRef: m, duration: 1.1, volume: vol * 0.7 });
-          }, 120),
-        );
-        break;
-      case "willow":
-        pushTimer(
-          setTimeout(() => {
-            if (mountedRef.current)
-              playFire({ mutedRef: m, duration: 1.4, volume: vol * 0.5 });
-          }, 100),
-        );
-        break;
-      case "senrin":
-        [200, 280, 340, 410].forEach((delay, idx) =>
-          pushTimer(
-            setTimeout(() => {
-              if (mountedRef.current)
-                playClick({
-                  mutedRef: m,
-                  freq: 600 - idx * 80,
-                  duration: 0.08,
-                  volume: vol * 0.85,
-                });
-            }, delay),
-          ),
-        );
-        break;
-      case "yashi":
-        // Deep low rumble + extended whoosh as leaves drop.
-        pushTimer(
-          setTimeout(() => {
-            if (mountedRef.current)
-              playFire({ mutedRef: m, duration: 1.7, volume: vol * 0.55 });
-          }, 150),
-        );
-        pushTimer(
-          setTimeout(() => {
-            if (mountedRef.current)
-              playBoom({
-                mutedRef: m,
-                freq: 50,
-                duration: 0.6,
-                volume: vol * 0.4,
-              });
-          }, 220),
-        );
-        break;
-      case "yaeshin":
-        // Three booms at the same delays as the visual ring expansions.
-        [220, 440].forEach((delay, idx) =>
-          pushTimer(
-            setTimeout(() => {
-              if (mountedRef.current)
-                playBoom({
-                  mutedRef: m,
-                  freq: 80 + idx * 20,
-                  duration: 0.7,
-                  volume: vol * (0.7 - idx * 0.18),
-                });
-            }, delay),
-          ),
-        );
-        break;
-      case "kobana":
-        // 5 small pops at varied frequencies = the satellite mini-flowers.
-        [180, 240, 290, 350, 420].forEach((delay) =>
-          pushTimer(
-            setTimeout(() => {
-              if (mountedRef.current)
-                playClick({
-                  mutedRef: m,
-                  freq: 700 + Math.random() * 500,
-                  duration: 0.06,
-                  volume: vol * 0.55,
-                });
-            }, delay),
-          ),
-        );
-        break;
-      case "heart":
-        // Cute notification chime overlay.
-        pushTimer(
-          setTimeout(() => {
-            if (mountedRef.current)
-              playChime({ mutedRef: m, freq: 1100, volume: vol * 0.5 });
-          }, 150),
-        );
-        break;
-      case "star":
-        // Sparkle — high-freq tick triplet.
-        [120, 180, 240].forEach((delay) =>
-          pushTimer(
-            setTimeout(() => {
-              if (mountedRef.current)
-                playClick({
-                  mutedRef: m,
-                  freq: 2200,
-                  duration: 0.05,
-                  volume: vol * 0.6,
-                });
-            }, delay),
-          ),
-        );
-        break;
-      case "smiley":
-        // Major-third chime pair = happy face audio cue.
-        pushTimer(
-          setTimeout(() => {
-            if (mountedRef.current)
-              playChime({ mutedRef: m, freq: 880, volume: vol * 0.55 });
-          }, 100),
-        );
-        pushTimer(
-          setTimeout(() => {
-            if (mountedRef.current)
-              playChime({ mutedRef: m, freq: 1320, volume: vol * 0.45 });
-          }, 220),
-        );
-        break;
-    }
   }
 
   const stars = useMemo<Star[]>(() => {
