@@ -2,6 +2,7 @@ export type ExperienceType =
   | "kiriko-cut"
   | "washi-scoop"
   | "hanabi-launch"
+  | "lantern-light";
   | "sensu-paint";
 
 // ISO 3166-2:JP codes for the curated subset of prefectures we surface in
