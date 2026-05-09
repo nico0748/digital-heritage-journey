@@ -109,12 +109,20 @@ function yaraiStrokes(sym: number): Stroke[] {
   const lines = 5;
   const slope = 0.45;
   const out: Stroke[] = [];
+  // Endpoint epsilon: the renderer's wrap-detector splits a stroke
+  // into two single-point segments when |xs[k] - xs[k-1]| > w/2. After
+  // rotation by i/sym, an endpoint of u=sector lands EXACTLY on
+  // (i+1)/sym; for the last sector i=sym-1 that's u=1.0 → folds to 0
+  // and registers as a wrap-around. Result: one of the sym sectors
+  // shows nothing at all. Pulling the endpoint back by a tiny epsilon
+  // keeps the segment continuous without visibly shortening it.
+  const endU = sector - 1e-4;
   for (let i = 0; i < lines; i++) {
     const startV = (i / lines) - slope * 0.4;
     out.push({
       points: [
         { u: 0, v: startV },
-        { u: sector, v: startV + slope },
+        { u: endU, v: startV + slope },
       ],
     });
   }
@@ -141,22 +149,34 @@ function shippoStrokes(sym: number): Stroke[] {
 }
 
 function asanohaStrokes(sym: number): Stroke[] {
-  // Hexagon outline + 6 spokes from centre — the classic "hemp leaf"
+  // Hexagon outline + spokes from centre — the classic "hemp leaf"
   // star, considered an auspicious motif in Edo period textiles and
   // glasswork.
   const sector = 1 / sym;
   const cx = sector * 0.5;
   const cy = 0.5;
-  const r = Math.min(sector * 0.5, 0.2);
+  // Make the asanoha visibly fill its sector even at high symmetries —
+  // the previous Math.min(sector*0.5, 0.2) shrunk the star to a tiny
+  // dot when sym=12 (sector=1/12 → r=0.042) so the user perceived the
+  // 12-fold render as "missing pattern". Use 0.85 of the half-sector
+  // so adjacent stars almost touch but don't bleed across boundaries.
+  const r = Math.min(sector * 0.85, 0.2);
+  // Spoke count matches symmetry so the star's internal rotational
+  // symmetry doesn't collide with the renderer's sym rotations. At
+  // sym=12 the original 6 spokes meant 12 placements all aligned with
+  // every-other rotation — visually identical to a 6-fold result.
+  // Using sym spokes (capped at 12 for legibility) gives a denser
+  // star at higher symmetries.
+  const spokes = Math.min(Math.max(sym, 6), 12);
   const out: Stroke[] = [];
   const hexPts: UV[] = [];
-  for (let i = 0; i <= 6; i++) {
-    const a = (Math.PI * 2 * i) / 6;
+  for (let i = 0; i <= spokes; i++) {
+    const a = (Math.PI * 2 * i) / spokes;
     hexPts.push({ u: cx + Math.cos(a) * r, v: cy + Math.sin(a) * r });
   }
   out.push({ points: hexPts });
-  for (let i = 0; i < 6; i++) {
-    const a = (Math.PI * 2 * i) / 6;
+  for (let i = 0; i < spokes; i++) {
+    const a = (Math.PI * 2 * i) / spokes;
     out.push({
       points: [
         { u: cx, v: cy },
