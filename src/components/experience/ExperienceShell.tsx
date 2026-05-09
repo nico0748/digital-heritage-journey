@@ -96,42 +96,43 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
         )}
         {culture.experience === "sensu-paint" && (
           <SensuStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "tsugaru-polish" && (
-          <TsugaruNuriStage
+          <TsugaruNuriStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "tekki-cast" && (
-          <NanbuTekkiStage
-            onComplete={handleComplete}
-            palette={culture.palette}
-          />
+          <NanbuTekkiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "magewappa-bend" && (
           <MagewappaStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "mashiko-throw" && (
-          <MashikoYakiStage
-            onComplete={handleComplete}
-            palette={culture.palette}
-          />
+          <MashikoYakiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "tsuiki-hammer" && (
           <TsuikiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "wajima-decorate" && (
-          <WajimaNuriStage
+          <WajimaNuriStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "blade-forge" && (
-          <EchizenBladeStage
+          <EchizenBladeStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "bizen-fire" && (
-          <BizenYakiStage
-            onComplete={handleComplete}
-            palette={culture.palette}
-          />
+          <BizenYakiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "fude-craft" && (
           <KumanoFudeStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "awa-rhythm" && (
           <AwaOdoriStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "ningyo-paint" && (
-          <HakataNingyoStage
+          <HakataNingyoStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "arita-paint" && (
-          <AritaYakiStage
-            onComplete={handleComplete}
-            palette={culture.palette}
-          />
+          <AritaYakiStage onComplete={handleComplete} palette={culture.palette} />
+        )}
         {culture.experience === "bingata-dye" && (
           <BingataStage onComplete={handleComplete} palette={culture.palette} />
         )}

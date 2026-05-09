@@ -4,7 +4,20 @@ export type ExperienceType =
   | "hanabi-launch"
   | "lantern-light"
   | "taiko-strike"
-  | "sensu-paint";
+  | "sensu-paint"
+  | "tsugaru-polish"
+  | "tekki-cast"
+  | "magewappa-bend"
+  | "mashiko-throw"
+  | "tsuiki-hammer"
+  | "wajima-decorate"
+  | "blade-forge"
+  | "bizen-fire"
+  | "fude-craft"
+  | "awa-rhythm"
+  | "ningyo-paint"
+  | "arita-paint"
+  | "bingata-dye";
 
 // ISO 3166-2:JP codes for the curated subset of prefectures we surface in
 // the archive. We don't enumerate all 47 — only the ones that anchor an
@@ -47,19 +60,6 @@ export interface Prefecture {
   // culture entry exists yet.
   highlights: string[];
 }
-  | "tsugaru-polish";
-  | "tekki-cast";
-  | "magewappa-bend";
-  | "mashiko-throw";
-  | "tsuiki-hammer";
-  | "wajima-decorate";
-  | "blade-forge";
-  | "bizen-fire";
-  | "fude-craft";
-  | "awa-rhythm";
-  | "ningyo-paint";
-  | "arita-paint";
-  | "bingata-dye";
 
 export interface CultureMedia {
   hero?: string;
@@ -81,17 +81,9 @@ export type RealWorldKind =
 export interface RealWorldLink {
   url: string;
   label: string;   // English label, e.g. "Visit Edo Kiriko Cooperative"
-  labelJp: string; // 日本語ラベル, e.g. "江戸切子協同組合へ"
+  labelJp?: string; // 日本語ラベル, e.g. "江戸切子協同組合へ"
   kind: RealWorldKind;
   location?: string; // optional, e.g. "Tokyo, Sumida"
-export interface CultureRealWorld {
-  kind: "association" | "museum" | "shop" | "festival";
-export interface CultureRealWorld {
-  kind: "festival" | "workshop" | "museum" | "shop";
-export interface RealWorldLink {
-  kind: "association" | "museum" | "shop" | "site";
-  label: string;
-  url: string;
 }
 
 export interface Culture {
@@ -105,7 +97,6 @@ export interface Culture {
   // taxonomy landed don't break the type when they merge — they can
   // backfill the field in a follow-up.
   prefectures?: PrefectureId[];
-  category: "craft" | "festival";
   category: "craft" | "festival" | "matsuri";
   era: string;
   description: string;
@@ -115,12 +106,6 @@ export interface Culture {
   experience: ExperienceType;
   accentKanji: string;
   // Optional pointer to where the user can experience the real thing.
-  // Optional so cultures added before this taxonomy don't break and so
-  // future cultures can opt in incrementally.
-  realWorld?: RealWorldLink;
-  prefectures?: string[];
-  realWorld?: CultureRealWorld;
-  prefectures?: string[];
   realWorld?: RealWorldLink;
 }
 
