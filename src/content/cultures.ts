@@ -47,6 +47,27 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "hakata-ningyo",
+    name: "Hakata-ningyō",
+    jp: "博多人形",
+    region: "Fukuoka / Hakata",
+    category: "craft",
+    era: "Early Edo period (1600s-)",
+    description:
+      "Hand-painted bisque clay dolls; 目入れ (eye-painting) gives them their soul.",
+    problem: "Modern decor demand falling; ~50 master craftsmen remain.",
+    palette: ["#1d130a", "#C03D2B", "#C9A227"],
+    accentKanji: "人",
+    prefectures: ["JP-40"],
+    realWorld: {
+      kind: "association",
+      label: "博多人形商工業協同組合",
+      url: "https://hakata-ningyo.or.jp/",
+    },
+    media: {},
+    experience: "ningyo-paint",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {

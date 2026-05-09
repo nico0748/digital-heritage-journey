@@ -1,10 +1,20 @@
-export type ExperienceType = "kiriko-cut" | "washi-scoop" | "hanabi-launch";
+export type ExperienceType =
+  | "kiriko-cut"
+  | "washi-scoop"
+  | "hanabi-launch"
+  | "ningyo-paint";
 
 export interface CultureMedia {
   hero?: string;
   thumbnail?: string;
   process?: string[];
   sounds?: string[];
+}
+
+export interface RealWorldLink {
+  kind: "association" | "museum" | "shop" | "site";
+  label: string;
+  url: string;
 }
 
 export interface Culture {
@@ -20,6 +30,8 @@ export interface Culture {
   media: CultureMedia;
   experience: ExperienceType;
   accentKanji: string;
+  prefectures?: string[];
+  realWorld?: RealWorldLink;
 }
 
 export interface StoryScene {
