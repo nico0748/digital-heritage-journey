@@ -14,6 +14,7 @@ import { SensuStage } from "./SensuStage";
 import { TsugaruNuriStage } from "./TsugaruNuriStage";
 import { NanbuTekkiStage } from "./NanbuTekkiStage";
 import { MagewappaStage } from "./MagewappaStage";
+import { MashikoYakiStage } from "./MashikoYakiStage";
 
 // Heavy: Three.js + R3F + drei. Load only when Kiriko is actually requested.
 const KirikoCanvas = dynamic(
@@ -95,6 +96,11 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
           />
         {culture.experience === "magewappa-bend" && (
           <MagewappaStage onComplete={handleComplete} palette={culture.palette} />
+        {culture.experience === "mashiko-throw" && (
+          <MashikoYakiStage
+            onComplete={handleComplete}
+            palette={culture.palette}
+          />
         )}
       </section>
     </main>

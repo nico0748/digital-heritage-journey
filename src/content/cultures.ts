@@ -165,6 +165,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "magewappa-bend",
   },
+  {
+    id: "mashiko-yaki",
+    name: "Mashiko-yaki",
+    jp: "益子焼",
+    region: "Tochigi / Mashiko",
+    category: "craft",
+    era: "Late Edo period (1850s-)",
+    description:
+      "Rustic pottery with four traditional glazes; central to Hamada Shōji's mingei movement.",
+    problem:
+      "Younger potters are scarce; only ~250 kilns remain active vs. ~600 a generation ago.",
+    palette: ["#1d130a", "#B85F2E", "#5b3a20"],
+    accentKanji: "陶",
+    media: {},
+    experience: "mashiko-throw",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {

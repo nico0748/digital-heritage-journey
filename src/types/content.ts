@@ -50,6 +50,7 @@ export interface Prefecture {
   | "tsugaru-polish";
   | "tekki-cast";
   | "magewappa-bend";
+  | "mashiko-throw";
 
 export interface CultureMedia {
   hero?: string;
