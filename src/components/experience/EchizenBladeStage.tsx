@@ -99,6 +99,12 @@ export function EchizenBladeStage({
   const mountedRef = useRef(true);
   const finaleTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   useEffect(() => {
+    // React 19 StrictMode dev double-mount workaround: the first
+    // cleanup leaves mountedRef = false, and the 700ms onComplete
+    // timer in handleStageComplete then silent-skips on its
+    // `if (!mountedRef.current) return` guard. Re-arm here so the
+    // Complete button on the togi step actually advances.
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       for (const id of finaleTimersRef.current) clearTimeout(id);
