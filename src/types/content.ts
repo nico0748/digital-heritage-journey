@@ -18,6 +18,9 @@ export type ExperienceType =
   | "ningyo-paint"
   | "arita-paint"
   | "bingata-dye";
+  | "taiko-strike";
+  | "lantern-light";
+  | "sensu-paint";
 
 // ISO 3166-2:JP codes for the curated subset of prefectures we surface in
 // the archive. We don't enumerate all 47 — only the ones that anchor an
@@ -83,6 +86,7 @@ export interface RealWorldLink {
   url: string;
   label: string;   // English label, e.g. "Visit Edo Kiriko Cooperative"
   labelJp?: string; // 日本語ラベル, e.g. "江戸切子協同組合へ"
+  labelJp: string; // 日本語ラベル, e.g. "江戸切子協同組合へ"
   kind: RealWorldKind;
   location?: string; // optional, e.g. "Tokyo, Sumida"
 }
@@ -99,6 +103,7 @@ export interface Culture {
   // backfill the field in a follow-up.
   prefectures?: PrefectureId[];
   category: "craft" | "festival" | "matsuri";
+  category: "craft" | "festival";
   era: string;
   description: string;
   problem: string;

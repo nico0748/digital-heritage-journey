@@ -61,7 +61,7 @@ const STIR_TARGET = 1; // 0..1 progress
 const BEAT_TARGET = 12; // taps required
 const SCOOP_TARGET_SWEEPS = 8; // half-sweeps; 4 full back-and-forths
 const PRESS_TARGET_MS = 2400;
-const SIZE = 480;
+const SIZE = 640;
 
 export function WashiCanvas({
   onComplete,
@@ -705,7 +705,7 @@ export function WashiCanvas({
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerLeave}
-        className="aspect-square w-[min(90vw,28rem)] cursor-pointer touch-none rounded-sm border border-washi-50/10 shadow-2xl shadow-black/50"
+        className="aspect-square w-[min(94vw,38rem)] cursor-pointer touch-none rounded-sm border border-washi-50/10 shadow-2xl shadow-black/50"
       />
 
       {step.id !== "done" && (
