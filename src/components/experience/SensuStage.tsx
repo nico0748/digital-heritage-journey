@@ -168,12 +168,22 @@ function WaritakeStep({ onConfirm }: { onConfirm: () => void }) {
       ctx.translate(cx, ribCy);
       ctx.rotate(angle);
 
+      // Lighter mid-tone so the rib reads against the near-black bg.
       const grad = ctx.createLinearGradient(0, -logHalfH, 0, logHalfH);
-      grad.addColorStop(0, "#3a2614");
-      grad.addColorStop(0.5, "#5b3a20");
-      grad.addColorStop(1, "#2a1a0c");
+      grad.addColorStop(0, "#5a3b22");
+      grad.addColorStop(0.5, "#8a5a30");
+      grad.addColorStop(1, "#3d2716");
       ctx.fillStyle = grad;
       ctx.fillRect(-ribW * 0.42, -logHalfH, ribW * 0.84, logHalfH * 2);
+
+      // Top-edge highlight — adds a single bright stroke that lifts the
+      // bamboo off the dark workshop floor without changing palette.
+      ctx.strokeStyle = "rgba(255,235,200,0.22)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-ribW * 0.42, -logHalfH + 1);
+      ctx.lineTo(ribW * 0.42, -logHalfH + 1);
+      ctx.stroke();
 
       // Bamboo joints — horizontal nodes on each rib, hint at material.
       ctx.strokeStyle = "rgba(20,12,5,0.55)";
@@ -196,12 +206,21 @@ function WaritakeStep({ onConfirm }: { onConfirm: () => void }) {
       const startI = splitsRef.current;
       const blockX0 = x0 + (logW / RIBS) * startI;
       const blockX1 = x1;
+      // Match the rib mid-tone so the un-split block visually reads as
+      // the same material at the same lit angle.
       const grad = ctx.createLinearGradient(0, cy - logHalfH, 0, cy + logHalfH);
-      grad.addColorStop(0, "#3a2614");
-      grad.addColorStop(0.5, "#5b3a20");
-      grad.addColorStop(1, "#2a1a0c");
+      grad.addColorStop(0, "#5a3b22");
+      grad.addColorStop(0.5, "#8a5a30");
+      grad.addColorStop(1, "#3d2716");
       ctx.fillStyle = grad;
       ctx.fillRect(blockX0, cy - logHalfH, blockX1 - blockX0, logHalfH * 2);
+      // Top-edge highlight on the unsplit block so it doesn't go dark.
+      ctx.strokeStyle = "rgba(255,235,200,0.18)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(blockX0, cy - logHalfH + 1);
+      ctx.lineTo(blockX1, cy - logHalfH + 1);
+      ctx.stroke();
       // Pending split markers — faint vertical dashes.
       ctx.strokeStyle = "rgba(252,232,170,0.18)";
       ctx.lineWidth = 1;
@@ -335,6 +354,11 @@ function OrikamiStep({
     const x1 = w * 0.92;
     const stripW = x1 - x0;
     const segW = stripW / RIBS;
+    // Half-height of the paper strip. Was 26 (52px tall) which felt
+    // cramped vs the canvas; tripled to 78 (156px tall) so the folded
+    // washi has room to breathe and the alternating mountain/valley
+    // creases are clearly readable.
+    const paperHalfH = 78;
     // Compression: fully folded, the strip is half its flat width.
     const compress = 1 - (foldsRef.current / FOLD_TARGET) * 0.45;
     const visW = stripW * compress;
@@ -343,13 +367,13 @@ function OrikamiStep({
 
     // Draw each segment between folds. When folded, alternate segments
     // shear up (山, mountain) or down (谷, valley) at a small angle.
-    const peak = (foldsRef.current / FOLD_TARGET) * 22;
+    // Peak scales with the new paper height so the fold amplitude
+    // stays proportional to the strip rather than looking flat.
+    const peak = (foldsRef.current / FOLD_TARGET) * 40;
     for (let i = 0; i < RIBS; i++) {
       const sx0 = visX0 + segW * compress * i;
       const sx1 = visX0 + segW * compress * (i + 1);
       const isMountain = i % 2 === 0;
-      // Only segments with folds on at least one side participate in
-      // the accordion shape; un-folded ones stay flat.
       const leftFolded = i > 0 && i <= foldsRef.current;
       const rightFolded = i < foldsRef.current;
       const yLeft = leftFolded
@@ -359,25 +383,33 @@ function OrikamiStep({
         ? stripY + (isMountain ? peak : -peak)
         : stripY;
 
-      // Paper face — washi cream, with grain texture clipped per segment.
       ctx.save();
       ctx.beginPath();
-      ctx.moveTo(sx0, yLeft - 26);
-      ctx.lineTo(sx1, yRight - 26);
-      ctx.lineTo(sx1, yRight + 26);
-      ctx.lineTo(sx0, yLeft + 26);
+      ctx.moveTo(sx0, yLeft - paperHalfH);
+      ctx.lineTo(sx1, yRight - paperHalfH);
+      ctx.lineTo(sx1, yRight + paperHalfH);
+      ctx.lineTo(sx0, yLeft + paperHalfH);
       ctx.closePath();
       ctx.clip();
 
       ctx.fillStyle = "#F8F1E0";
       ctx.fillRect(0, 0, w, h);
 
-      // Subtle warm gradient inside the segment to add depth.
-      const warm = ctx.createLinearGradient(sx0, yLeft - 26, sx0, yLeft + 26);
+      const warm = ctx.createLinearGradient(
+        sx0,
+        yLeft - paperHalfH,
+        sx0,
+        yLeft + paperHalfH,
+      );
       warm.addColorStop(0, "rgba(250,240,215,0)");
       warm.addColorStop(1, "rgba(170,140,100,0.18)");
       ctx.fillStyle = warm;
-      ctx.fillRect(sx0 - 2, yLeft - 28, sx1 - sx0 + 4, 56);
+      ctx.fillRect(
+        sx0 - 2,
+        yLeft - paperHalfH - 2,
+        sx1 - sx0 + 4,
+        paperHalfH * 2 + 4,
+      );
 
       for (const g of grain) {
         ctx.fillStyle = `rgba(120, 90, 60, ${g.a})`;
@@ -387,18 +419,16 @@ function OrikamiStep({
       }
       ctx.restore();
 
-      // Outline the segment so folds are visually distinct.
       ctx.strokeStyle = "rgba(70, 48, 26, 0.3)";
       ctx.lineWidth = 0.8;
       ctx.beginPath();
-      ctx.moveTo(sx0, yLeft - 26);
-      ctx.lineTo(sx1, yRight - 26);
-      ctx.lineTo(sx1, yRight + 26);
-      ctx.lineTo(sx0, yLeft + 26);
+      ctx.moveTo(sx0, yLeft - paperHalfH);
+      ctx.lineTo(sx1, yRight - paperHalfH);
+      ctx.lineTo(sx1, yRight + paperHalfH);
+      ctx.lineTo(sx0, yLeft + paperHalfH);
       ctx.closePath();
       ctx.stroke();
 
-      // Fold crease — emphasise the seam between this segment and next.
       if (rightFolded) {
         const isMountainCrease = isMountain;
         ctx.strokeStyle = isMountainCrease
@@ -407,8 +437,8 @@ function OrikamiStep({
         ctx.lineWidth = isMountainCrease ? 1.4 : 1;
         ctx.setLineDash(isMountainCrease ? [] : [3, 2]);
         ctx.beginPath();
-        ctx.moveTo(sx1, yRight - 28);
-        ctx.lineTo(sx1, yRight + 28);
+        ctx.moveTo(sx1, yRight - paperHalfH - 2);
+        ctx.lineTo(sx1, yRight + paperHalfH + 2);
         ctx.stroke();
         ctx.setLineDash([]);
       }
@@ -896,11 +926,55 @@ function ShiageStep({
       ctx.stroke();
     }
 
-    // The painted design — squashed/stretched to follow the fan as it
-    // spreads. We draw it inside the clipped paper region so it never
-    // bleeds past the wedge.
-    if (paintImgRef.current) {
-      ctx.drawImage(paintImgRef.current, 0, 0, w, h);
+    // The painted design — when EtsukeStep captured it, the strokes
+    // were laid on a FLAT rectangular paper (centred horizontally on
+    // the canvas, ~55% of canvas height). Drawing that flat image
+    // directly on a fan wedge clips most of it away because the fan
+    // covers a different region of the canvas. We instead slice the
+    // flat paint into RIBS vertical columns and lay each column down
+    // along its corresponding fan rib — same UV-style mapping the
+    // hanabi star bursts use, scaled by the rib radius.
+    const img = paintImgRef.current;
+    if (img && img.naturalWidth > 0) {
+      // Source columns map to RIBS-1 wedge slots; the flat paper in
+      // EtsukeStep spans x in [0.08w, 0.92w] (the visible strip).
+      const srcStripStart = w * 0.08;
+      const srcStripWidth = w * 0.84;
+      const srcStripTop = h * 0.225; // (0.5 - 0.55/2) * h
+      const srcStripHeight = h * 0.55;
+      const srcSliceW = srcStripWidth / (RIBS - 1);
+      const wedgeSpan = total / (RIBS - 1);
+      // Half-angle a single slice should cover so neighbouring slices
+      // overlap a hair — kills sub-pixel seams between ribs.
+      const sliceHalfAngle = wedgeSpan * 0.55;
+      for (let i = 0; i < RIBS - 1; i++) {
+        const tMid = (i + 0.5) / (RIBS - 1);
+        const aMid = startAngle + total * tMid;
+        ctx.save();
+        ctx.translate(pivot.x, pivot.y);
+        // Rotate so the slice's local +y axis points outward along
+        // the rib (canvas y grows downward, fan opens upward → rotate
+        // so that aMid becomes the local "down" direction).
+        ctx.rotate(aMid + Math.PI / 2);
+        // Compute the screen width of the rib at radius r1 — gives a
+        // dest rectangle that visually fills its wedge slot.
+        const destWidthAtRim = 2 * r1 * Math.tan(sliceHalfAngle);
+        const destWidthAtPivot = 2 * r0 * Math.tan(sliceHalfAngle);
+        const destWidth = Math.max(destWidthAtRim, destWidthAtPivot);
+        const srcX = srcStripStart + srcSliceW * i;
+        ctx.drawImage(
+          img,
+          srcX,
+          srcStripTop,
+          srcSliceW,
+          srcStripHeight,
+          -destWidth / 2,
+          -r1,
+          destWidth,
+          r1 - r0,
+        );
+        ctx.restore();
+      }
     }
 
     ctx.restore();
