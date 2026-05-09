@@ -442,7 +442,16 @@ function RokuroStep({
   const radiiRef = useRef<number[]>([...initialRadii]);
   const lastPt = useRef<{ x: number; y: number } | null>(null);
   const totalDragRef = useRef(0);
-  const [dragProgress, setDragProgress] = useState(0);
+  // If the user already shaped the form on a previous visit (came back
+  // from glazing), pre-arm dragProgress so the Continue button isn't
+  // disabled until they drag again. Codex P2: returning from Seyu
+  // otherwise made it look like the wheel had been reset.
+  const hasShapedBefore =
+    initialHeight !== 180 ||
+    initialRadii.some((r) => r !== 78);
+  const [dragProgress, setDragProgress] = useState(
+    hasShapedBefore ? 1 : 0,
+  );
   const ready = dragProgress >= 1;
 
   // Ambient wheel hum — one play on entry. Restart on each pointer-down
