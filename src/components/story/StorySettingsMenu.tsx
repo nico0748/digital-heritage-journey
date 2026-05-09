@@ -72,6 +72,14 @@ export function StorySettingsMenu() {
         role="dialog"
         aria-label="表示設定"
         aria-hidden={!open}
+        // `inert` is the modern way to take a subtree fully out of the
+        // accessibility / focus / hit-test tree. With only
+        // `pointer-events-none` + `aria-hidden`, the mode buttons inside
+        // were still tabbable when the panel was visually hidden, so
+        // keyboard users could land on (and activate!) invisible options
+        // and silently switch story modes. React 19 supports `inert` as
+        // a native boolean prop.
+        inert={!open}
         className={clsx(
           "fixed right-4 top-20 z-[300] w-72 max-w-[calc(100vw-2rem)] origin-top-right rounded-2xl bg-washi-50 p-5 shadow-2xl ring-1 ring-sumi/10 transition",
           open
