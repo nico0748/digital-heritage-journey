@@ -343,6 +343,12 @@ export function AritaYakiStage({
     playFire({ mutedRef: muted, duration: 4.5 });
     const start = performance.now();
     let raf = 0;
+    // Local handle for this effect's auto-advance timer so the cleanup
+    // can cancel it. Without this, leaving honyaki (back button or
+    // unmount) before the 5s+500ms completes would still queue a
+    // setStepIdx(3) call, jumping the user forward unexpectedly
+    // (Codex P2).
+    let advanceTimer: ReturnType<typeof setTimeout> | null = null;
     const tick = () => {
       const elapsed = performance.now() - start;
       const t = Math.min(1, elapsed / 5000);
@@ -351,14 +357,17 @@ export function AritaYakiStage({
         raf = requestAnimationFrame(tick);
       } else {
         playChime({ mutedRef: muted });
-        const id = setTimeout(() => {
+        advanceTimer = setTimeout(() => {
           if (mountedRef.current) setStepIdx(3);
         }, 500);
-        timersRef.current.push(id);
+        timersRef.current.push(advanceTimer);
       }
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (advanceTimer) clearTimeout(advanceTimer);
+    };
   }, [step.id, muted]);
 
   // Kansei rotation — slow continuous spin showcasing the finished plate.
