@@ -205,6 +205,7 @@ export const cultures: Culture[] = [
     accentKanji: "陶",
     media: {},
     experience: "mashiko-throw",
+    comingSoon: true,
   },
   {
     id: "tsubame-sanjo",
@@ -291,6 +292,7 @@ export const cultures: Culture[] = [
     },
     media: {},
     experience: "fude-craft",
+    comingSoon: true,
   },
   {
     id: "awa-odori",
@@ -313,6 +315,7 @@ export const cultures: Culture[] = [
     },
     media: {},
     experience: "awa-rhythm",
+    comingSoon: true,
   },
   {
     id: "hakata-ningyo",
@@ -350,6 +353,7 @@ export const cultures: Culture[] = [
     accentKanji: "磁",
     media: {},
     experience: "arita-paint",
+    comingSoon: true,
   },
 ];
 
