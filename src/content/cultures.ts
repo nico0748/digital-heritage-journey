@@ -267,6 +267,28 @@ export const cultures: Culture[] = [
     media: {},
     experience: "fude-craft",
   },
+  {
+    id: "awa-odori",
+    name: "Awa-odori",
+    jp: "阿波踊り",
+    region: "Tokushima",
+    category: "matsuri",
+    era: "Edo period (1580s-)",
+    description:
+      "400-year-old summer festival dance with 2-beat rhythm; ~1.3M visitors/year.",
+    problem:
+      "Younger ren shrinking; pandemic-era cancellations broke continuity.",
+    palette: ["#0A0604", "#C03D2B", "#C9A227"],
+    accentKanji: "踊",
+    prefectures: ["JP-36"],
+    realWorld: {
+      kind: "festival",
+      label: "徳島市阿波おどり",
+      url: "https://www.awaodori-kaikan.jp/",
+    },
+    media: {},
+    experience: "awa-rhythm",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {

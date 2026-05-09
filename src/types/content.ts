@@ -56,6 +56,7 @@ export interface Prefecture {
   | "blade-forge";
   | "bizen-fire";
   | "fude-craft";
+  | "awa-rhythm";
 
 export interface CultureMedia {
   hero?: string;
@@ -82,6 +83,8 @@ export interface RealWorldLink {
   location?: string; // optional, e.g. "Tokyo, Sumida"
 export interface CultureRealWorld {
   kind: "association" | "museum" | "shop" | "festival";
+export interface CultureRealWorld {
+  kind: "festival" | "workshop" | "museum" | "shop";
   label: string;
   url: string;
 }
@@ -98,6 +101,7 @@ export interface Culture {
   // backfill the field in a follow-up.
   prefectures?: PrefectureId[];
   category: "craft" | "festival";
+  category: "craft" | "festival" | "matsuri";
   era: string;
   description: string;
   problem: string;
