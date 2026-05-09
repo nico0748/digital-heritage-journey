@@ -14,7 +14,11 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      muted: true,
+      // Default to sound ON — fireworks / taiko / craft tactile audio
+      // is the most impactful piece of the experience, and starting
+      // muted means new visitors don't realise sound exists. The
+      // header's speaker icon lets them mute if they want.
+      muted: false,
       toggleMute: () => set((s) => ({ muted: !s.muted })),
       completedWorks: {},
       saveWork: (id, dataUrl) =>
