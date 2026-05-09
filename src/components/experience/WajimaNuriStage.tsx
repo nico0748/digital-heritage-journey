@@ -590,6 +590,12 @@ function KashokuStep({
   const [finalizing, setFinalizing] = useState(false);
 
   useEffect(() => {
+    // Re-arm on mount: React 19 StrictMode dev double-mounts the
+    // effect, the first cleanup sets mountedRef=false, and without
+    // re-arming the second mount inherits that false. The Complete
+    // button's deferred onComplete (in finaleTimerRef chain) then
+    // silent-skips and the user is stuck on the kashoku canvas.
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       if (finaleTimerRef.current) clearTimeout(finaleTimerRef.current);
@@ -815,7 +821,7 @@ function KashokuStep({
       }
       // Gold sprinkle ticks — short bright ticks evoke 金粉撒き.
       for (let i = 0; i < 8; i++) {
-        window.setTimeout(() => {
+        setTimeout(() => {
           if (!mountedRef.current) return;
           playClick({ mutedRef, freq: 2000, duration: 0.04, volume: 0.4 });
         }, i * 90);
