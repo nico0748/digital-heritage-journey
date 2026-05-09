@@ -23,6 +23,7 @@ import { KumanoFudeStage } from "./KumanoFudeStage";
 import { AwaOdoriStage } from "./AwaOdoriStage";
 import { HakataNingyoStage } from "./HakataNingyoStage";
 import { AritaYakiStage } from "./AritaYakiStage";
+import { BingataStage } from "./BingataStage";
 
 // Heavy: Three.js + R3F + drei. Load only when Kiriko is actually requested.
 const KirikoCanvas = dynamic(
@@ -131,6 +132,8 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
             onComplete={handleComplete}
             palette={culture.palette}
           />
+        {culture.experience === "bingata-dye" && (
+          <BingataStage onComplete={handleComplete} palette={culture.palette} />
         )}
       </section>
     </main>

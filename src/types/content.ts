@@ -59,6 +59,7 @@ export interface Prefecture {
   | "awa-rhythm";
   | "ningyo-paint";
   | "arita-paint";
+  | "bingata-dye";
 
 export interface CultureMedia {
   hero?: string;
