@@ -122,12 +122,11 @@ export function PaginatedStage({ scenes }: { scenes: StoryScene[] }) {
     if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
     if (wheelLockRef.current) return;
     wheelAccumRef.current += e.deltaX;
-    // macOS natural-scroll trackpad: a physical LEFT-swipe registers as
-    // POSITIVE deltaX. We want left-swipe → next, so positive accumulation
-    // advances and negative goes back.
-    // macOS natural-scroll trackpad: a physical RIGHT-swipe registers as
-    // NEGATIVE deltaX. Right swipe is now "next", so negative accumulation
-    // advances and positive goes back.
+    // RTL kamishibai flow (matches drag/onDragEnd):
+    //   right-swipe  → next  → physical right swipe is NEGATIVE deltaX
+    //                          on macOS natural-scroll, so we advance
+    //                          when accumulation crosses -SWIPE_THRESHOLD_PX.
+    //   left-swipe   → prev  → POSITIVE deltaX, threshold above 0.
     if (wheelAccumRef.current < -SWIPE_THRESHOLD_PX) {
       if (canNext) {
         wheelLockRef.current = true;
@@ -173,7 +172,10 @@ export function PaginatedStage({ scenes }: { scenes: StoryScene[] }) {
 
   return (
     <div
-      className="relative h-screen w-full overflow-hidden bg-washi-200"
+      // overscroll-x-contain stops a horizontal trackpad swipe from
+      // simultaneously firing browser back/forward navigation while we
+      // consume the same wheel event for scene navigation.
+      className="relative h-screen w-full overflow-hidden bg-washi-200 overscroll-x-contain"
       onWheel={handleWheel}
     >
       {/* Render in reverse story order — same as HorizontalStage's DOM:
