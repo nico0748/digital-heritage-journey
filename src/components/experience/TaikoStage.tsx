@@ -5,8 +5,12 @@ import { Check, Drum } from "lucide-react";
 import { useAppStore } from "@/stores/useAppStore";
 
 const TARGET_HITS = 8;
-const TRAVEL_MS = 1500;
-const SPAWN_INTERVAL_MS = 1300;
+// Rhythm-game cadence — sub-second spawn so the experience reads as a
+// steady musical pulse (~86 BPM) rather than a slow tap counter, with
+// 1.5 beats of lookahead so the user can read the incoming ring
+// before it hits the drum head.
+const TRAVEL_MS = 1050;
+const SPAWN_INTERVAL_MS = 700;
 const HIT_WINDOW = 0.18;
 const PERFECT_WINDOW = 0.07;
 
@@ -65,22 +69,28 @@ export function TaikoStage({
   const feedbackTimerRef = useRef<number | null>(null);
   const finalizingRef = useRef(false);
 
+  function ensureCtx(): AudioContext | null {
+    if (!audioCtxRef.current) {
+      const Ctor =
+        (typeof window !== "undefined" &&
+          (window.AudioContext ||
+            (window as unknown as { webkitAudioContext?: typeof AudioContext })
+              .webkitAudioContext)) ||
+        null;
+      if (!Ctor) return null;
+      audioCtxRef.current = new Ctor();
+    }
+    const ctx = audioCtxRef.current;
+    if (!ctx) return null;
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+    return ctx;
+  }
+
   function playBoom() {
     if (mutedRef.current) return;
     try {
-      if (!audioCtxRef.current) {
-        const Ctor =
-          (typeof window !== "undefined" &&
-            (window.AudioContext ||
-              (window as unknown as { webkitAudioContext?: typeof AudioContext })
-                .webkitAudioContext)) ||
-          null;
-        if (!Ctor) return;
-        audioCtxRef.current = new Ctor();
-      }
-      const ctx = audioCtxRef.current;
+      const ctx = ensureCtx();
       if (!ctx) return;
-      if (ctx.state === "suspended") ctx.resume().catch(() => {});
       const now = ctx.currentTime;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -95,6 +105,34 @@ export function TaikoStage({
       osc.stop(now + 0.55);
     } catch {
       /* audio is best-effort; ignore failures */
+    }
+  }
+
+  // Metronome tock — short woody click played at every spawn so the
+  // rhythm is audible and the user can predict the hit moment without
+  // relying on visual ring tracking alone. Downbeats (every 4th) get
+  // a slightly lower pitch + louder gain to give the loop a 4/4 feel.
+  function playTock(downbeat: boolean) {
+    if (mutedRef.current) return;
+    try {
+      const ctx = ensureCtx();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      const f = downbeat ? 320 : 480;
+      osc.frequency.setValueAtTime(f, now);
+      osc.frequency.exponentialRampToValueAtTime(f * 0.6, now + 0.04);
+      const peak = downbeat ? 0.22 : 0.13;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(peak, now + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    } catch {
+      /* best-effort */
     }
   }
 
@@ -127,8 +165,13 @@ export function TaikoStage({
         hitsRef.current < TARGET_HITS &&
         now - lastSpawnRef.current >= SPAWN_INTERVAL_MS
       ) {
+        const beatIdx = targetsRef.current.length;
         targetsRef.current.push({ spawn: now, hit: false, hitAt: 0 });
         lastSpawnRef.current = now;
+        // Audible metronome: every spawn ticks; first beat of each
+        // 4-beat cycle gets the lower 'downbeat' tock so the rhythm
+        // reads as music rather than an undifferentiated stream.
+        playTock(beatIdx % 4 === 0);
       }
 
       const bg = ctx.createRadialGradient(
