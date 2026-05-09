@@ -32,6 +32,22 @@ export const cultures: Culture[] = [
     experience: "washi-scoop",
   },
   {
+    id: "bingata",
+    name: "Bingata",
+    jp: "紅型",
+    region: "Okinawa / Ryūkyū",
+    category: "craft",
+    era: "Ryūkyū kingdom (1500s-)",
+    description:
+      "Stencil-and-resist dye craft of the Ryūkyū court; vivid tropical motifs.",
+    problem:
+      "Few young craftsmen learning the multi-stage stencil + resist technique.",
+    palette: ["#FBF7F0", "#C03D2B", "#C9A227"],
+    accentKanji: "紅",
+    media: {},
+    experience: "bingata-dye",
+  },
+  {
     id: "hanabi",
     name: "Hanabi",
     jp: "花火",
