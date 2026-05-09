@@ -517,6 +517,11 @@ function LaunchStep({
   const burstsRef = useRef(0);
   const [chargeProgress, setChargeProgress] = useState(0);
   const finalizingRef = useRef(false);
+  // Mirrors finalizingRef in React state so we can disable the Finale
+  // button after the first click. Without this, a rapid double-click
+  // queues two finale chains and onComplete fires twice (router.push
+  // gets called against an unmounted tree on the second invocation).
+  const [finalizing, setFinalizing] = useState(false);
   const chargeProgressRef = useRef(0);
   const mountedRef = useRef(true);
   // Tracks every setTimeout used by the finale so we can cancel them
@@ -930,10 +935,14 @@ function LaunchStep({
   }
 
   function complete() {
+    // Re-entry guard: a double-click would otherwise queue a second
+    // finale chain and call onComplete twice.
+    if (finalizingRef.current) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const w = canvas.clientWidth;
     finalizingRef.current = true;
+    setFinalizing(true);
     // Track every deferred call so we can cancel it on unmount and
     // never call `onComplete` (which router.push'es) against a
     // torn-down tree.
@@ -1022,7 +1031,7 @@ function LaunchStep({
         <button
           type="button"
           onClick={complete}
-          disabled={bursts < TARGET_BURSTS}
+          disabled={bursts < TARGET_BURSTS || finalizing}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
           <Check size={12} /> Finale
