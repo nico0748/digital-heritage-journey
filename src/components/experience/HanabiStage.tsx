@@ -11,20 +11,37 @@ import {
   Undo2,
 } from "lucide-react";
 import clsx from "clsx";
+import {
+  playBoom,
+  playChime,
+  playClick,
+  playCrackle,
+  playFire,
+  playWhistle,
+  useMutedRef,
+} from "@/lib/craftAudio";
 
 type Pattern =
   | "peony"
   | "chrysanthemum"
   | "willow"
   | "senrin"
+  // Additional 割物 added in the grand-finale expansion
+  | "yashi"      // 椰子 — palm tree drop
+  | "yaeshin"    // 八重芯 — three-tier concentric expansion
+  | "kobana"     // 小花 — main bloom + 4-6 mini satellite clusters
   // 型物 (katamono) — pictograph fireworks, modern artisan repertoire.
   | "heart"
-  | "star";
+  | "star"
+  | "smiley";    // ニコちゃん — face shape (eyes + arc mouth)
 type Step = "design" | "hoshi" | "tamabari" | "launch";
 
 // Real shell sizes used by Japanese 花火師. Bigger shell = higher launch
-// + larger bloom + more wrapping paper layers in 玉貼り.
-type ShellSize = "3" | "5" | "10";
+// + larger bloom + more wrapping paper layers in 玉貼り. We considered
+// adding a finale-only 二尺玉 (20号) for the grand climax, but at that
+// scale the bloom radius spilled outside the canvas viewport, so the
+// finale now climaxes with the user's pattern at 尺玉 (10号) instead.
+type ShellSize = "3" | "5" | "7" | "10";
 
 interface ShellSizeInfo {
   jp: string;       // "三号"
@@ -61,6 +78,16 @@ const SHELL_SIZE_INFO: Record<ShellSize, ShellSizeInfo> = {
     heightFactor: 0.45,
     wrapTarget: 7,
   },
+  "7": {
+    jp: "七号玉",
+    cm: "約 21 cm",
+    bloomM: "開花 230 m",
+    heightM: "高さ 250 m",
+    desc: "中規模花火大会の主役。五号と尺玉の中間、迫力と細工が両立。",
+    radiusFactor: 1.2,
+    heightFactor: 0.39,
+    wrapTarget: 9,
+  },
   "10": {
     jp: "尺玉(十号)",
     cm: "約 30 cm",
@@ -72,6 +99,10 @@ const SHELL_SIZE_INFO: Record<ShellSize, ShellSizeInfo> = {
     wrapTarget: 12,
   },
 };
+
+// Sizes the user can pick during the 玉貼り step (excludes the
+// finale-only 二尺玉, which fires during complete()).
+const SELECTABLE_SHELL_SIZES: ShellSize[] = ["3", "5", "7", "10"];
 
 // Maximum number of layers the user can stack in 星掛け. Each tap on a
 // colour adds a new outer ring; 5 layers is enough for visible burn-
@@ -145,11 +176,15 @@ const ALL_PATTERNS: Pattern[] = [
   "chrysanthemum",
   "willow",
   "senrin",
+  "yashi",
+  "yaeshin",
+  "kobana",
   "heart",
   "star",
+  "smiley",
 ];
 
-// 4 warimono (割物) + 2 katamono (型物). Real 花火師 distinguish between
+// 7 warimono (割物) + 3 katamono (型物). Real 花火師 distinguish between
 // "scatter shells" and "shape shells" — both are in our menu.
 const PATTERN_INFO: Record<
   Pattern,
@@ -179,6 +214,24 @@ const PATTERN_INFO: Record<
     desc: "親玉が咲いた後、無数の小玉が一斉に開花する。",
     category: "warimono",
   },
+  yashi: {
+    jp: "椰子",
+    en: "Yashi (Palm)",
+    desc: "南国の椰子の木のように太い幹から長い葉が垂れ下がる。",
+    category: "warimono",
+  },
+  yaeshin: {
+    jp: "八重芯",
+    en: "Yaeshin",
+    desc: "外殻 → 中殻 → 内殻と三段で開く、職人技の極み。",
+    category: "warimono",
+  },
+  kobana: {
+    jp: "小花",
+    en: "Kobana",
+    desc: "メイン開花の中で小さな花が次々ポッポッと咲く。",
+    category: "warimono",
+  },
   heart: {
     jp: "ハート",
     en: "Heart (katamono)",
@@ -189,6 +242,12 @@ const PATTERN_INFO: Record<
     jp: "星",
     en: "Star (katamono)",
     desc: "型物。五芒星の形に詰めて開花。祝祭でよく上がる。",
+    category: "katamono",
+  },
+  smiley: {
+    jp: "ニコちゃん",
+    en: "Smiley (katamono)",
+    desc: "型物。目と笑顔で空に浮かぶ、夏祭りの定番アンコール。",
     category: "katamono",
   },
 };
@@ -245,13 +304,47 @@ function starUnitPos(t: number): [number, number] {
   return [x1 + (x2 - x1) * frac, y1 + (y2 - y1) * frac];
 }
 
+// Smiley face composed from 4 regions distributed across [0, 2π):
+//   0.00–0.60  face outline   (large circle)
+//   0.60–0.72  left eye       (cluster, jitter)
+//   0.72–0.84  right eye      (cluster, jitter)
+//   0.84–1.00  smile arc      (lower semicircle, narrower span)
+// The eye jitter is intentional — it spreads particles into an oval
+// dot rather than collapsing onto a single point.
+function smileyUnitPos(t: number, jitterSeed: number): [number, number] {
+  const u = (t / (Math.PI * 2)) % 1;
+  // Cheap deterministic jitter per particle index.
+  const j = (n: number) => ((jitterSeed * 9301 + n * 49297) % 233280) / 233280;
+  if (u < 0.6) {
+    const a = (u / 0.6) * Math.PI * 2 - Math.PI / 2;
+    return [Math.cos(a) * 0.95, Math.sin(a) * 0.95];
+  } else if (u < 0.72) {
+    const jx = (j(1) - 0.5) * 0.18;
+    const jy = (j(2) - 0.5) * 0.18;
+    return [-0.38 + jx, -0.32 + jy];
+  } else if (u < 0.84) {
+    const jx = (j(3) - 0.5) * 0.18;
+    const jy = (j(4) - 0.5) * 0.18;
+    return [0.38 + jx, -0.32 + jy];
+  } else {
+    // Smile: arc from ~165° to ~15° (lower face), span 150°.
+    const k = (u - 0.84) / 0.16;
+    const a = Math.PI * (0.92 - k * 0.84); // 165° → 15° in radians
+    return [Math.cos(a) * 0.55, Math.sin(a) * 0.55 + 0.18];
+  }
+}
+
 const PATTERN_NAMES: Record<Pattern, string> = {
   peony: "牡丹",
   chrysanthemum: "菊",
   willow: "柳",
   senrin: "千輪",
+  yashi: "椰子",
+  yaeshin: "八重芯",
+  kobana: "小花",
   heart: "ハート",
   star: "星",
+  smiley: "ニコちゃん",
 };
 
 export function HanabiStage({
@@ -455,6 +548,80 @@ function PatternPreview({ pattern }: { pattern: Pattern }) {
         });
       }
     }
+  } else if (pattern === "yashi") {
+    // Palm tree — short top dome (the burst) + 5 long drooping leaves
+    // arcing down from the centre.
+    for (let i = 0; i < 7; i++) {
+      const a = -Math.PI + (Math.PI * i) / 6;
+      dots.push({
+        x: cx + Math.cos(a) * 14,
+        y: cy + Math.sin(a) * 14,
+        r: 1.4,
+        opacity: 0.7,
+      });
+    }
+    for (let lf = 0; lf < 5; lf++) {
+      const baseAngle = -Math.PI / 2 + ((lf - 2) * Math.PI) / 6;
+      for (let s = 0; s < 8; s++) {
+        const t = s / 7;
+        const r = 14 + t * 18;
+        const droop = Math.pow(t, 1.6) * 16;
+        dots.push({
+          x: cx + Math.cos(baseAngle) * r,
+          y: cy + Math.sin(baseAngle) * r + droop,
+          r: 1.1 - t * 0.4,
+          opacity: 0.85 - t * 0.35,
+        });
+      }
+    }
+  } else if (pattern === "yaeshin") {
+    // Three concentric rings (outer / middle / inner) for the 3-tier
+    // expansion. Outer ring is sparser (would be drawn first), inner
+    // densest (drawn last on top).
+    for (const [radius, count, opacity] of [
+      [28, 18, 0.55] as const,
+      [18, 14, 0.75] as const,
+      [9, 10, 0.95] as const,
+    ]) {
+      for (let i = 0; i < count; i++) {
+        const a = (Math.PI * 2 * i) / count;
+        dots.push({
+          x: cx + Math.cos(a) * radius,
+          y: cy + Math.sin(a) * radius,
+          r: 1.6,
+          opacity,
+        });
+      }
+    }
+  } else if (pattern === "kobana") {
+    // Main central cluster + 5 satellite mini-clusters scattered around.
+    for (let i = 0; i < 10; i++) {
+      const a = (Math.PI * 2 * i) / 10;
+      dots.push({
+        x: cx + Math.cos(a) * 8,
+        y: cy + Math.sin(a) * 8,
+        r: 1.4,
+        opacity: 0.85,
+      });
+    }
+    const satellites = [
+      [-22, -10],
+      [22, -8],
+      [0, -22],
+      [-18, 18],
+      [20, 16],
+    ] as const;
+    for (const [ox, oy] of satellites) {
+      for (let i = 0; i < 5; i++) {
+        const a = (Math.PI * 2 * i) / 5;
+        dots.push({
+          x: cx + ox + Math.cos(a) * 4,
+          y: cy + oy + Math.sin(a) * 4,
+          r: 1,
+          opacity: 0.7,
+        });
+      }
+    }
   } else if (pattern === "heart") {
     // Sample the heart parametric curve at 28 points.
     for (let i = 0; i < 28; i++) {
@@ -467,8 +634,8 @@ function PatternPreview({ pattern }: { pattern: Pattern }) {
         opacity: 0.85,
       });
     }
-  } else {
-    // star — sample the 5-point star at 30 points.
+  } else if (pattern === "star") {
+    // 5-point star at 30 sample points.
     for (let i = 0; i < 30; i++) {
       const t = (Math.PI * 2 * i) / 30;
       const [dx, dy] = starUnitPos(t);
@@ -477,6 +644,38 @@ function PatternPreview({ pattern }: { pattern: Pattern }) {
         y: cy + dy * 26,
         r: 1.6,
         opacity: 0.85,
+      });
+    }
+  } else {
+    // smiley — 32 face outline + 6 each eye + 12 smile arc.
+    for (let i = 0; i < 32; i++) {
+      const a = (Math.PI * 2 * i) / 32;
+      dots.push({
+        x: cx + Math.cos(a) * 26,
+        y: cy + Math.sin(a) * 26,
+        r: 1.4,
+        opacity: 0.85,
+      });
+    }
+    for (const ex of [-10, 10]) {
+      for (let j = 0; j < 6; j++) {
+        const ja = (Math.PI * 2 * j) / 6;
+        dots.push({
+          x: cx + ex + Math.cos(ja) * 2,
+          y: cy - 8 + Math.sin(ja) * 2,
+          r: 1.3,
+          opacity: 0.95,
+        });
+      }
+    }
+    for (let m = 0; m < 12; m++) {
+      const k = m / 11;
+      const a = Math.PI * (0.92 - k * 0.84); // mirror of smileyUnitPos
+      dots.push({
+        x: cx + Math.cos(a) * 13,
+        y: cy + Math.sin(a) * 13 + 6,
+        r: 1.4,
+        opacity: 0.9,
       });
     }
   }
@@ -754,7 +953,7 @@ function TamabariStep({
   onConfirm: () => void;
   onBack: () => void;
 }) {
-  const SIZES: ShellSize[] = ["3", "5", "10"];
+  const SIZES = SELECTABLE_SHELL_SIZES;
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
@@ -767,7 +966,7 @@ function TamabariStep({
         作った星をシェルに詰め、クラフト紙を何層も巻き付ける。巻きが厚いほど大きな花火が咲く。
       </p>
 
-      <div className="grid w-[min(92vw,48rem)] grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid w-[min(92vw,52rem)] grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {SIZES.map((sz) => {
           const info = SHELL_SIZE_INFO[sz];
           const active = selected === sz;
@@ -943,6 +1142,7 @@ function LaunchStep({
   onBack: () => void;
 }) {
   const sizeInfo = SHELL_SIZE_INFO[shellSize];
+  const mutedRef = useMutedRef();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
   const rockets = useRef<Rocket[]>([]);
@@ -967,12 +1167,178 @@ function LaunchStep({
   // tree.
   const finaleTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   useEffect(() => {
+    // Re-arm mountedRef on (re-)mount so React 19 StrictMode's dev
+    // double-mount doesn't leave it false. Without this the finale
+    // setTimeout chain silent-skips and the Complete button does
+    // nothing.
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       for (const id of finaleTimersRef.current) clearTimeout(id);
       finaleTimersRef.current = [];
     };
   }, []);
+
+  // Pattern-specific sound dispatch. Each pattern shares a common
+  // launch whistle + initial boom but layers a different tail so the
+  // ear can tell 椰子 from 八重芯 from 小花 even with eyes closed.
+  // Volume scales with sizeFactor so 二尺玉 lands louder than 三号.
+  function fireworkSound(
+    pat: Pattern,
+    phase: "launch" | "burst",
+    sizeFactor: number,
+  ) {
+    const m = mutedRef;
+    const vol = Math.min(1, 0.55 + sizeFactor * 0.4);
+    const pushTimer = (id: ReturnType<typeof setTimeout>) =>
+      finaleTimersRef.current.push(id);
+
+    if (phase === "launch") {
+      playWhistle({
+        mutedRef: m,
+        duration: 0.55 + sizeFactor * 0.18,
+        volume: vol,
+      });
+      return;
+    }
+    // Common burst boom — frequency drops a touch as size grows so
+    // the bigger shells thump deeper.
+    playBoom({
+      mutedRef: m,
+      freq: 80 - sizeFactor * 12,
+      duration: 0.85 + sizeFactor * 0.15,
+      volume: vol,
+    });
+
+    switch (pat) {
+      case "peony":
+        // No tail — classic.
+        break;
+      case "chrysanthemum":
+        pushTimer(
+          setTimeout(() => {
+            if (mountedRef.current)
+              playCrackle({ mutedRef: m, duration: 1.1, volume: vol * 0.7 });
+          }, 120),
+        );
+        break;
+      case "willow":
+        pushTimer(
+          setTimeout(() => {
+            if (mountedRef.current)
+              playFire({ mutedRef: m, duration: 1.4, volume: vol * 0.5 });
+          }, 100),
+        );
+        break;
+      case "senrin":
+        [200, 280, 340, 410].forEach((delay, idx) =>
+          pushTimer(
+            setTimeout(() => {
+              if (mountedRef.current)
+                playClick({
+                  mutedRef: m,
+                  freq: 600 - idx * 80,
+                  duration: 0.08,
+                  volume: vol * 0.85,
+                });
+            }, delay),
+          ),
+        );
+        break;
+      case "yashi":
+        // Deep low rumble + extended whoosh as leaves drop.
+        pushTimer(
+          setTimeout(() => {
+            if (mountedRef.current)
+              playFire({ mutedRef: m, duration: 1.7, volume: vol * 0.55 });
+          }, 150),
+        );
+        pushTimer(
+          setTimeout(() => {
+            if (mountedRef.current)
+              playBoom({
+                mutedRef: m,
+                freq: 50,
+                duration: 0.6,
+                volume: vol * 0.4,
+              });
+          }, 220),
+        );
+        break;
+      case "yaeshin":
+        // Three booms at the same delays as the visual ring expansions.
+        [220, 440].forEach((delay, idx) =>
+          pushTimer(
+            setTimeout(() => {
+              if (mountedRef.current)
+                playBoom({
+                  mutedRef: m,
+                  freq: 80 + idx * 20,
+                  duration: 0.7,
+                  volume: vol * (0.7 - idx * 0.18),
+                });
+            }, delay),
+          ),
+        );
+        break;
+      case "kobana":
+        // 5 small pops at varied frequencies = the satellite mini-flowers.
+        [180, 240, 290, 350, 420].forEach((delay) =>
+          pushTimer(
+            setTimeout(() => {
+              if (mountedRef.current)
+                playClick({
+                  mutedRef: m,
+                  freq: 700 + Math.random() * 500,
+                  duration: 0.06,
+                  volume: vol * 0.55,
+                });
+            }, delay),
+          ),
+        );
+        break;
+      case "heart":
+        // Cute notification chime overlay.
+        pushTimer(
+          setTimeout(() => {
+            if (mountedRef.current)
+              playChime({ mutedRef: m, freq: 1100, volume: vol * 0.5 });
+          }, 150),
+        );
+        break;
+      case "star":
+        // Sparkle — high-freq tick triplet.
+        [120, 180, 240].forEach((delay) =>
+          pushTimer(
+            setTimeout(() => {
+              if (mountedRef.current)
+                playClick({
+                  mutedRef: m,
+                  freq: 2200,
+                  duration: 0.05,
+                  volume: vol * 0.6,
+                });
+            }, delay),
+          ),
+        );
+        break;
+      case "smiley":
+        // Major-third chime pair = happy face audio cue.
+        pushTimer(
+          setTimeout(() => {
+            if (mountedRef.current)
+              playChime({ mutedRef: m, freq: 880, volume: vol * 0.55 });
+          }, 100),
+        );
+        pushTimer(
+          setTimeout(() => {
+            if (mountedRef.current)
+              playChime({ mutedRef: m, freq: 1320, volume: vol * 0.45 });
+          }, 220),
+        );
+        break;
+    }
+  }
 
   const stars = useMemo<Star[]>(() => {
     let s = 17;
@@ -1270,6 +1636,10 @@ function LaunchStep({
       size: (70 + charge * 70) * sizeFactor,
       isFlash: true,
     });
+    // Pattern-specific burst audio fires on impact — common boom plus
+    // a tail tuned to the visual character (crackle / whoosh / pop /
+    // chime depending on pat).
+    fireworkSound(pat, "burst", sizeFactor);
 
     if (pat === "senrin") {
       const cores = 5 + Math.floor(charge * 4);
@@ -1299,16 +1669,153 @@ function LaunchStep({
 
     const count = 80 + Math.floor(charge * 140);
     const baseSpeed = (1.6 + charge * 2.6) * sizeFactor;
-    const trailing = pat === "chrysanthemum" || pat === "willow";
+    const trailing =
+      pat === "chrysanthemum" || pat === "willow" || pat === "yashi";
+
+    // Yashi (椰子 / palm tree) — like willow but with a brisk top-burst
+    // dome before the long droop. Particles bias upward then fall.
+    if (pat === "yashi") {
+      const yashiCount = Math.floor(count * 1.2);
+      for (let i = 0; i < yashiCount; i++) {
+        // Bias direction upward — strong at top, sparser at the sides.
+        const theta = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.95;
+        const v = baseSpeed * (0.55 + Math.random() * 0.35);
+        particles.current.push({
+          x,
+          y,
+          vx: Math.cos(theta) * v,
+          vy: Math.sin(theta) * v - 0.5,
+          life: 0,
+          // ~1.6× chrysanthemum lifespan so leaves visibly droop down.
+          maxLife: 70 + Math.random() * 30,
+          hue: flashHue,
+          hueLayers: layersForBurst,
+          hueJitter: (Math.random() - 0.5) * 24,
+          trail: true,
+          size: 1.8,
+        });
+      }
+      return;
+    }
+
+    // Yaeshin (八重芯) — three-tier concentric expansion. Fire the outer
+    // shell now, then two more shells on a 200ms / 400ms delay. Each
+    // shell uses a slightly different size + life so they read as
+    // distinct rings rather than one fat blur.
+    if (pat === "yaeshin") {
+      const fireRing = (
+        radiusScale: number,
+        countScale: number,
+        speedScale: number,
+        hueShift: number,
+      ) => {
+        const c = Math.floor(count * countScale);
+        for (let i = 0; i < c; i++) {
+          const theta = (Math.PI * 2 * i) / c + Math.random() * 0.05;
+          const v = baseSpeed * speedScale * (0.92 + Math.random() * 0.16);
+          particles.current.push({
+            x,
+            y,
+            vx: Math.cos(theta) * v * radiusScale,
+            vy: Math.sin(theta) * v * radiusScale - 0.2,
+            life: 0,
+            maxLife: (40 + Math.random() * 20) * (0.9 + radiusScale * 0.2),
+            hue: flashHue + hueShift,
+            hueLayers: layersForBurst,
+            hueJitter: (Math.random() - 0.5) * 18,
+            trail: false,
+            size: 1.5,
+          });
+        }
+      };
+      fireRing(1.0, 0.55, 1.0, 0);
+      finaleTimersRef.current.push(
+        setTimeout(() => {
+          if (mountedRef.current) fireRing(0.62, 0.4, 0.95, 30);
+        }, 220),
+      );
+      finaleTimersRef.current.push(
+        setTimeout(() => {
+          if (mountedRef.current) fireRing(0.32, 0.3, 0.9, -30);
+        }, 440),
+      );
+      return;
+    }
+
+    // Kobana (小花) — peony-style main bloom, plus 4-6 mini satellite
+    // clusters spawning ~100ms later at random offsets so the eye sees
+    // little flowers blooming inside the main one.
+    if (pat === "kobana") {
+      // Main bloom (re-uses the warimono solid-disk recipe inline).
+      const mainCount = Math.floor(count * 0.7);
+      for (let i = 0; i < mainCount; i++) {
+        const u = 2 * Math.random() - 1;
+        const theta = Math.PI * 2 * Math.random();
+        const r2d = Math.sqrt(1 - u * u);
+        const dirX = r2d * Math.cos(theta);
+        const dirY = r2d * Math.sin(theta);
+        const v = baseSpeed * (0.85 + Math.random() * 0.2);
+        const depth = 1 - Math.abs(u) * 0.45;
+        particles.current.push({
+          x,
+          y,
+          vx: dirX * v,
+          vy: dirY * v - 0.3,
+          life: 0,
+          maxLife: 50 + Math.random() * 25,
+          hue: flashHue,
+          hueLayers: layersForBurst,
+          hueJitter: (Math.random() - 0.5) * 30,
+          trail: false,
+          size: 1.7 * depth,
+        });
+      }
+      // 4-6 satellite mini bursts — fired ~100ms in so they read as
+      // secondary blooms rather than contemporaneous noise.
+      const sats = 4 + Math.floor(Math.random() * 3);
+      for (let s = 0; s < sats; s++) {
+        const ox = (Math.random() - 0.5) * 110 * sizeFactor;
+        const oy = (Math.random() - 0.5) * 90 * sizeFactor;
+        const delay = 80 + Math.random() * 90;
+        finaleTimersRef.current.push(
+          setTimeout(() => {
+            if (!mountedRef.current) return;
+            const miniCount = 14 + Math.floor(Math.random() * 8);
+            for (let i = 0; i < miniCount; i++) {
+              const a = (Math.PI * 2 * i) / miniCount + Math.random() * 0.1;
+              const v = baseSpeed * 0.4 * (0.8 + Math.random() * 0.4);
+              particles.current.push({
+                x: x + ox,
+                y: y + oy,
+                vx: Math.cos(a) * v,
+                vy: Math.sin(a) * v,
+                life: 0,
+                maxLife: 30 + Math.random() * 15,
+                hue: flashHue + (Math.random() - 0.5) * 60,
+                hueLayers: layersForBurst,
+                hueJitter: (Math.random() - 0.5) * 30,
+                trail: false,
+                size: 1.3,
+              });
+            }
+          }, delay),
+        );
+      }
+      return;
+    }
 
     // Katamono (pictograph) patterns — particles trace a parametric shape
-    // instead of distributing radially. Heart / star are real pyrotechnic
-    // 型物 used by modern 花火師.
-    if (pat === "heart" || pat === "star") {
+    // instead of distributing radially. Heart / star / smiley are real
+    // pyrotechnic 型物 used by modern 花火師.
+    if (pat === "heart" || pat === "star" || pat === "smiley") {
       for (let i = 0; i < count; i++) {
         const t = (Math.PI * 2 * i) / count;
         const [dx, dy] =
-          pat === "heart" ? heartUnitPos(t) : starUnitPos(t);
+          pat === "heart"
+            ? heartUnitPos(t)
+            : pat === "star"
+              ? starUnitPos(t)
+              : smileyUnitPos(t, i + 1);
         particles.current.push({
           x,
           y,
@@ -1365,22 +1872,35 @@ function LaunchStep({
     // Locked recipe: pattern + hoshi layers + shellSize chosen during
     // steps 1-3. The launch trail uses the outermost layer hue (= what
     // ignites first), and the bloom honours all layers.
+    spawnRocketWithOverride(canvasX, charge, pattern, shellSize);
+  }
+
+  // Variant of spawnRocket that overrides pattern/size — used by the
+  // grand finale to fire showcase rockets cycling through every
+  // pattern, then a single 二尺玉 climax with the user's pattern.
+  function spawnRocketWithOverride(
+    canvasX: number,
+    charge: number,
+    patOverride: Pattern,
+    sizeOverride: ShellSize,
+  ) {
+    const sizeInfoLocal = SHELL_SIZE_INFO[sizeOverride];
     const outerHue = layers[layers.length - 1] ?? 48;
     rocketCycleRef.current++;
     rockets.current.push({
       x: canvasX,
       yNorm: 1,
-      // Larger shells need more impulse to clear the higher target.
-      vyNorm: -(0.011 + charge * 0.006) * (0.85 + sizeInfo.heightFactor * 0.4),
-      // sizeInfo.heightFactor is the BASE bloom height for the shell
-      // (smaller value = higher in canvas). Charge can lift it further.
-      targetYNorm: sizeInfo.heightFactor - charge * 0.18,
+      vyNorm:
+        -(0.011 + charge * 0.006) * (0.85 + sizeInfoLocal.heightFactor * 0.4),
+      targetYNorm: sizeInfoLocal.heightFactor - charge * 0.18,
       hue: outerHue,
-      pattern,
+      pattern: patOverride,
       charge,
       hueLayers: layers,
-      sizeRadiusFactor: sizeInfo.radiusFactor,
+      sizeRadiusFactor: sizeInfoLocal.radiusFactor,
     });
+    // Launch whistle, scaled by the rocket's shell size.
+    fireworkSound(patOverride, "launch", sizeInfoLocal.radiusFactor);
   }
 
   function onPointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
@@ -1417,26 +1937,70 @@ function LaunchStep({
     const w = canvas.clientWidth;
     finalizingRef.current = true;
     setFinalizing(true);
-    // Track every deferred call so we can cancel it on unmount and
-    // never call `onComplete` (which router.push'es) against a
-    // torn-down tree.
-    spawnRocket(w * 0.22, 1);
+
+    // ─── Grand Finale ─────────────────────────────────────────────────
+    // Two-phase fireworks-festival-style climax:
+    //   Phase 1 — SHOWCASE: 8 rockets cycling through every pattern at
+    //             alternating 5号/7号, ~220ms apart. Demonstrates the
+    //             full repertoire to the audience.
+    //   Phase 2 — pause ~1.2s for the showcase blooms to settle.
+    //   Phase 3 — GRAND: a single 二尺玉 with the user's chosen pattern,
+    //             dead centre, max charge. Loudest, biggest bloom.
+    //   Phase 4 — capture canvas + onComplete after the grand bloom
+    //             matures (~2.2s post-launch).
+    //
+    // All timers go into finaleTimersRef so unmount cleans them up.
+    const SHOWCASE_PATTERNS: Pattern[] = [
+      "peony",
+      "chrysanthemum",
+      "willow",
+      "yashi",
+      "yaeshin",
+      "kobana",
+      "smiley",
+      "senrin",
+    ];
+    const SHOWCASE_SPACING = 220; // ms between showcase rockets
+    const SHOWCASE_COUNT = SHOWCASE_PATTERNS.length;
+    const PAUSE_BEFORE_GRAND = 1200;
+    const GRAND_TO_CAPTURE = 2200;
+
+    // Phase 1: showcase — fire from i=0 (immediate) through i=7
+    for (let i = 0; i < SHOWCASE_COUNT; i++) {
+      const pat = SHOWCASE_PATTERNS[i]!;
+      const sz: ShellSize = i % 2 === 0 ? "5" : "7";
+      const xPos = w * (0.15 + (i / (SHOWCASE_COUNT - 1)) * 0.7);
+      const fire = () => {
+        if (!mountedRef.current) return;
+        spawnRocketWithOverride(xPos, 1, pat, sz);
+      };
+      if (i === 0) {
+        fire();
+      } else {
+        finaleTimersRef.current.push(
+          setTimeout(fire, i * SHOWCASE_SPACING),
+        );
+      }
+    }
+
+    // Phase 3: grand finale — user's pattern at 尺玉 (10号), max
+    // charge, dead centre. Originally tried 二尺玉 here but the bloom
+    // overflowed the viewport so we settled on 尺玉.
+    const grandDelay = SHOWCASE_COUNT * SHOWCASE_SPACING + PAUSE_BEFORE_GRAND;
     finaleTimersRef.current.push(
       setTimeout(() => {
-        if (mountedRef.current) spawnRocket(w * 0.5, 1);
-      }, 160),
+        if (!mountedRef.current) return;
+        spawnRocketWithOverride(w * 0.5, 1, pattern, "10");
+      }, grandDelay),
     );
-    finaleTimersRef.current.push(
-      setTimeout(() => {
-        if (mountedRef.current) spawnRocket(w * 0.78, 1);
-      }, 320),
-    );
+
+    // Phase 4: capture + onComplete after grand bloom matures
     finaleTimersRef.current.push(
       setTimeout(() => {
         if (!mountedRef.current) return;
         const dataUrl = canvas.toDataURL("image/png");
         onComplete(dataUrl);
-      }, 1700),
+      }, grandDelay + GRAND_TO_CAPTURE),
     );
   }
 
