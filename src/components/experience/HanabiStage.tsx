@@ -5,8 +5,10 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  Palette,
+  Layers,
+  Package,
   Sparkles,
+  Undo2,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -18,7 +20,64 @@ type Pattern =
   // 型物 (katamono) — pictograph fireworks, modern artisan repertoire.
   | "heart"
   | "star";
-type Step = "design" | "color" | "launch";
+type Step = "design" | "hoshi" | "tamabari" | "launch";
+
+// Real shell sizes used by Japanese 花火師. Bigger shell = higher launch
+// + larger bloom + more wrapping paper layers in 玉貼り.
+type ShellSize = "3" | "5" | "10";
+
+interface ShellSizeInfo {
+  jp: string;       // "三号"
+  cm: string;       // "9 cm"
+  bloomM: string;   // "50 m"
+  heightM: string;  // "120 m"
+  desc: string;
+  // Animation tuning. radiusFactor scales bloom speed/size, heightFactor
+  // raises the bloom higher in the canvas (smaller targetYNorm).
+  radiusFactor: number;
+  heightFactor: number;
+  // Number of paper layers wrapped in 玉貼り to reach this size.
+  wrapTarget: number;
+}
+
+const SHELL_SIZE_INFO: Record<ShellSize, ShellSizeInfo> = {
+  "3": {
+    jp: "三号玉",
+    cm: "約 9 cm",
+    bloomM: "開花 50 m",
+    heightM: "高さ 120 m",
+    desc: "町の小さな祭りで上がる、最も親しみやすいサイズ。",
+    radiusFactor: 0.7,
+    heightFactor: 0.55,
+    wrapTarget: 3,
+  },
+  "5": {
+    jp: "五号玉",
+    cm: "約 15 cm",
+    bloomM: "開花 170 m",
+    heightM: "高さ 190 m",
+    desc: "地方花火大会の主役。バランスのとれた標準サイズ。",
+    radiusFactor: 1.0,
+    heightFactor: 0.45,
+    wrapTarget: 7,
+  },
+  "10": {
+    jp: "尺玉(十号)",
+    cm: "約 30 cm",
+    bloomM: "開花 320 m",
+    heightM: "高さ 330 m",
+    desc: "大花火大会のクライマックス。重量約 8kg、玉貼り十数層。",
+    radiusFactor: 1.4,
+    heightFactor: 0.32,
+    wrapTarget: 12,
+  },
+};
+
+// Maximum number of layers the user can stack in 星掛け. Each tap on a
+// colour adds a new outer ring; 5 layers is enough for visible burn-
+// through without overwhelming the cross-section graphic.
+const MAX_HOSHI_LAYERS = 5;
+const MIN_HOSHI_LAYERS = 2;
 
 interface Particle {
   x: number;
@@ -28,6 +87,13 @@ interface Particle {
   life: number;
   maxLife: number;
   hue: number;
+  // Layered hoshi colours, sampled by life ratio at draw time so each
+  // particle visibly transitions from outermost → innermost colour as
+  // the gunpowder burns through. When omitted, `hue` is used directly.
+  hueLayers?: number[];
+  // Per-particle hue offset (±30°) so even a single-layer star bloom
+  // has visual texture. Applied on top of the sampled layer hue.
+  hueJitter?: number;
   trail: boolean;
   size: number;
   isFlash?: boolean;
@@ -38,9 +104,15 @@ interface Rocket {
   yNorm: number;
   vyNorm: number;
   targetYNorm: number;
+  // Outermost (first-burning) hue used for the launch trail and the
+  // initial flash. Bloom particles carry their own hueLayers reference.
   hue: number;
   pattern: Pattern;
   charge: number;
+  // The full hoshi recipe + size factor are passed straight through to
+  // spawnBurst so the bloom honours both.
+  hueLayers: number[];
+  sizeRadiusFactor: number;
 }
 
 interface Star {
@@ -182,41 +254,60 @@ export function HanabiStage({
   palette: [string, string, string];
 }) {
   // ─────────────────────────────────────────────────────────────────
-  // 3-step craft flow: design (pick pattern) → color (pick 3 hues)
-  //                    → launch (charge & release with locked recipe)
+  // 4-step craft flow mirroring the real 花火師 process:
+  //   1. design   — pick pattern (絵柄 — what you're making)
+  //   2. hoshi    — layer gunpowder colours on the star (星掛け)
+  //   3. tamabari — wrap paper layers, choose shell size (玉貼り)
+  //   4. launch   — charge & release; bloom uses the shell + star recipe
   // ─────────────────────────────────────────────────────────────────
   const [step, setStep] = useState<Step>("design");
   const [pattern, setPattern] = useState<Pattern | null>(null);
-  const [hues, setHues] = useState<number[]>([]);
+  // Hoshi layers in build order: index 0 = innermost (laid first),
+  // last index = outermost (laid last, burns first).
+  const [layers, setLayers] = useState<number[]>([]);
+  const [shellSize, setShellSize] = useState<ShellSize | null>(null);
 
   if (step === "design") {
     return (
       <DesignStep
         onPick={(p) => {
           setPattern(p);
-          setStep("color");
+          setStep("hoshi");
         }}
       />
     );
   }
-  if (step === "color") {
+  if (step === "hoshi") {
     return (
-      <ColorStep
+      <HoshiStep
         pattern={pattern!}
-        selected={hues}
-        onToggle={(h) =>
-          setHues((prev) =>
-            prev.includes(h)
-              ? prev.filter((x) => x !== h)
-              : prev.length < 3
-                ? [...prev, h]
-                : prev,
+        layers={layers}
+        onAddLayer={(h) =>
+          setLayers((prev) =>
+            prev.length < MAX_HOSHI_LAYERS ? [...prev, h] : prev,
           )
         }
+        onUndoLayer={() => setLayers((prev) => prev.slice(0, -1))}
+        onClear={() => setLayers([])}
+        onConfirm={() => setStep("tamabari")}
+        onBack={() => {
+          setLayers([]);
+          setStep("design");
+        }}
+      />
+    );
+  }
+  if (step === "tamabari") {
+    return (
+      <TamabariStep
+        pattern={pattern!}
+        layers={layers}
+        selected={shellSize}
+        onSelect={setShellSize}
         onConfirm={() => setStep("launch")}
         onBack={() => {
-          setHues([]);
-          setStep("design");
+          setShellSize(null);
+          setStep("hoshi");
         }}
       />
     );
@@ -224,9 +315,10 @@ export function HanabiStage({
   return (
     <LaunchStep
       pattern={pattern!}
-      hues={hues}
+      layers={layers}
+      shellSize={shellSize!}
       onComplete={onComplete}
-      onBack={() => setStep("color")}
+      onBack={() => setStep("tamabari")}
     />
   );
 }
@@ -238,13 +330,13 @@ function DesignStep({ onPick }: { onPick: (p: Pattern) => void }) {
   return (
     <div className="flex w-full flex-col items-center gap-6 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> Step 1 · 花火玉を作る
+        <Sparkles size={14} /> Step 1 / 4 · 絵柄を決める
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         どの割物にする？
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        花火師は星(色玉)の配置で花火の咲き方を決める。あなたが今夜咲かせる型を選んでください。
+        花火師はまず「何を咲かせるか」を決める。星(色玉)もシェルもこの絵柄に合わせて作る。
       </p>
 
       <div className="grid w-[min(92vw,42rem)] grid-cols-1 gap-3 sm:grid-cols-2">
@@ -405,79 +497,124 @@ function PatternPreview({ pattern }: { pattern: Pattern }) {
 }
 
 // ═════════════════════════════════════════════════════════════════════
-// Step 2 — Color (pick 3 hues)
+// Step 2 — Hoshi (星掛け / Hoshigake) — layer gunpowder colours on a
+// star pellet. Real stars are made by tumbling pellets in a slurry of
+// gunpowder + colorant + binder, then drying, repeated 5+ times. The
+// OUTERMOST layer ignites first, so the order users add layers
+// determines the time-sequence of colours when the bloom burns through.
 // ═════════════════════════════════════════════════════════════════════
-function ColorStep({
+function HoshiStep({
   pattern,
-  selected,
-  onToggle,
+  layers,
+  onAddLayer,
+  onUndoLayer,
+  onClear,
   onConfirm,
   onBack,
 }: {
   pattern: Pattern;
-  selected: number[];
-  onToggle: (hue: number) => void;
+  layers: number[];
+  onAddLayer: (hue: number) => void;
+  onUndoLayer: () => void;
+  onClear: () => void;
   onConfirm: () => void;
   onBack: () => void;
 }) {
-  const ready = selected.length === 3;
+  const ready = layers.length >= MIN_HOSHI_LAYERS;
+  const full = layers.length >= MAX_HOSHI_LAYERS;
   return (
-    <div className="flex w-full flex-col items-center gap-6 text-washi-50">
+    <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Palette size={14} /> Step 2 · 色を選ぶ
+        <Layers size={14} /> Step 2 / 4 · 星掛け
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        {PATTERN_INFO[pattern].jp}に込める色を 3 つ
+        {PATTERN_INFO[pattern].jp}の星に色を重ねる
       </h2>
-      <p className="text-sm italic text-washi-50/70">
-        星(色玉)に使う色を選ぶ。順番は問わない。 ({selected.length} / 3)
+      <p className="max-w-md text-center text-sm italic text-washi-50/70">
+        小さな種に火薬と色素を何層も塗り重ねる。外側から燃えるので、最後に重ねた色が一番先に咲く。
       </p>
 
-      <div className="grid w-[min(92vw,32rem)] grid-cols-3 gap-3 sm:grid-cols-6">
-        {HUE_PALETTE.map((h) => {
-          const isSelected = selected.includes(h.hue);
-          return (
-            <button
-              key={h.hue}
-              type="button"
-              onClick={() => onToggle(h.hue)}
-              className={clsx(
-                "flex flex-col items-center gap-1.5 rounded-lg border p-3 transition",
-                isSelected
-                  ? "border-washi-50 bg-washi-50/10"
-                  : "border-washi-50/15 hover:border-washi-50/40",
-              )}
-            >
-              <span
-                className="h-12 w-12 rounded-full"
-                style={{
-                  background: `radial-gradient(circle at 35% 35%, hsl(${h.hue}, 100%, 78%), hsl(${h.hue}, 90%, 45%) 70%)`,
-                  boxShadow: isSelected
-                    ? `0 0 24px hsla(${h.hue}, 100%, 70%, 0.7)`
-                    : "none",
-                }}
-              />
-              <span className="font-jp text-sm">{h.name}</span>
-              <span className="text-[0.55rem] uppercase tracking-[0.3em] text-washi-50/40">
-                {h.en}
-              </span>
-              {/* Educational subtitle: the metal salt that produces this
-                  colour in real pyrotechnics. */}
-              <span className="mt-0.5 text-[0.5rem] tracking-[0.15em] text-amber-200/45">
-                {h.metalEn} · {h.metal}
-              </span>
-            </button>
-          );
-        })}
+      {/* Cross-section visualization of the star being built. */}
+      <HoshiCrossSection layers={layers} />
+
+      <div className="text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/55">
+        {layers.length} / {MAX_HOSHI_LAYERS} 層 ·{" "}
+        {layers.length === 0
+          ? "色を選んで重ねる"
+          : full
+            ? "これ以上は重ねられない"
+            : `${MAX_HOSHI_LAYERS - layers.length} 層追加できる`}
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* Colour palette — tap to ADD as next outer layer. Re-tapping the
+          same colour is allowed (real artisans often double up). */}
+      <div className="grid w-[min(92vw,32rem)] grid-cols-3 gap-3 sm:grid-cols-6">
+        {HUE_PALETTE.map((h) => (
+          <button
+            key={h.hue}
+            type="button"
+            onClick={() => onAddLayer(h.hue)}
+            disabled={full}
+            className={clsx(
+              "flex flex-col items-center gap-1.5 rounded-lg border p-3 transition",
+              "border-washi-50/15 hover:border-washi-50/40",
+              full && "cursor-not-allowed opacity-30",
+            )}
+          >
+            <span
+              className="h-10 w-10 rounded-full"
+              style={{
+                background: `radial-gradient(circle at 35% 35%, hsl(${h.hue}, 100%, 78%), hsl(${h.hue}, 90%, 45%) 70%)`,
+              }}
+            />
+            <span className="font-jp text-sm">{h.name}</span>
+            <span className="mt-0.5 text-[0.5rem] tracking-[0.15em] text-amber-200/45">
+              {h.metalEn}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Layer history strip — shows burn order (outermost = burns first) */}
+      {layers.length > 0 && (
+        <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.25em] text-washi-50/55">
+          <span className="text-washi-50/40">中心</span>
+          <div className="flex items-center gap-1.5">
+            {layers.map((h, i) => (
+              <span
+                key={`${i}-${h}`}
+                className="block h-3 w-3 rounded-full ring-1 ring-washi-50/20"
+                style={{ background: `hsl(${h}, 90%, 65%)` }}
+              />
+            ))}
+          </div>
+          <span className="text-washi-50/40">外側</span>
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center justify-center gap-3">
         <button
           type="button"
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 作り直す
+          <ArrowLeft size={12} /> 絵柄を選び直す
+        </button>
+        <button
+          type="button"
+          onClick={onUndoLayer}
+          disabled={layers.length === 0}
+          className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10 disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          <Undo2 size={12} /> 1 層戻す
+        </button>
+        <button
+          type="button"
+          onClick={onClear}
+          disabled={layers.length === 0}
+          className="text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/45 transition hover:text-washi-50/80 disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          全部やり直す
         </button>
         <button
           type="button"
@@ -485,7 +622,7 @@ function ColorStep({
           disabled={!ready}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          打ち上げ準備
+          玉貼りへ
           <ArrowRight size={12} />
         </button>
       </div>
@@ -493,20 +630,276 @@ function ColorStep({
   );
 }
 
+// Concentric-ring SVG showing the star being built up. The center is
+// the "tane" (seed), and each user-added layer paints a ring outward.
+// Sized so a fully-loaded 5-layer star comfortably fits inside.
+function HoshiCrossSection({ layers }: { layers: number[] }) {
+  const cx = 90;
+  const cy = 90;
+  const seedR = 8;
+  const ringStep = 12; // each layer adds this much radius
+  return (
+    <svg
+      width="180"
+      height="180"
+      viewBox="0 0 180 180"
+      className="drop-shadow-[0_0_24px_rgba(255,200,120,0.18)]"
+      aria-label="星の断面図"
+    >
+      {/* Outermost first (drawn behind), inner layers drawn last so they
+          appear on top — but since each is a smaller circle, they
+          naturally overlap correctly. */}
+      {layers
+        .map((hue, i) => ({ hue, r: seedR + (i + 1) * ringStep, i }))
+        .reverse()
+        .map(({ hue, r, i }) => (
+          <circle
+            key={i}
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill={`hsl(${hue}, 85%, 55%)`}
+            stroke={`hsl(${hue}, 90%, 35%)`}
+            strokeWidth="0.8"
+            opacity={0.92}
+          />
+        ))}
+      {/* The tane — small dark seed at center */}
+      <circle cx={cx} cy={cy} r={seedR} fill="#2a2218" />
+      <circle cx={cx} cy={cy} r={seedR} fill="url(#tane-grad)" />
+      <defs>
+        <radialGradient id="tane-grad">
+          <stop offset="0%" stopColor="rgba(180,150,100,0.6)" />
+          <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+        </radialGradient>
+      </defs>
+      {/* Empty-state hint */}
+      {layers.length === 0 && (
+        <text
+          x={cx}
+          y={cy + 38}
+          textAnchor="middle"
+          fontSize="9"
+          fill="rgba(252,232,170,0.5)"
+        >
+          色をタップして層を重ねる
+        </text>
+      )}
+    </svg>
+  );
+}
+
 // ═════════════════════════════════════════════════════════════════════
-// Step 3 — Launch (charge & release with locked recipe)
+// Step 3 — Tamabari (玉貼り) — wrap kraft paper around the assembled
+// shell. More layers = larger, sturdier shell that flies higher and
+// blooms wider. We let the user TAP to add a wrap, and the displayed
+// size badge auto-classifies into 3号 / 5号 / 10号 by wrap count.
+// Tapping past the 10号 threshold clamps; "やり直す" rewinds.
+// ═════════════════════════════════════════════════════════════════════
+function TamabariStep({
+  pattern,
+  layers,
+  selected,
+  onSelect,
+  onConfirm,
+  onBack,
+}: {
+  pattern: Pattern;
+  layers: number[];
+  selected: ShellSize | null;
+  onSelect: (s: ShellSize) => void;
+  onConfirm: () => void;
+  onBack: () => void;
+}) {
+  const SIZES: ShellSize[] = ["3", "5", "10"];
+  return (
+    <div className="flex w-full flex-col items-center gap-5 text-washi-50">
+      <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
+        <Package size={14} /> Step 3 / 4 · 玉貼り
+      </p>
+      <h2 className="text-center font-serif text-3xl font-light leading-tight">
+        花火玉の大きさを決める
+      </h2>
+      <p className="max-w-md text-center text-sm italic text-washi-50/70">
+        作った星をシェルに詰め、クラフト紙を何層も巻き付ける。巻きが厚いほど大きな花火が咲く。
+      </p>
+
+      <div className="grid w-[min(92vw,48rem)] grid-cols-1 gap-3 sm:grid-cols-3">
+        {SIZES.map((sz) => {
+          const info = SHELL_SIZE_INFO[sz];
+          const active = selected === sz;
+          return (
+            <button
+              key={sz}
+              type="button"
+              onClick={() => onSelect(sz)}
+              className={clsx(
+                "group relative flex flex-col items-center gap-3 rounded-lg border p-4 text-center transition",
+                active
+                  ? "border-amber-300 bg-amber-300/5 shadow-[0_0_24px_rgba(255,200,120,0.18)]"
+                  : "border-washi-50/15 bg-white/5 hover:border-amber-300/50",
+              )}
+            >
+              <ShellPreview
+                size={sz}
+                layers={layers}
+                wrapTarget={info.wrapTarget}
+              />
+              <div>
+                <h3 className="font-jp text-xl tracking-wider">{info.jp}</h3>
+                <p className="text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/55">
+                  {info.cm}
+                </p>
+              </div>
+              <div className="flex flex-col gap-0.5 text-[0.6rem] tracking-[0.15em] text-amber-200/65">
+                <span>{info.heightM}</span>
+                <span>{info.bloomM}</span>
+                <span className="text-washi-50/40">
+                  玉貼り {info.wrapTarget} 層
+                </span>
+              </div>
+              <p className="text-[0.65rem] leading-relaxed text-washi-50/65">
+                {info.desc}
+              </p>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
+        >
+          <ArrowLeft size={12} /> 星を作り直す
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={!selected}
+          className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
+        >
+          打ち上げ準備
+          <ArrowRight size={12} />
+        </button>
+      </div>
+
+      {/* Recipe summary */}
+      <div className="mt-2 flex items-center gap-3 rounded-full bg-black/30 px-4 py-2 text-[0.65rem] tracking-[0.2em] text-washi-50/70">
+        <span className="font-jp">{PATTERN_INFO[pattern].jp}</span>
+        <span className="text-washi-50/30">·</span>
+        <span>星 {layers.length} 層</span>
+        <div className="flex items-center gap-1">
+          {layers.map((h, i) => (
+            <span
+              key={i}
+              className="block h-2 w-2 rounded-full"
+              style={{ background: `hsl(${h}, 90%, 65%)` }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// SVG of a half-shell with concentric paper wrap layers. The outline
+// scales with wrapTarget so 三号 shows as a small circle and 尺玉 as a
+// big one.
+function ShellPreview({
+  size,
+  layers,
+  wrapTarget,
+}: {
+  size: ShellSize;
+  layers: number[];
+  wrapTarget: number;
+}) {
+  const cx = 60;
+  const cy = 60;
+  // Visual radius scales with the actual shell size factor.
+  const factor = SHELL_SIZE_INFO[size].radiusFactor;
+  const coreR = 12 + factor * 6; // star cluster footprint
+  const wrapStep = 1.6;
+  const finalR = coreR + wrapTarget * wrapStep;
+  return (
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
+      {/* Paper wrap layers (drawn outermost first) */}
+      {Array.from({ length: wrapTarget }).map((_, idx) => {
+        const r = coreR + (idx + 1) * wrapStep;
+        const opacity = 0.18 + (idx / wrapTarget) * 0.18;
+        return (
+          <circle
+            key={idx}
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill="none"
+            stroke="rgba(220,200,160,1)"
+            strokeWidth="0.8"
+            opacity={opacity}
+          />
+        );
+      })}
+      {/* Outer paper boundary */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={finalR}
+        fill="none"
+        stroke="rgba(252,232,170,0.55)"
+        strokeWidth="1"
+        strokeDasharray="3 2"
+      />
+      {/* Star cluster at the center, arranged on a small ring */}
+      {(() => {
+        const dots = [];
+        const ringR = coreR * 0.55;
+        const count = Math.max(6, layers.length * 3 + 6);
+        for (let i = 0; i < count; i++) {
+          const a = (Math.PI * 2 * i) / count;
+          const hue = layers[i % Math.max(layers.length, 1)] ?? 48;
+          dots.push(
+            <circle
+              key={i}
+              cx={cx + Math.cos(a) * ringR}
+              cy={cy + Math.sin(a) * ringR}
+              r={1.6}
+              fill={`hsl(${hue}, 90%, 65%)`}
+            />,
+          );
+        }
+        // Center bursting charge (割薬)
+        dots.push(
+          <circle key="warikusari" cx={cx} cy={cy} r={2.5} fill="#3a2410" />,
+        );
+        return dots;
+      })()}
+    </svg>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// Step 4 — Launch (打ち上げ) — charge & release with the locked recipe.
+// shellSize scales bloom radius + launch height. Layered hoshi colours
+// burn outside-in: the OUTERMOST layer's hue shows immediately after
+// burst, then transitions inward to the seed colour.
 // ═════════════════════════════════════════════════════════════════════
 function LaunchStep({
   pattern,
-  hues,
+  layers,
+  shellSize,
   onComplete,
   onBack,
 }: {
   pattern: Pattern;
-  hues: number[];
+  layers: number[];
+  shellSize: ShellSize;
   onComplete: (dataUrl: string) => void;
   onBack: () => void;
 }) {
+  const sizeInfo = SHELL_SIZE_INFO[shellSize];
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
   const rockets = useRef<Rocket[]>([]);
@@ -713,7 +1106,14 @@ function LaunchStep({
         ctx.shadowBlur = 0;
 
         if (r.yNorm <= r.targetYNorm) {
-          spawnBurst(r.x, ry, r.charge, r.hue, r.pattern);
+          spawnBurst(
+            r.x,
+            ry,
+            r.charge,
+            r.hueLayers,
+            r.pattern,
+            r.sizeRadiusFactor,
+          );
           r.yNorm = -1;
           if (!finalizingRef.current) {
             burstsRef.current = Math.min(TARGET_BURSTS, burstsRef.current + 1);
@@ -739,6 +1139,8 @@ function LaunchStep({
             life: 0,
             maxLife: 10 + Math.random() * 8,
             hue: p.hue,
+            hueLayers: p.hueLayers,
+            hueJitter: p.hueJitter,
             trail: false,
             size: p.size * 0.55,
           });
@@ -748,17 +1150,30 @@ function LaunchStep({
 
       for (const p of particles.current) {
         const a = 1 - p.life / p.maxLife;
+        // Sample the hoshi layer that's currently exposed. Outermost
+        // (last index) burns first → at life=0 we want layers[N-1],
+        // at life=maxLife we want layers[0]. Snap by segment so the
+        // colour change is perceptible (real burns flicker but the
+        // dominant tint shifts in clear bands).
+        const baseHue = (() => {
+          if (!p.hueLayers || p.hueLayers.length === 0) return p.hue;
+          const N = p.hueLayers.length;
+          const t = Math.min(0.999, p.life / p.maxLife);
+          const segIdx = Math.min(N - 1, Math.floor(t * N));
+          return p.hueLayers[N - 1 - segIdx]!;
+        })();
+        const hue = baseHue + (p.hueJitter ?? 0);
         if (p.isFlash) {
           const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-          grd.addColorStop(0, `hsla(${p.hue}, 100%, 80%, ${a * 0.9})`);
-          grd.addColorStop(0.5, `hsla(${p.hue}, 100%, 65%, ${a * 0.4})`);
-          grd.addColorStop(1, `hsla(${p.hue}, 100%, 60%, 0)`);
+          grd.addColorStop(0, `hsla(${hue}, 100%, 80%, ${a * 0.9})`);
+          grd.addColorStop(0.5, `hsla(${hue}, 100%, 65%, ${a * 0.4})`);
+          grd.addColorStop(1, `hsla(${hue}, 100%, 60%, 0)`);
           ctx.fillStyle = grd;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          ctx.fillStyle = `hsla(${p.hue}, 90%, 70%, ${a})`;
+          ctx.fillStyle = `hsla(${hue}, 90%, 70%, ${a})`;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
@@ -793,9 +1208,13 @@ function LaunchStep({
     x: number,
     y: number,
     charge: number,
-    hue: number,
+    layersForBurst: number[],
     pat: Pattern,
+    sizeFactor: number,
   ) {
+    // Initial flash uses the OUTERMOST layer hue — that's what burns
+    // first when the bursting charge ignites the stars.
+    const flashHue = layersForBurst[layersForBurst.length - 1] ?? 48;
     particles.current.push({
       x,
       y,
@@ -803,20 +1222,20 @@ function LaunchStep({
       vy: 0,
       life: 0,
       maxLife: 22,
-      hue,
+      hue: flashHue,
       trail: false,
-      size: 70 + charge * 70,
+      size: (70 + charge * 70) * sizeFactor,
       isFlash: true,
     });
 
     if (pat === "senrin") {
       const cores = 5 + Math.floor(charge * 4);
       for (let m = 0; m < cores; m++) {
-        const ox = (Math.random() - 0.5) * 90;
-        const oy = (Math.random() - 0.5) * 60;
+        const ox = (Math.random() - 0.5) * 90 * sizeFactor;
+        const oy = (Math.random() - 0.5) * 60 * sizeFactor;
         for (let i = 0; i < 14; i++) {
           const a = (Math.PI * 2 * i) / 14 + Math.random() * 0.1;
-          const speed = 0.7 + Math.random() * 0.6;
+          const speed = (0.7 + Math.random() * 0.6) * sizeFactor;
           particles.current.push({
             x: x + ox,
             y: y + oy,
@@ -824,7 +1243,9 @@ function LaunchStep({
             vy: Math.sin(a) * speed,
             life: 0,
             maxLife: 38 + Math.random() * 20,
-            hue: hue + (Math.random() - 0.5) * 30,
+            hue: flashHue,
+            hueLayers: layersForBurst,
+            hueJitter: (Math.random() - 0.5) * 30,
             trail: false,
             size: 1.4,
           });
@@ -834,7 +1255,7 @@ function LaunchStep({
     }
 
     const count = 80 + Math.floor(charge * 140);
-    const baseSpeed = 1.6 + charge * 2.6;
+    const baseSpeed = (1.6 + charge * 2.6) * sizeFactor;
     const trailing = pat === "chrysanthemum" || pat === "willow";
 
     // Katamono (pictograph) patterns — particles trace a parametric shape
@@ -852,7 +1273,9 @@ function LaunchStep({
           vy: dy * baseSpeed - 0.3,
           life: 0,
           maxLife: 55 + Math.random() * 25,
-          hue: hue + (Math.random() - 0.5) * 30,
+          hue: flashHue,
+          hueLayers: layersForBurst,
+          hueJitter: (Math.random() - 0.5) * 30,
           trail: false,
           size: 1.6,
         });
@@ -886,7 +1309,9 @@ function LaunchStep({
         vy: dirY * v - (pat === "willow" ? 0 : 0.3),
         life: 0,
         maxLife: (50 + Math.random() * 25) * lifeFactor,
-        hue: hue + (Math.random() - 0.5) * 30,
+        hue: flashHue,
+        hueLayers: layersForBurst,
+        hueJitter: (Math.random() - 0.5) * 30,
         trail: trailing,
         size: 1.7 * depthAttenuation,
       });
@@ -894,18 +1319,24 @@ function LaunchStep({
   }
 
   function spawnRocket(canvasX: number, charge: number) {
-    // Locked recipe: pattern + hues chosen during Steps 1-2, hues cycle
-    // through the 3 chosen so each rocket alternates colour deterministically.
-    const hue = hues[rocketCycleRef.current % hues.length] ?? 48;
+    // Locked recipe: pattern + hoshi layers + shellSize chosen during
+    // steps 1-3. The launch trail uses the outermost layer hue (= what
+    // ignites first), and the bloom honours all layers.
+    const outerHue = layers[layers.length - 1] ?? 48;
     rocketCycleRef.current++;
     rockets.current.push({
       x: canvasX,
       yNorm: 1,
-      vyNorm: -(0.011 + charge * 0.006),
-      targetYNorm: 0.5 - charge * 0.22,
-      hue,
+      // Larger shells need more impulse to clear the higher target.
+      vyNorm: -(0.011 + charge * 0.006) * (0.85 + sizeInfo.heightFactor * 0.4),
+      // sizeInfo.heightFactor is the BASE bloom height for the shell
+      // (smaller value = higher in canvas). Charge can lift it further.
+      targetYNorm: sizeInfo.heightFactor - charge * 0.18,
+      hue: outerHue,
       pattern,
       charge,
+      hueLayers: layers,
+      sizeRadiusFactor: sizeInfo.radiusFactor,
     });
   }
 
@@ -969,7 +1400,7 @@ function LaunchStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> Step 3 · 押して溜める · 離して打ち上げる
+        <Sparkles size={14} /> Step 4 / 4 · 押して溜める · 離して打ち上げる
       </p>
 
       <div
@@ -984,15 +1415,20 @@ function LaunchStep({
           className="absolute inset-0 h-full w-full cursor-crosshair touch-none"
         />
 
-        {/* Recipe badge — shows the locked pattern + colours */}
+        {/* Recipe badge — shows the locked pattern + shell size + hoshi
+            layers (in burn order: outermost first) */}
         <div className="pointer-events-none absolute right-3 top-3 flex items-center gap-2 rounded-full bg-black/40 px-3 py-1 backdrop-blur">
           <span className="font-jp text-[0.65rem] tracking-wider text-amber-200/85">
             {PATTERN_NAMES[pattern]}
           </span>
           <span className="text-amber-200/30">·</span>
-          {hues.map((h) => (
+          <span className="text-[0.6rem] tracking-[0.15em] text-amber-200/65">
+            {sizeInfo.jp}
+          </span>
+          <span className="text-amber-200/30">·</span>
+          {[...layers].reverse().map((h, i) => (
             <span
-              key={h}
+              key={i}
               className="block h-2 w-2 rounded-full"
               style={{
                 background: `hsl(${h}, 90%, 65%)`,
@@ -1026,7 +1462,7 @@ function LaunchStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 色を選び直す
+          <ArrowLeft size={12} /> サイズを選び直す
         </button>
         <button
           type="button"
