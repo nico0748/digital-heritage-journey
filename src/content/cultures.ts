@@ -47,6 +47,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "tsugaru-nuri",
+    name: "Tsugaru-nuri",
+    jp: "津軽塗",
+    region: "Aomori / Tsugaru",
+    category: "craft",
+    era: "Edo period (1660s-)",
+    description:
+      "48-step lacquer with multi-color layers polished to reveal speckled 唐塗 patterns.",
+    problem:
+      "2-month per-piece process; ~30 active masters remain in Hirosaki.",
+    palette: ["#1A0E0A", "#3a2614", "#C03D2B"],
+    accentKanji: "塗",
+    media: {},
+    experience: "tsugaru-polish",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
