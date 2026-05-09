@@ -2,9 +2,22 @@ export type ExperienceType =
   | "kiriko-cut"
   | "washi-scoop"
   | "hanabi-launch"
-  | "taiko-strike";
-  | "lantern-light";
-  | "sensu-paint";
+  | "lantern-light"
+  | "taiko-strike"
+  | "sensu-paint"
+  | "tsugaru-polish"
+  | "tekki-cast"
+  | "magewappa-bend"
+  | "mashiko-throw"
+  | "tsuiki-hammer"
+  | "wajima-decorate"
+  | "blade-forge"
+  | "bizen-fire"
+  | "fude-craft"
+  | "awa-rhythm"
+  | "ningyo-paint"
+  | "arita-paint"
+  | "bingata-dye";
 
 // ISO 3166-2:JP codes for the curated subset of prefectures we surface in
 // the archive. We don't enumerate all 47 — only the ones that anchor an
@@ -69,7 +82,7 @@ export type RealWorldKind =
 export interface RealWorldLink {
   url: string;
   label: string;   // English label, e.g. "Visit Edo Kiriko Cooperative"
-  labelJp: string; // 日本語ラベル, e.g. "江戸切子協同組合へ"
+  labelJp?: string; // 日本語ラベル, e.g. "江戸切子協同組合へ"
   kind: RealWorldKind;
   location?: string; // optional, e.g. "Tokyo, Sumida"
 }
@@ -85,7 +98,7 @@ export interface Culture {
   // taxonomy landed don't break the type when they merge — they can
   // backfill the field in a follow-up.
   prefectures?: PrefectureId[];
-  category: "craft" | "festival";
+  category: "craft" | "festival" | "matsuri";
   era: string;
   description: string;
   problem: string;
@@ -98,6 +111,11 @@ export interface Culture {
   // when a culture has multiple authoritative venues (e.g. Mino washi
   // has both the official shop and the Washi-no-Sato museum).
   realWorld?: RealWorldLink | RealWorldLink[];
+  // Hides the experience interaction. Archive shows a "準備中" badge
+  // and clicking it does nothing; /experience/{id} renders a
+  // placeholder card instead of the Stage. Used to keep an unreleased
+  // culture in the catalogue while signalling it's not yet playable.
+  comingSoon?: boolean;
 }
 
 export interface StoryScene {
