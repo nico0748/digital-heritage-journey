@@ -1217,10 +1217,17 @@ function LaunchStep({
   // with sizeFactor so 尺玉 lands deeper / louder than 三号.
   // Patterns whose bursts intentionally play silently. The launch
   // whistle still fires for these (so you hear the rocket go up), but
-  // the burst itself is silent — used for the small / decorative
-  // patterns (kobana, heart, star, smiley) where a boom would feel
-  // out of proportion to the gentle visual.
-  const SILENT_BURST_PATTERNS: Pattern[] = ["kobana", "heart", "star", "smiley"];
+  // the burst itself is silent. Per-pattern call: the user asked to
+  // keep this list broad so the soundscape stays focused on a few
+  // headline booms rather than every shell crackling.
+  const SILENT_BURST_PATTERNS: Pattern[] = [
+    "kobana",
+    "heart",
+    "star",
+    "smiley",
+    "senrin",
+    "kiku",
+  ];
 
   function fireworkSound(
     pat: Pattern,
@@ -1895,7 +1902,12 @@ function LaunchStep({
     const SHOWCASE_SPACING = 220; // ms between showcase rockets
     const SHOWCASE_COUNT = SHOWCASE_PATTERNS.length;
     const PAUSE_BEFORE_GRAND = 1200;
-    const GRAND_TO_CAPTURE = 2200;
+    // Time from grand-finale launch to canvas capture. Was 2200ms which
+    // landed mid-fadeout on the snapshot — by then the chrysanthemum
+    // had dimmed and the saved image looked half-empty. 1400ms catches
+    // the bloom right at peak, with the showcase blooms still glowing
+    // in the background.
+    const GRAND_TO_CAPTURE = 1400;
 
     // Phase 1: showcase — fire from i=0 (immediate) through i=7
     for (let i = 0; i < SHOWCASE_COUNT; i++) {
