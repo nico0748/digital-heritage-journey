@@ -539,7 +539,7 @@ function HoshiStep({
         {PATTERN_INFO[pattern].jp}の星に色を重ねる
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        小さな種に火薬と色素を何層も塗り重ねる。外側から燃えるので、最後に重ねた色が一番先に咲く。
+        小さな種に火薬と色素を何層も塗り重ねる。外側から燃えるので、最後に重ねた色が一番先に咲く。同じ色を続けて重ねると、その色がより長く燃える。
       </p>
 
       {/* Cross-section visualization of the star being built. */}
@@ -554,33 +554,54 @@ function HoshiStep({
             : `${MAX_HOSHI_LAYERS - layers.length} 層追加できる`}
       </div>
 
-      {/* Colour palette — tap to ADD as next outer layer. Re-tapping the
-          same colour is allowed (real artisans often double up). */}
+      {/* Colour palette — tap to ADD as next outer layer. Re-tapping
+          the same colour is allowed (real artisans often double up to
+          extend a colour's burn time). The ×N badge shows how many
+          times each hue is currently in the stack. */}
       <div className="grid w-[min(92vw,32rem)] grid-cols-3 gap-3 sm:grid-cols-6">
-        {HUE_PALETTE.map((h) => (
-          <button
-            key={h.hue}
-            type="button"
-            onClick={() => onAddLayer(h.hue)}
-            disabled={full}
-            className={clsx(
-              "flex flex-col items-center gap-1.5 rounded-lg border p-3 transition",
-              "border-washi-50/15 hover:border-washi-50/40",
-              full && "cursor-not-allowed opacity-30",
-            )}
-          >
-            <span
-              className="h-10 w-10 rounded-full"
-              style={{
-                background: `radial-gradient(circle at 35% 35%, hsl(${h.hue}, 100%, 78%), hsl(${h.hue}, 90%, 45%) 70%)`,
-              }}
-            />
-            <span className="font-jp text-sm">{h.name}</span>
-            <span className="mt-0.5 text-[0.5rem] tracking-[0.15em] text-amber-200/45">
-              {h.metalEn}
-            </span>
-          </button>
-        ))}
+        {HUE_PALETTE.map((h) => {
+          const count = layers.filter((l) => l === h.hue).length;
+          return (
+            <button
+              key={h.hue}
+              type="button"
+              onClick={() => onAddLayer(h.hue)}
+              disabled={full}
+              className={clsx(
+                "relative flex flex-col items-center gap-1.5 rounded-lg border p-3 transition",
+                count > 0
+                  ? "border-amber-300/60 bg-amber-300/5"
+                  : "border-washi-50/15 hover:border-washi-50/40",
+                full && "cursor-not-allowed opacity-30",
+              )}
+            >
+              {/* ×N badge — only when this hue has been added at least
+                  once. Reassures the user that re-tapping registered. */}
+              {count > 0 && (
+                <span
+                  className="absolute right-1.5 top-1.5 grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-amber-300 px-1 font-mono text-[0.6rem] font-medium text-sumi"
+                  aria-label={`${count} 層`}
+                >
+                  ×{count}
+                </span>
+              )}
+              <span
+                className="h-10 w-10 rounded-full"
+                style={{
+                  background: `radial-gradient(circle at 35% 35%, hsl(${h.hue}, 100%, 78%), hsl(${h.hue}, 90%, 45%) 70%)`,
+                  boxShadow:
+                    count > 0
+                      ? `0 0 16px hsla(${h.hue}, 100%, 70%, 0.5)`
+                      : "none",
+                }}
+              />
+              <span className="font-jp text-sm">{h.name}</span>
+              <span className="mt-0.5 text-[0.5rem] tracking-[0.15em] text-amber-200/45">
+                {h.metalEn}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Layer history strip — shows burn order (outermost = burns first) */}
@@ -654,24 +675,38 @@ function HoshiCrossSection({ layers }: { layers: number[] }) {
       className="drop-shadow-[0_0_24px_rgba(255,200,120,0.18)]"
       aria-label="星の断面図"
     >
-      {/* Outermost first (drawn behind), inner layers drawn last so they
-          appear on top — but since each is a smaller circle, they
-          naturally overlap correctly. */}
+      {/* Outermost first (drawn behind), inner layers drawn last so
+          they appear on top — but since each is a smaller circle, they
+          naturally overlap correctly. Use a stronger contrasting stroke
+          when the next-inner layer is the SAME hue, so a "double-up"
+          (e.g. 朱→朱) still reads as two distinct rings instead of
+          merging into one fat band. */}
       {layers
         .map((hue, i) => ({ hue, r: seedR + (i + 1) * ringStep, i }))
         .reverse()
-        .map(({ hue, r, i }) => (
-          <circle
-            key={i}
-            cx={cx}
-            cy={cy}
-            r={r}
-            fill={`hsl(${hue}, 85%, 55%)`}
-            stroke={`hsl(${hue}, 90%, 35%)`}
-            strokeWidth="0.8"
-            opacity={0.92}
-          />
-        ))}
+        .map(({ hue, r, i }) => {
+          // i is the original index in `layers`. The next-inner ring
+          // (i.e. drawn ON TOP of this one) is layers[i-1]. If it's
+          // the same hue, we need a darker outline to keep the boundary
+          // legible.
+          const innerSameHue = i > 0 && layers[i - 1] === hue;
+          return (
+            <circle
+              key={i}
+              cx={cx}
+              cy={cy}
+              r={r}
+              fill={`hsl(${hue}, 85%, 55%)`}
+              stroke={
+                innerSameHue
+                  ? "rgba(20,12,5,0.55)"
+                  : `hsl(${hue}, 90%, 35%)`
+              }
+              strokeWidth={innerSameHue ? 1.2 : 0.8}
+              opacity={0.92}
+            />
+          );
+        })}
       {/* The tane — small dark seed at center */}
       <circle cx={cx} cy={cy} r={seedR} fill="#2a2218" />
       <circle cx={cx} cy={cy} r={seedR} fill="url(#tane-grad)" />
@@ -802,7 +837,7 @@ function TamabariStep({
           {layers.map((h, i) => (
             <span
               key={i}
-              className="block h-2 w-2 rounded-full"
+              className="block h-2 w-2 rounded-full ring-1 ring-black/30"
               style={{ background: `hsl(${h}, 90%, 65%)` }}
             />
           ))}
@@ -1437,7 +1472,7 @@ function LaunchStep({
           {[...layers].reverse().map((h, i) => (
             <span
               key={i}
-              className="block h-2 w-2 rounded-full"
+              className="block h-2 w-2 rounded-full ring-1 ring-black/30"
               style={{
                 background: `hsl(${h}, 90%, 65%)`,
               }}
