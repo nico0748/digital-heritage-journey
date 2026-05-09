@@ -47,6 +47,22 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "nanbu-tekki",
+    name: "Nanbu Tekki",
+    jp: "南部鉄器",
+    region: "Iwate / Morioka",
+    category: "craft",
+    era: "Early Edo period (1600s-)",
+    description:
+      "Cast iron kettles with regular 霰文 raised pattern; iron leaching mellows tea.",
+    problem:
+      "Foundries closing as gas/electric replaces traditional charcoal kettles.",
+    palette: ["#0A0604", "#5B3A20", "#C9A227"],
+    accentKanji: "鉄",
+    media: {},
+    experience: "tekki-cast",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
