@@ -38,6 +38,43 @@ export function EndingView({ culture }: { culture: Culture }) {
 
   useEffect(() => setMounted(true), []);
 
+  // Coming-soon: someone hit /ending/{slug} directly (or got redirected
+  // here by a Stage that hasn't been fully wired up yet). Same
+  // 「準備中」 placeholder shape as ExperienceShell so the journey
+  // stays consistent.
+  if (culture.comingSoon) {
+    return (
+      <main
+        className="relative min-h-screen w-full overflow-hidden px-6 py-16"
+        style={{
+          background: `radial-gradient(circle at 80% 10%, ${c3} 0%, ${c2} 45%, ${c1} 100%)`,
+        }}
+      >
+        <div className="paper-grain" />
+        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center text-washi-50">
+          <span
+            aria-hidden
+            className="font-jp text-[14rem] leading-none text-washi-50/20"
+          >
+            {culture.accentKanji}
+          </span>
+          <p className="-mt-8 font-jp text-2xl tracking-[0.5em] text-washi-50/85">
+            準備中
+          </p>
+          <p className="mt-3 text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55">
+            Coming Soon · {culture.name} ({culture.jp})
+          </p>
+          <Link
+            href="/archive"
+            className="mt-10 inline-flex items-center gap-2 rounded-full border border-washi-50/40 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10 hover:text-washi-50"
+          >
+            ← Back to Archive
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   const share = async () => {
     const text = `I just preserved ${culture.name} (${culture.jp}) on Digital Heritage Journey.`;
     try {
