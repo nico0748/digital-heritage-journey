@@ -1215,8 +1215,15 @@ function LaunchStep({
   // (chrysanthemum crackle, willow whoosh, senrin pops, etc.) but the
   // user asked to keep it consistent. Volume + frequency still scale
   // with sizeFactor so 尺玉 lands deeper / louder than 三号.
+  // Patterns whose bursts intentionally play silently. The launch
+  // whistle still fires for these (so you hear the rocket go up), but
+  // the burst itself is silent — used for the small / decorative
+  // patterns (kobana, heart, star, smiley) where a boom would feel
+  // out of proportion to the gentle visual.
+  const SILENT_BURST_PATTERNS: Pattern[] = ["kobana", "heart", "star", "smiley"];
+
   function fireworkSound(
-    _pat: Pattern,
+    pat: Pattern,
     phase: "launch" | "burst",
     sizeFactor: number,
   ) {
@@ -1231,6 +1238,7 @@ function LaunchStep({
       });
       return;
     }
+    if (SILENT_BURST_PATTERNS.includes(pat)) return;
     playBoom({
       mutedRef: m,
       freq: 80 - sizeFactor * 12,
@@ -1571,7 +1579,9 @@ function LaunchStep({
             vx: Math.cos(a) * speed,
             vy: Math.sin(a) * speed,
             life: 0,
-            maxLife: 38 + Math.random() * 20,
+            // Senrin sub-cores: bumped from 38+20 to 60+30 so the
+            // many small flowers stay visible long enough to read.
+            maxLife: 60 + Math.random() * 30,
             hue: flashHue,
             hueLayers: layersForBurst,
             hueJitter: (Math.random() - 0.5) * 30,
@@ -1608,8 +1618,10 @@ function LaunchStep({
           vx: Math.cos(theta) * v,
           vy: Math.sin(theta) * v - 0.5,
           life: 0,
-          // ~1.6× chrysanthemum lifespan so leaves visibly droop down.
-          maxLife: 70 + Math.random() * 30,
+          // Yashi (palm) leaves drop further now — bumped from 70+30
+          // to 110+40 so the falling fronds linger at the bottom of
+          // the canvas, matching willow's new 2.6× life multiplier.
+          maxLife: 110 + Math.random() * 40,
           hue: flashHue,
           hueLayers: layersForBurst,
           hueJitter: (Math.random() - 0.5) * 24,
@@ -1620,47 +1632,31 @@ function LaunchStep({
       return;
     }
 
-    // Yaeshin (八重芯) — three-tier concentric expansion. Fire the outer
-    // shell now, then two more shells on a 200ms / 400ms delay. Each
-    // shell uses a slightly different size + life so they read as
-    // distinct rings rather than one fat blur.
+    // Yaeshin (八重芯) — single dense ring burst. Originally fired three
+    // staggered rings (220 ms / 440 ms follow-ups) for a layered
+    // expansion effect, but the user found the repeated booms
+    // distracting. Now fires only the initial ring; the dense
+    // count + smaller hueJitter still gives it a more uniform look
+    // than peony so the pattern stays distinct visually.
     if (pat === "yaeshin") {
-      const fireRing = (
-        radiusScale: number,
-        countScale: number,
-        speedScale: number,
-        hueShift: number,
-      ) => {
-        const c = Math.floor(count * countScale);
-        for (let i = 0; i < c; i++) {
-          const theta = (Math.PI * 2 * i) / c + Math.random() * 0.05;
-          const v = baseSpeed * speedScale * (0.92 + Math.random() * 0.16);
-          particles.current.push({
-            x,
-            y,
-            vx: Math.cos(theta) * v * radiusScale,
-            vy: Math.sin(theta) * v * radiusScale - 0.2,
-            life: 0,
-            maxLife: (40 + Math.random() * 20) * (0.9 + radiusScale * 0.2),
-            hue: flashHue + hueShift,
-            hueLayers: layersForBurst,
-            hueJitter: (Math.random() - 0.5) * 18,
-            trail: false,
-            size: 1.5,
-          });
-        }
-      };
-      fireRing(1.0, 0.55, 1.0, 0);
-      finaleTimersRef.current.push(
-        setTimeout(() => {
-          if (mountedRef.current) fireRing(0.62, 0.4, 0.95, 30);
-        }, 220),
-      );
-      finaleTimersRef.current.push(
-        setTimeout(() => {
-          if (mountedRef.current) fireRing(0.32, 0.3, 0.9, -30);
-        }, 440),
-      );
+      const c = Math.floor(count * 0.85);
+      for (let i = 0; i < c; i++) {
+        const theta = (Math.PI * 2 * i) / c + Math.random() * 0.05;
+        const v = baseSpeed * (0.92 + Math.random() * 0.16);
+        particles.current.push({
+          x,
+          y,
+          vx: Math.cos(theta) * v,
+          vy: Math.sin(theta) * v - 0.2,
+          life: 0,
+          maxLife: (50 + Math.random() * 25) * 1.4,
+          hue: flashHue,
+          hueLayers: layersForBurst,
+          hueJitter: (Math.random() - 0.5) * 18,
+          trail: false,
+          size: 1.7,
+        });
+      }
       return;
     }
 
@@ -1684,7 +1680,10 @@ function LaunchStep({
           vx: dirX * v,
           vy: dirY * v - 0.3,
           life: 0,
-          maxLife: 50 + Math.random() * 25,
+          // Kobana main bloom — 1.4× life so it lingers for the
+          // satellite mini-bursts to land while the main is still
+          // visible.
+          maxLife: (50 + Math.random() * 25) * 1.4,
           hue: flashHue,
           hueLayers: layersForBurst,
           hueJitter: (Math.random() - 0.5) * 30,
@@ -1712,7 +1711,10 @@ function LaunchStep({
                 vx: Math.cos(a) * v,
                 vy: Math.sin(a) * v,
                 life: 0,
-                maxLife: 30 + Math.random() * 15,
+                // Kobana satellite mini-flowers — bumped from 30+15
+                // to 50+20 so each little bloom stays visible long
+                // enough to register before the next pops.
+                maxLife: 50 + Math.random() * 20,
                 hue: flashHue + (Math.random() - 0.5) * 60,
                 hueLayers: layersForBurst,
                 hueJitter: (Math.random() - 0.5) * 30,
@@ -1744,7 +1746,10 @@ function LaunchStep({
           vx: dx * baseSpeed,
           vy: dy * baseSpeed - 0.3,
           life: 0,
-          maxLife: 55 + Math.random() * 25,
+          // Katamono shapes (heart / star / smiley) — bumped 1.6× so
+          // the parametric shape stays legible long enough to read
+          // instead of dissipating before the eye locks onto it.
+          maxLife: (55 + Math.random() * 25) * 1.6,
           hue: flashHue,
           hueLayers: layersForBurst,
           hueJitter: (Math.random() - 0.5) * 30,
@@ -1771,7 +1776,12 @@ function LaunchStep({
         pat === "willow"
           ? baseSpeed * (0.4 + Math.random() * 0.3)
           : baseSpeed * (0.9 + Math.random() * 0.2);
-      const lifeFactor = pat === "willow" ? 1.5 : 1;
+      // Willow's signature is the long droop — bumped from 1.5× to
+      // 2.6× so the leaves visibly fall well after every other
+      // pattern has faded. All other warimono patterns get a 1.4×
+      // bump so the bloom lingers in the night sky instead of
+      // snapping out instantly.
+      const lifeFactor = pat === "willow" ? 2.6 : 1.4;
       // Depth cue: particles moving mostly along z appear smaller in 2D.
       const depthAttenuation = 1 - Math.abs(u) * 0.45;
       particles.current.push({
