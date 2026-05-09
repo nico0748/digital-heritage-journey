@@ -1215,19 +1215,13 @@ function LaunchStep({
   // (chrysanthemum crackle, willow whoosh, senrin pops, etc.) but the
   // user asked to keep it consistent. Volume + frequency still scale
   // with sizeFactor so 尺玉 lands deeper / louder than 三号.
-  // Patterns whose bursts intentionally play silently. The launch
-  // whistle still fires for these (so you hear the rocket go up), but
-  // the burst itself is silent — used for the small / decorative
-  // patterns (kobana, heart, star, smiley) where a boom would feel
-  // out of proportion to the gentle visual. Senrin / chrysanthemum
-  // keep their booms but use the transient/rumble-stripped variant
-  // below so only the pitched thump plays.
-  const SILENT_BURST_PATTERNS: Pattern[] = [
-    "kobana",
-    "heart",
-    "star",
-    "smiley",
-  ];
+  // Every pattern's burst now plays the same clean pitched thump
+  // (transient + rumble stripped via playBoom flags below). The
+  // user's earlier request to silence small / decorative patterns
+  // (kobana / heart / star / smiley) was actually about the
+  // transient + rumble layers, not the boom itself — once those are
+  // stripped, every burst can stay audible without feeling noisy.
+  const SILENT_BURST_PATTERNS: Pattern[] = [];
 
   function fireworkSound(
     pat: Pattern,
@@ -1920,12 +1914,31 @@ function LaunchStep({
       }, grandDelay),
     );
 
-    // Phase 4: capture + onComplete after grand bloom matures
+    // Phase 4: capture + onComplete after grand bloom matures.
+    // The live canvas is rectangular (~42rem × 32rem) but the ending
+    // screen displays a SQUARE preview with object-cover, which chops
+    // off the left and right edges of the showcase row. Render the
+    // rectangular canvas onto a square offscreen canvas (letterboxed
+    // top/bottom on the night-sky background colour) before encoding,
+    // so the saved snapshot keeps every showcase bloom in frame.
     finaleTimersRef.current.push(
       setTimeout(() => {
         if (!mountedRef.current) return;
-        const dataUrl = canvas.toDataURL("image/png");
-        onComplete(dataUrl);
+        const sw = canvas.width;
+        const sh = canvas.height;
+        const side = Math.max(sw, sh);
+        const out = document.createElement("canvas");
+        out.width = side;
+        out.height = side;
+        const octx = out.getContext("2d");
+        if (!octx) {
+          onComplete(canvas.toDataURL("image/png"));
+          return;
+        }
+        octx.fillStyle = "#070b1d";
+        octx.fillRect(0, 0, side, side);
+        octx.drawImage(canvas, (side - sw) / 2, (side - sh) / 2);
+        onComplete(out.toDataURL("image/png"));
       }, grandDelay + GRAND_TO_CAPTURE),
     );
   }
