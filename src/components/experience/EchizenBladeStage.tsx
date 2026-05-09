@@ -108,13 +108,36 @@ export function EchizenBladeStage({
 
   const goBack = useCallback(() => {
     if (finalizingRef.current) return;
-    setStepIdx((i) => Math.max(0, i - 1));
-    // Going back invalidates downstream values — let the user redo
-    // them so the recipe badge stays truthful.
-    setStrikes(0);
-    setSori(0);
-    setTogiStrokes(0);
     playClick({ mutedRef: muted });
+    setStepIdx((i) => {
+      const prev = Math.max(0, i - 1);
+      // Only clear values that the destination step will overwrite, not
+      // every downstream value. Otherwise stepping back from yakiire
+      // (3) → tanzō (2) clears the strike count the user just earned —
+      // even though tanzō is the step that PRODUCED that count
+      // (Codex P2). Strikes belong to step 2; sori belongs to step 3;
+      // togiStrokes to step 4. Wipe only the values OWNED by steps
+      // strictly downstream of `prev`.
+      if (prev <= 0) {
+        // Back to kashitsu — every downstream value will be redone.
+        setStrikes(0);
+        setSori(0);
+        setTogiStrokes(0);
+      } else if (prev <= 1) {
+        // Back to tanzō — strikes will be re-earned, sori/togi too.
+        setStrikes(0);
+        setSori(0);
+        setTogiStrokes(0);
+      } else if (prev <= 2) {
+        // Back to yakiire — keep strikes, redo sori + togi.
+        setSori(0);
+        setTogiStrokes(0);
+      } else {
+        // Back to togi — keep strikes + sori, redo togi.
+        setTogiStrokes(0);
+      }
+      return prev;
+    });
   }, [muted]);
 
   const advanceFromKashitsu = useCallback(() => {
