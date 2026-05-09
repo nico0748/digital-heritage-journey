@@ -60,6 +60,14 @@ interface SkylineSeg {
 const TARGET_BURSTS = 5;
 const MAX_CHARGE_MS = 1200;
 
+// Round to 3 decimals — used for any computed value that lands inside
+// JSX as an SVG attribute. Math.cos / Math.sin can produce slightly
+// different last-bit floats between SSR (Node) and CSR (browser),
+// which React 19 surfaces as a hydration mismatch ("57.896733171588906"
+// vs "57.89673317158891"). Rounding to a fixed precision keeps the
+// serialised string identical between the two passes.
+const r3 = (n: number) => Math.round(n * 1000) / 1000;
+
 const ALL_PATTERNS: Pattern[] = [
   "peony",
   "chrysanthemum",
@@ -393,8 +401,8 @@ function PatternPreview({ pattern }: { pattern: Pattern }) {
       {dots.map((d, i) => (
         <circle
           key={i}
-          cx={d.x}
-          cy={d.y}
+          cx={r3(d.x)}
+          cy={r3(d.y)}
           r={d.r}
           fill="rgba(252, 232, 170, 1)"
           opacity={d.opacity}
