@@ -37,10 +37,11 @@ type Pattern =
 type Step = "design" | "hoshi" | "tamabari" | "launch";
 
 // Real shell sizes used by Japanese 花火師. Bigger shell = higher launch
-// + larger bloom + more wrapping paper layers in 玉貼り.
-// "20" (二尺玉) is finale-only — never offered in TamabariStep, only
-// fired during complete()'s grand-finale climax.
-type ShellSize = "3" | "5" | "7" | "10" | "20";
+// + larger bloom + more wrapping paper layers in 玉貼り. We considered
+// adding a finale-only 二尺玉 (20号) for the grand climax, but at that
+// scale the bloom radius spilled outside the canvas viewport, so the
+// finale now climaxes with the user's pattern at 尺玉 (10号) instead.
+type ShellSize = "3" | "5" | "7" | "10";
 
 interface ShellSizeInfo {
   jp: string;       // "三号"
@@ -96,17 +97,6 @@ const SHELL_SIZE_INFO: Record<ShellSize, ShellSizeInfo> = {
     radiusFactor: 1.4,
     heightFactor: 0.32,
     wrapTarget: 12,
-  },
-  "20": {
-    // Finale-only — not surfaced in TamabariStep.
-    jp: "二尺玉",
-    cm: "約 60 cm",
-    bloomM: "開花 480 m",
-    heightM: "高さ 500 m",
-    desc: "大花火大会の最大級。重量約 60kg、職人最高峰の作。",
-    radiusFactor: 2.2,
-    heightFactor: 0.18,
-    wrapTarget: 25,
   },
 };
 
@@ -1993,12 +1983,14 @@ function LaunchStep({
       }
     }
 
-    // Phase 3: grand finale
+    // Phase 3: grand finale — user's pattern at 尺玉 (10号), max
+    // charge, dead centre. Originally tried 二尺玉 here but the bloom
+    // overflowed the viewport so we settled on 尺玉.
     const grandDelay = SHOWCASE_COUNT * SHOWCASE_SPACING + PAUSE_BEFORE_GRAND;
     finaleTimersRef.current.push(
       setTimeout(() => {
         if (!mountedRef.current) return;
-        spawnRocketWithOverride(w * 0.5, 1, pattern, "20");
+        spawnRocketWithOverride(w * 0.5, 1, pattern, "10");
       }, grandDelay),
     );
 
