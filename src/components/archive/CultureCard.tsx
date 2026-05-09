@@ -24,12 +24,8 @@ export function CultureCard({ culture }: { culture: Culture }) {
           background: `linear-gradient(160deg, ${c1} 0%, ${c2} 60%, ${c3} 100%)`,
         }}
       >
-        <span
-          aria-hidden
-          className="absolute -right-2 -top-6 font-jp text-[14rem] leading-none text-washi-50/20"
-        >
-          {culture.accentKanji}
-        </span>
+        {culture.accentKanji}
+      </span>
 
         <span className="absolute left-4 top-4 inline-flex items-center rounded-full border border-washi-50/30 bg-sumi/30 px-3 py-1 text-[0.55rem] uppercase tracking-[0.3em] text-washi-50/85 backdrop-blur">
           <span className="font-jp tracking-wider">
@@ -49,8 +45,36 @@ export function CultureCard({ culture }: { culture: Culture }) {
           <span className="mt-5 inline-flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.3em] opacity-0 transition group-hover:opacity-100">
             Touch it <ArrowRight size={12} />
           </span>
+        )}
+      </div>
+
+      {/* Coming-soon overlay — keeps the culture's accent kanji + name
+          visible behind a softened tint so the card still reads as
+          "this culture exists, just not yet playable". */}
+      {culture.comingSoon && (
+        <div className="absolute inset-0 flex items-center justify-center bg-sumi/55 backdrop-blur-[2px]">
+          <span className="rounded-full border border-washi-50/40 bg-sumi/60 px-5 py-2 font-jp text-sm tracking-[0.4em] text-washi-50/95">
+            準備中
+          </span>
         </div>
-      </motion.div>
+      )}
+    </motion.div>
+  );
+
+  if (culture.comingSoon) {
+    return (
+      <div
+        aria-label={`${culture.name} (準備中, coming soon)`}
+        className="group relative block cursor-not-allowed"
+      >
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <Link href={`/experience/${culture.id}`} className="group relative block">
+      {inner}
     </Link>
   );
 }
