@@ -47,6 +47,28 @@ export const cultures: Culture[] = [
     media: {},
     experience: "hanabi-launch",
   },
+  {
+    id: "kumano-fude",
+    name: "Kumano-fude",
+    jp: "熊野筆",
+    region: "Hiroshima / Kumano",
+    category: "craft",
+    era: "Late Edo period (1830s-)",
+    description:
+      "Premium calligraphy & makeup brushes; 80% domestic share, world brand-supplier.",
+    problem:
+      "Lower-skill makeup brush demand falling; calligraphy market shrinking.",
+    palette: ["#1d130a", "#3a2614", "#FBF7F0"],
+    accentKanji: "筆",
+    prefectures: ["JP-34"],
+    realWorld: {
+      kind: "association",
+      label: "熊野筆事業協同組合",
+      url: "https://kumanofude.or.jp/",
+    },
+    media: {},
+    experience: "fude-craft",
+  },
 ];
 
 export function getCulture(id: string): Culture | undefined {
