@@ -313,11 +313,12 @@ function WaritakeStep({ onConfirm }: { onConfirm: () => void }) {
 // ═════════════════════════════════════════════════════════════════════
 // Step 2 — Kami-ori (紙折り) — accordion-fold the washi
 //
-// A flat strip of washi spans the canvas. The user taps along the
-// strip to add folds. Folds alternate automatically between 山折り
-// (mountain) and 谷折り (valley) — that's the actual accordion
-// pattern that lets the fan open and close. After FOLD_TARGET folds,
-// the strip is fully accordioned.
+// A wedge-shaped sheet of washi (the actual fan blank, 地紙) sits in
+// the canvas. The user taps to add folds along radial crease lines.
+// Folds alternate automatically between 山折り (mountain) and 谷折り
+// (valley) — that's the accordion pattern that lets a fan open and
+// close. As folds accumulate the wedge compresses angularly toward
+// the closed (narrow) form.
 // ═════════════════════════════════════════════════════════════════════
 function OrikamiStep({
   onConfirm,
@@ -348,110 +349,115 @@ function OrikamiStep({
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, w, h);
 
-    // Washi strip dimensions — flat at 0 folds, accordioned at full.
-    const stripY = h * 0.5;
-    const x0 = w * 0.08;
-    const x1 = w * 0.92;
-    const stripW = x1 - x0;
-    const segW = stripW / RIBS;
-    // Half-height of the paper strip. Was 26 (52px tall) which felt
-    // cramped vs the canvas; tripled to 78 (156px tall) so the folded
-    // washi has room to breathe and the alternating mountain/valley
-    // creases are clearly readable.
-    const paperHalfH = 78;
-    // Compression: fully folded, the strip is half its flat width.
-    const compress = 1 - (foldsRef.current / FOLD_TARGET) * 0.45;
-    const visW = stripW * compress;
-    const offsetX = (stripW - visW) / 2;
-    const visX0 = x0 + offsetX;
+    // Fan geometry — pivot at bottom-center, wedge fans upward. Same
+    // pivot/r0/r1 as Etsuke and Shiage so the painted washi composes
+    // cleanly across all three steps.
+    const pivot = { x: w / 2, y: h * 0.94 };
+    const r0 = 42;
+    const r1 = w * 0.44;
 
-    // Draw each segment between folds. When folded, alternate segments
-    // shear up (山, mountain) or down (谷, valley) at a small angle.
-    // Peak scales with the new paper height so the fold amplitude
-    // stays proportional to the strip rather than looking flat.
-    const peak = (foldsRef.current / FOLD_TARGET) * 40;
-    for (let i = 0; i < RIBS; i++) {
-      const sx0 = visX0 + segW * compress * i;
-      const sx1 = visX0 + segW * compress * (i + 1);
-      const isMountain = i % 2 === 0;
-      const leftFolded = i > 0 && i <= foldsRef.current;
-      const rightFolded = i < foldsRef.current;
-      const yLeft = leftFolded
-        ? stripY + (isMountain ? -peak : peak)
-        : stripY;
-      const yRight = rightFolded
-        ? stripY + (isMountain ? peak : -peak)
-        : stripY;
+    // Compress the wedge angularly as folds accumulate. Fully folded
+    // sits at 35% of the open angle — narrow but still legibly a fan.
+    const compress = 1 - (foldsRef.current / FOLD_TARGET) * 0.65;
+    const total = OPEN_ANGLE * compress;
+    const startAngle = -Math.PI / 2 - total / 2;
+    const endAngle = -Math.PI / 2 + total / 2;
+    const wedge = total / (RIBS - 1);
 
-      ctx.save();
+    const fanPath = new Path2D();
+    fanPath.arc(pivot.x, pivot.y, r1, startAngle, endAngle, false);
+    fanPath.arc(pivot.x, pivot.y, r0, endAngle, startAngle, true);
+    fanPath.closePath();
+
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.5)";
+    ctx.shadowBlur = 22;
+    ctx.shadowOffsetY = 8;
+    ctx.fillStyle = "#F8F1E0";
+    ctx.fill(fanPath);
+    ctx.restore();
+
+    ctx.save();
+    ctx.clip(fanPath);
+
+    const warm = ctx.createLinearGradient(0, pivot.y - r1, 0, pivot.y);
+    warm.addColorStop(0, "rgba(250,240,215,0)");
+    warm.addColorStop(1, "rgba(170,140,100,0.2)");
+    ctx.fillStyle = warm;
+    ctx.fillRect(0, 0, w, h);
+
+    for (const g of grain) {
+      ctx.fillStyle = `rgba(120, 90, 60, ${g.a})`;
       ctx.beginPath();
-      ctx.moveTo(sx0, yLeft - paperHalfH);
-      ctx.lineTo(sx1, yRight - paperHalfH);
-      ctx.lineTo(sx1, yRight + paperHalfH);
-      ctx.lineTo(sx0, yLeft + paperHalfH);
-      ctx.closePath();
-      ctx.clip();
-
-      ctx.fillStyle = "#F8F1E0";
-      ctx.fillRect(0, 0, w, h);
-
-      const warm = ctx.createLinearGradient(
-        sx0,
-        yLeft - paperHalfH,
-        sx0,
-        yLeft + paperHalfH,
-      );
-      warm.addColorStop(0, "rgba(250,240,215,0)");
-      warm.addColorStop(1, "rgba(170,140,100,0.18)");
-      ctx.fillStyle = warm;
-      ctx.fillRect(
-        sx0 - 2,
-        yLeft - paperHalfH - 2,
-        sx1 - sx0 + 4,
-        paperHalfH * 2 + 4,
-      );
-
-      for (const g of grain) {
-        ctx.fillStyle = `rgba(120, 90, 60, ${g.a})`;
-        ctx.beginPath();
-        ctx.arc(g.x * w, g.y * h, 1.4, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-
-      ctx.strokeStyle = "rgba(70, 48, 26, 0.3)";
-      ctx.lineWidth = 0.8;
-      ctx.beginPath();
-      ctx.moveTo(sx0, yLeft - paperHalfH);
-      ctx.lineTo(sx1, yRight - paperHalfH);
-      ctx.lineTo(sx1, yRight + paperHalfH);
-      ctx.lineTo(sx0, yLeft + paperHalfH);
-      ctx.closePath();
-      ctx.stroke();
-
-      if (rightFolded) {
-        const isMountainCrease = isMountain;
-        ctx.strokeStyle = isMountainCrease
-          ? "rgba(20,12,5,0.55)"
-          : "rgba(150,110,70,0.45)";
-        ctx.lineWidth = isMountainCrease ? 1.4 : 1;
-        ctx.setLineDash(isMountainCrease ? [] : [3, 2]);
-        ctx.beginPath();
-        ctx.moveTo(sx1, yRight - paperHalfH - 2);
-        ctx.lineTo(sx1, yRight + paperHalfH + 2);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
+      ctx.arc(g.x * w, g.y * h, 1.4, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    // HUD — count + 山/谷 hint
+    // Per-segment shading — folded segments alternate light/shadow so
+    // the accordion takes shape visually as the user adds creases.
+    for (let i = 0; i < RIBS - 1; i++) {
+      const isFolded = i < foldsRef.current;
+      if (!isFolded) continue;
+      const a0 = startAngle + wedge * i;
+      const a1 = startAngle + wedge * (i + 1);
+      const isMountainSeg = i % 2 === 0;
+      ctx.save();
+      const segPath = new Path2D();
+      segPath.arc(pivot.x, pivot.y, r1, a0, a1, false);
+      segPath.arc(pivot.x, pivot.y, r0, a1, a0, true);
+      segPath.closePath();
+      ctx.clip(segPath);
+      ctx.fillStyle = isMountainSeg
+        ? "rgba(255,240,200,0.10)"
+        : "rgba(0,0,0,0.18)";
+      ctx.fillRect(0, 0, w, h);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // Radial crease lines — solid (山折り) or dashed (谷折り) once the
+    // user has folded that crease; faint dotted guide otherwise.
+    for (let i = 1; i < RIBS; i++) {
+      const a = startAngle + wedge * i;
+      const folded = i <= foldsRef.current;
+      if (!folded) {
+        ctx.strokeStyle = "rgba(252,232,170,0.18)";
+        ctx.lineWidth = 0.7;
+        ctx.setLineDash([3, 4]);
+      } else {
+        const isMountain = (i - 1) % 2 === 0;
+        ctx.strokeStyle = isMountain
+          ? "rgba(20,12,5,0.55)"
+          : "rgba(150,110,70,0.45)";
+        ctx.lineWidth = isMountain ? 1.4 : 1;
+        ctx.setLineDash(isMountain ? [] : [3, 2]);
+      }
+      ctx.beginPath();
+      ctx.moveTo(
+        pivot.x + Math.cos(a) * r0,
+        pivot.y + Math.sin(a) * r0,
+      );
+      ctx.lineTo(
+        pivot.x + Math.cos(a) * r1,
+        pivot.y + Math.sin(a) * r1,
+      );
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Outer paper border
+    ctx.strokeStyle = "rgba(70,48,26,0.55)";
+    ctx.lineWidth = 1.2;
+    ctx.stroke(fanPath);
+
+    // HUD — count + 山/谷 hint, anchored above the wedge.
     ctx.fillStyle = "rgba(252,232,170,0.7)";
     ctx.font = "12px monospace";
     ctx.textAlign = "center";
     ctx.fillText(
       `${foldsRef.current} / ${FOLD_TARGET} 折り`,
       w / 2,
-      h * 0.16,
+      h * 0.10,
     );
     if (foldsRef.current < FOLD_TARGET) {
       const next = foldsRef.current + 1;
@@ -461,7 +467,7 @@ function OrikamiStep({
       ctx.fillText(
         `次は ${isMountain ? "山折り" : "谷折り"}`,
         w / 2,
-        h * 0.16 + 18,
+        h * 0.10 + 18,
       );
     }
   }, [grain]);
@@ -541,8 +547,10 @@ function OrikamiStep({
 
 // ═════════════════════════════════════════════════════════════════════
 // Step 3 — Etsuke (絵付け) — pick ink + brush, paint on the folded
-// washi. Painting is captured into an offscreen buffer so the design
-// can be composited into the final spread fan in Shiage.
+// washi. The wedge is shown fully open here (so the user has a clear
+// surface to paint on) with radial creases marking each fold. The
+// paint buffer is the same SIZE × SIZE as the canvas, so Shiage can
+// rotate-sample it slice-by-slice as the fan opens.
 // ═════════════════════════════════════════════════════════════════════
 function EtsukeStep({
   inkId,
@@ -582,6 +590,19 @@ function EtsukeStep({
     paintRef.current = c;
   }, []);
 
+  // Fan geometry shared with the buffer's clip path so painting that
+  // strays outside the wedge is masked out (otherwise it would show as
+  // stray pixels when Shiage composites slice-by-slice).
+  const fan = {
+    pivotX: SIZE / 2,
+    pivotY: SIZE * 0.94,
+    r0: 42,
+    r1: SIZE * 0.44,
+    total: OPEN_ANGLE,
+    startAngle: -Math.PI / 2 - OPEN_ANGLE / 2,
+    endAngle: -Math.PI / 2 + OPEN_ANGLE / 2,
+  };
+
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -597,35 +618,35 @@ function EtsukeStep({
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, w, h);
 
-    // The folded paper is shown FLAT here (so the user has a clear
-    // canvas to paint on), but with crease lines marking each fold so
-    // they remember the shape.
-    const x0 = w * 0.08;
-    const x1 = w * 0.92;
-    const stripW = x1 - x0;
-    const segW = stripW / RIBS;
-    const stripY = h * 0.5;
-    const stripH = h * 0.55;
+    const pivot = { x: w / 2, y: h * 0.94 };
+    const r0 = 42;
+    const r1 = w * 0.44;
+    const total = OPEN_ANGLE;
+    const startAngle = -Math.PI / 2 - total / 2;
+    const endAngle = -Math.PI / 2 + total / 2;
+    const wedge = total / (RIBS - 1);
 
-    // Paper background
+    const fanPath = new Path2D();
+    fanPath.arc(pivot.x, pivot.y, r1, startAngle, endAngle, false);
+    fanPath.arc(pivot.x, pivot.y, r0, endAngle, startAngle, true);
+    fanPath.closePath();
+
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.5)";
     ctx.shadowBlur = 22;
     ctx.shadowOffsetY = 8;
     ctx.fillStyle = "#F8F1E0";
-    ctx.fillRect(x0, stripY - stripH / 2, stripW, stripH);
+    ctx.fill(fanPath);
     ctx.restore();
 
     ctx.save();
-    ctx.beginPath();
-    ctx.rect(x0, stripY - stripH / 2, stripW, stripH);
-    ctx.clip();
+    ctx.clip(fanPath);
 
-    const warm = ctx.createLinearGradient(0, stripY - stripH / 2, 0, stripY + stripH / 2);
+    const warm = ctx.createLinearGradient(0, pivot.y - r1, 0, pivot.y);
     warm.addColorStop(0, "rgba(250,240,215,0)");
     warm.addColorStop(1, "rgba(170,140,100,0.2)");
     ctx.fillStyle = warm;
-    ctx.fillRect(x0, stripY - stripH / 2, stripW, stripH);
+    ctx.fillRect(0, 0, w, h);
 
     for (const g of grain) {
       ctx.fillStyle = `rgba(120, 90, 60, ${g.a})`;
@@ -634,9 +655,10 @@ function EtsukeStep({
       ctx.fill();
     }
 
-    // Crease guide lines
+    // Radial crease guides — alternating 山折り (solid) and 谷折り
+    // (dashed). They're faint so they don't dominate the painting.
     for (let i = 1; i < RIBS; i++) {
-      const cx = x0 + segW * i;
+      const a = startAngle + wedge * i;
       const isMountain = (i - 1) % 2 === 0;
       ctx.strokeStyle = isMountain
         ? "rgba(20,12,5,0.18)"
@@ -644,8 +666,14 @@ function EtsukeStep({
       ctx.lineWidth = 0.8;
       ctx.setLineDash(isMountain ? [] : [3, 2]);
       ctx.beginPath();
-      ctx.moveTo(cx, stripY - stripH / 2);
-      ctx.lineTo(cx, stripY + stripH / 2);
+      ctx.moveTo(
+        pivot.x + Math.cos(a) * r0,
+        pivot.y + Math.sin(a) * r0,
+      );
+      ctx.lineTo(
+        pivot.x + Math.cos(a) * r1,
+        pivot.y + Math.sin(a) * r1,
+      );
       ctx.stroke();
       ctx.setLineDash([]);
     }
@@ -660,7 +688,7 @@ function EtsukeStep({
     // Paper border
     ctx.strokeStyle = "rgba(70,48,26,0.55)";
     ctx.lineWidth = 1.2;
-    ctx.strokeRect(x0, stripY - stripH / 2, stripW, stripH);
+    ctx.stroke(fanPath);
   }, [grain]);
 
   useEffect(() => {
@@ -690,6 +718,13 @@ function EtsukeStep({
     const bctx = buf.getContext("2d");
     if (!bctx) return;
     bctx.save();
+    // Clip strokes to the fan wedge — anything outside is invisible
+    // both here and in Shiage's slice-rotated composite.
+    bctx.beginPath();
+    bctx.arc(fan.pivotX, fan.pivotY, fan.r1, fan.startAngle, fan.endAngle, false);
+    bctx.arc(fan.pivotX, fan.pivotY, fan.r0, fan.endAngle, fan.startAngle, true);
+    bctx.closePath();
+    bctx.clip();
     bctx.lineCap = "round";
     bctx.lineJoin = "round";
     bctx.strokeStyle = inkRef.current;
@@ -926,53 +961,37 @@ function ShiageStep({
       ctx.stroke();
     }
 
-    // The painted design — when EtsukeStep captured it, the strokes
-    // were laid on a FLAT rectangular paper (centred horizontally on
-    // the canvas, ~55% of canvas height). Drawing that flat image
-    // directly on a fan wedge clips most of it away because the fan
-    // covers a different region of the canvas. We instead slice the
-    // flat paint into RIBS vertical columns and lay each column down
-    // along its corresponding fan rib — same UV-style mapping the
-    // hanabi star bursts use, scaled by the rib radius.
+    // The painted design — EtsukeStep captures the brushwork onto a
+    // wedge that matches OPEN_ANGLE (the fully spread fan). When the
+    // current spread is narrower we slice that fully-open paint into
+    // (RIBS-1) angular wedges and rotate each into its current rib
+    // slot. Result: the painted strokes follow the ribs as the fan
+    // opens, like real folded washi spreading apart.
     const img = paintImgRef.current;
     if (img && img.naturalWidth > 0) {
-      // Source columns map to RIBS-1 wedge slots; the flat paper in
-      // EtsukeStep spans x in [0.08w, 0.92w] (the visible strip).
-      const srcStripStart = w * 0.08;
-      const srcStripWidth = w * 0.84;
-      const srcStripTop = h * 0.225; // (0.5 - 0.55/2) * h
-      const srcStripHeight = h * 0.55;
-      const srcSliceW = srcStripWidth / (RIBS - 1);
-      const wedgeSpan = total / (RIBS - 1);
-      // Half-angle a single slice should cover so neighbouring slices
-      // overlap a hair — kills sub-pixel seams between ribs.
-      const sliceHalfAngle = wedgeSpan * 0.55;
+      const srcStartAngle = -Math.PI / 2 - OPEN_ANGLE / 2;
+      const wedgeFull = OPEN_ANGLE / (RIBS - 1);
+      const wedgeCurrent = total / (RIBS - 1);
       for (let i = 0; i < RIBS - 1; i++) {
-        const tMid = (i + 0.5) / (RIBS - 1);
-        const aMid = startAngle + total * tMid;
+        const srcMid = srcStartAngle + (i + 0.5) * wedgeFull;
+        const dstMid = startAngle + (i + 0.5) * wedgeCurrent;
+        const rot = dstMid - srcMid;
         ctx.save();
+        // Clip to the dest wedge slice so neighbouring rotations
+        // don't bleed into each other.
+        const a0 = startAngle + i * wedgeCurrent;
+        const a1 = startAngle + (i + 1) * wedgeCurrent;
+        const slicePath = new Path2D();
+        slicePath.arc(pivot.x, pivot.y, r1, a0, a1, false);
+        slicePath.arc(pivot.x, pivot.y, r0, a1, a0, true);
+        slicePath.closePath();
+        ctx.clip(slicePath);
+        // Rotate the paint canvas around the pivot by the angle delta
+        // between source slice and dest slice.
         ctx.translate(pivot.x, pivot.y);
-        // Rotate so the slice's local +y axis points outward along
-        // the rib (canvas y grows downward, fan opens upward → rotate
-        // so that aMid becomes the local "down" direction).
-        ctx.rotate(aMid + Math.PI / 2);
-        // Compute the screen width of the rib at radius r1 — gives a
-        // dest rectangle that visually fills its wedge slot.
-        const destWidthAtRim = 2 * r1 * Math.tan(sliceHalfAngle);
-        const destWidthAtPivot = 2 * r0 * Math.tan(sliceHalfAngle);
-        const destWidth = Math.max(destWidthAtRim, destWidthAtPivot);
-        const srcX = srcStripStart + srcSliceW * i;
-        ctx.drawImage(
-          img,
-          srcX,
-          srcStripTop,
-          srcSliceW,
-          srcStripHeight,
-          -destWidth / 2,
-          -r1,
-          destWidth,
-          r1 - r0,
-        );
+        ctx.rotate(rot);
+        ctx.translate(-pivot.x, -pivot.y);
+        ctx.drawImage(img, 0, 0, w, h);
         ctx.restore();
       }
     }
