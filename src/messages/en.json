@@ -190,6 +190,68 @@
         "heading": "Fire in the climbing kiln",
         "hint": "24 hours in the noborigama. Fire and ash collide to paint the keshiki landscape."
       }
+    },
+    "washi": {
+      "stir": {
+        "hint": "Trace circles in the water to loosen the kōzo fibres.",
+        "en": "Loosen the fibres"
+      },
+      "beat": {
+        "hint": "Beat the bundle with a wooden mallet.",
+        "en": "Beat the bundle"
+      },
+      "scoop": {
+        "hint": "Rock the bamboo screen side to side to layer the fibres.",
+        "en": "Sukikiri"
+      },
+      "press": {
+        "hint": "Press and hold to squeeze the water out.",
+        "en": "Press out the water"
+      },
+      "dry": {
+        "hint": "Let it dry in the sunlight.",
+        "en": "Dry on the board"
+      },
+      "done": {
+        "hint": "Your washi is complete.",
+        "en": "Complete"
+      }
+    },
+    "bizen": {
+      "rokuro": {
+        "hint": "Throw hiyose clay on the wheel — its iron content yields Bizen's signature colour after firing.",
+        "en": "Rokuro"
+      },
+      "kamaire": {
+        "hint": "Where you place the piece in the kiln decides its keshiki. Position is part of the work.",
+        "en": "Kama-ire"
+      },
+      "shosei": {
+        "hint": "10–14 days of firing. The accidents of ash, flame and heat compose the keshiki.",
+        "en": "Shōsei"
+      },
+      "kashoku": {
+        "hint": "Read the finished keshiki. The same piece can never be made twice.",
+        "en": "Keshiki"
+      }
+    },
+    "echizen": {
+      "kashitsu": {
+        "desc": "Heat the steel in charcoal",
+        "hint": "Heat the kashitsu hearth to 1100°C. When the steel glows white-hot, that is the signal to strike."
+      },
+      "tanzo": {
+        "desc": "Hammer the white-hot steel",
+        "hint": "Hammer it out. The nimaihiroge double-spread is a hallmark of the Chiyozuru lineage."
+      },
+      "yakiire": {
+        "desc": "Quench in water — locks in the hamon",
+        "hint": "Quench in water → tempering hardens the steel. The hamon wave of a master blade is born here."
+      },
+      "togi": {
+        "desc": "Sharpen on natural whetstone",
+        "hint": "Sharpen on natural stone. The hamon pattern is co-authored by the quench and the sharpening."
+      }
     }
   }
 }

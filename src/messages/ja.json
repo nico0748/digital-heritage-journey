@@ -190,6 +190,68 @@
         "heading": "登り窯で焼き上げる",
         "hint": "登り窯で 24 時間焼成。火と灰の偶然が景色を作る。"
       }
+    },
+    "washi": {
+      "stir": {
+        "hint": "水の中で円を描いて、楮(こうぞ)の繊維をほぐす",
+        "en": "Loosen the fibers"
+      },
+      "beat": {
+        "hint": "杵で叩いて繊維をほぐす",
+        "en": "Beat the bundle"
+      },
+      "scoop": {
+        "hint": "簀桁(すげた)を左右に揺らして繊維を重ねる",
+        "en": "Sukikiri"
+      },
+      "press": {
+        "hint": "押さえつけて水分を抜く(長押し)",
+        "en": "Press out the water"
+      },
+      "dry": {
+        "hint": "陽の光で乾かす",
+        "en": "Dry on the board"
+      },
+      "done": {
+        "hint": "和紙が完成しました",
+        "en": "Complete"
+      }
+    },
+    "bizen": {
+      "rokuro": {
+        "hint": "ひよせ土を轆轤で挽く. 鉄分が焼成で独特な色を出す",
+        "en": "Rokuro"
+      },
+      "kamaire": {
+        "hint": "窯のどこに置くかで「景色」が変わる. 場所も作品の一部",
+        "en": "Kama-ire"
+      },
+      "shosei": {
+        "hint": "窯焚き 10〜14 日. 灰・炎・温度の偶然が「景色」を作る",
+        "en": "Shōsei"
+      },
+      "kashoku": {
+        "hint": "完成体の景色を眺める. 同じ作品は二度と作れない",
+        "en": "Keshiki"
+      }
+    },
+    "echizen": {
+      "kashitsu": {
+        "desc": "Heat the steel in charcoal",
+        "hint": "火床(ほど)で 1100℃ まで加熱。鋼が白熱したら鎚を打つ合図"
+      },
+      "tanzo": {
+        "desc": "Hammer the white-hot steel",
+        "hint": "鎚で叩いて伸ばす。二枚広げで効率化、千代鶴の伝統"
+      },
+      "yakiire": {
+        "desc": "Quench in water — locks in the hamon",
+        "hint": "水焼入れで急冷 → 鋼が焼き戻りで硬化。名刀の刃文(はもん)はここで決まる"
+      },
+      "togi": {
+        "desc": "Sharpen on natural whetstone",
+        "hint": "天然砥石で研ぎ上げる。刃文の波形は焼入れと研ぎの合作"
+      }
     }
   }
 }

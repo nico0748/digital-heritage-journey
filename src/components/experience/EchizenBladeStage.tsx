@@ -85,6 +85,7 @@ export function EchizenBladeStage({
   palette: [string, string, string];
 }) {
   const muted = useMutedRef();
+  const t = useTranslations();
   const [stepIdx, setStepIdx] = useState(0);
   const step = STEPS[stepIdx];
 
@@ -187,12 +188,12 @@ export function EchizenBladeStage({
 
       {/* English description */}
       <p className="-mt-2 text-[0.55rem] uppercase tracking-[0.4em] text-washi-50/45">
-        {step.desc}
+        {t(`stages.echizen.${step.id}.desc`)}
       </p>
 
       {/* Educational sub-text per step */}
-      <p className="font-jp max-w-md text-center text-sm leading-relaxed tracking-wider text-washi-50/85">
-        {step.hint}
+      <p className="max-w-md text-center text-sm leading-relaxed tracking-wider text-washi-50/85">
+        {t(`stages.echizen.${step.id}.hint`)}
       </p>
 
       {/* Recipe badge */}

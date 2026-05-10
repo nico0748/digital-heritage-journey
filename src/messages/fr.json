@@ -190,6 +190,68 @@
         "heading": "Cuire dans le four grimpant",
         "hint": "24 heures dans le noborigama. Le hasard du feu et de la cendre peint le keshiki."
       }
+    },
+    "washi": {
+      "stir": {
+        "hint": "Tracez des cercles dans l'eau pour défaire les fibres de kōzo.",
+        "en": "Défaire les fibres"
+      },
+      "beat": {
+        "hint": "Battez le faisceau au pilon en bois.",
+        "en": "Battre le faisceau"
+      },
+      "scoop": {
+        "hint": "Balancez l'écran de bambou de gauche à droite pour superposer les fibres.",
+        "en": "Sukikiri"
+      },
+      "press": {
+        "hint": "Appuyez et maintenez pour faire sortir l'eau.",
+        "en": "Presser l'eau"
+      },
+      "dry": {
+        "hint": "Laissez sécher au soleil.",
+        "en": "Sécher sur la planche"
+      },
+      "done": {
+        "hint": "Votre washi est terminé.",
+        "en": "Terminé"
+      }
+    },
+    "bizen": {
+      "rokuro": {
+        "hint": "Tournez l'argile hiyose au tour — sa teneur en fer donne la couleur signature de Bizen après cuisson.",
+        "en": "Rokuro"
+      },
+      "kamaire": {
+        "hint": "Selon l'emplacement dans le four, le keshiki change. La position fait partie de l'œuvre.",
+        "en": "Kama-ire"
+      },
+      "shosei": {
+        "hint": "10 à 14 jours de cuisson. Les hasards de la cendre, de la flamme et de la chaleur composent le keshiki.",
+        "en": "Shōsei"
+      },
+      "kashoku": {
+        "hint": "Contemplez le keshiki achevé. La même pièce ne peut jamais être refaite.",
+        "en": "Keshiki"
+      }
+    },
+    "echizen": {
+      "kashitsu": {
+        "desc": "Chauffer l'acier au charbon",
+        "hint": "Chauffez la forge kashitsu jusqu'à 1100 °C. Quand l'acier rougit à blanc, c'est le signal de frapper."
+      },
+      "tanzo": {
+        "desc": "Marteler l'acier blanc",
+        "hint": "Martelez pour étirer. Le double-écrasement nimaihiroge est la marque de la lignée Chiyozuru."
+      },
+      "yakiire": {
+        "desc": "Trempe à l'eau — fixe le hamon",
+        "hint": "Trempe à l'eau → l'acier durcit au revenu. Le hamon ondoyant d'une lame de maître naît ici."
+      },
+      "togi": {
+        "desc": "Affûter sur pierre naturelle",
+        "hint": "Affûtez sur pierre naturelle. La vague du hamon est co-écrite par la trempe et l'aiguisage."
+      }
     }
   }
 }

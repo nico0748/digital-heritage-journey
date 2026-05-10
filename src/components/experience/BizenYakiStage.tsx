@@ -1555,11 +1555,11 @@ export function BizenYakiStage({
       )}
 
       {/* Hint */}
-      <p className="max-w-md text-center font-jp text-sm tracking-wider text-washi-50/85">
-        {step.hint}
+      <p className="max-w-md text-center text-sm tracking-wider text-washi-50/85">
+        {t(`stages.bizen.${step.id}.hint`)}
       </p>
       <p className="-mt-3 text-[0.55rem] uppercase tracking-[0.4em] text-washi-50/40">
-        {step.en}
+        {t(`stages.bizen.${step.id}.en`)}
       </p>
 
       {/* Navigation */}

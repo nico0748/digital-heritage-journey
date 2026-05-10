@@ -691,11 +691,11 @@ export function WashiCanvas({
 
       {/* Step hint */}
       <div className="text-center">
-        <p className="font-jp text-sm tracking-wider text-washi-50/90">
-          {step.hint}
+        <p className="text-sm tracking-wider text-washi-50/90">
+          {t(`stages.washi.${step.id}.hint`)}
         </p>
         <p className="mt-1 text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/45">
-          {step.en}
+          {t(`stages.washi.${step.id}.en`)}
         </p>
       </div>
 
