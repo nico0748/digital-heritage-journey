@@ -25,6 +25,7 @@ import {
   Undo2,
 } from "lucide-react";
 import clsx from "clsx";
+import { useTranslations } from "@/lib/i18n";
 
 type Symmetry = 6 | 8 | 12;
 type GlassColor = "blue" | "red";
@@ -313,6 +314,7 @@ export function KirikoCanvas({
   onComplete: (dataUrl: string) => void;
   palette: [string, string, string];
 }) {
+  const t = useTranslations();
   const [color, setColor] = useState<GlassColor>("blue");
   const [symmetry, setSymmetry] = useState<Symmetry>(8);
   const [hasStrokes, setHasStrokes] = useState(false);
@@ -615,7 +617,7 @@ export function KirikoCanvas({
           disabled={!hasStrokes}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          <Check size={12} /> Complete
+          <Check size={12} /> {t("common.complete")}
         </button>
       </div>
     </div>

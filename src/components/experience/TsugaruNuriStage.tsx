@@ -16,6 +16,7 @@ import {
   playClick,
   playFire,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ─────────────────────────────────────────────────────────────────────
 // 津軽塗 (Tsugaru-nuri / Aomori lacquerware) — 唐塗 (karanuri) flow.
@@ -622,6 +623,7 @@ function TogidashiStep({
   onBack: () => void;
   onDone: (dataUrl: string) => void;
 }) {
+  const t = useTranslations();
   const muted = useMutedRef();
   const visibleRef = useRef<HTMLCanvasElement>(null);
   const baseRef = useRef<HTMLCanvasElement | null>(null);
@@ -937,7 +939,7 @@ function TogidashiStep({
           disabled={polished < POLISH_TARGET || finalizing}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          <Check size={12} /> 完成
+          <Check size={12} /> {t("common.complete")}
         </button>
       </div>
     </div>

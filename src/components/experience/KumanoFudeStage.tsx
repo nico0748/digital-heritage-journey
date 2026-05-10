@@ -23,6 +23,7 @@ import {
   playFold,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ─────────────────────────────────────────────────────────────────────
 // Step definitions (kanji + romaji + description per step).
@@ -878,6 +879,7 @@ function TameshigakiStep({
   onComplete: (dataUrl: string) => void;
   finalizingRef: RefObject<boolean>;
 }) {
+  const t = useTranslations();
   const W = 520;
   const H = 380;
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1107,7 +1109,7 @@ function TameshigakiStep({
           disabled={!hasInk}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          <Check size={12} /> 完成
+          <Check size={12} /> {t("common.complete")}
         </button>
       </div>
 

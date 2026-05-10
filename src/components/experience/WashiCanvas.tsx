@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, Droplets, Hammer, Hand, Sun, Wind } from "lucide-react";
 import clsx from "clsx";
+import { useTranslations } from "@/lib/i18n";
 
 type StepId = "stir" | "beat" | "scoop" | "press" | "dry" | "done";
 
@@ -70,6 +71,7 @@ export function WashiCanvas({
   onComplete: (dataUrl: string) => void;
   palette: [string, string, string];
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stepIdx, setStepIdx] = useState(0);
   const step = STEPS[stepIdx];
@@ -729,7 +731,7 @@ export function WashiCanvas({
           onClick={complete}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100"
         >
-          <Check size={12} /> Complete
+          <Check size={12} /> {t("common.complete")}
         </button>
       )}
     </div>

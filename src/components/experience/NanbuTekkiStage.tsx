@@ -19,6 +19,7 @@ import {
   playPour,
   playThud,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ──────────────────────────────────────────────────────────────────────
 // 南部鉄器 (Nanbu Tekki) — Iwate cast iron experience.
@@ -1005,6 +1006,7 @@ function ShiageStep({
   onBack: () => void;
   onComplete: (dataUrl: string) => void;
 }) {
+  const t = useTranslations();
   // Phase 1 — cooling (orange → black). Animated independently of the
   // polish phase. After COOL_DURATION_MS we unlock dragging.
   const [coolStart] = useState(() => performance.now());
@@ -1232,7 +1234,7 @@ function ShiageStep({
           disabled={!polishComplete || finalizing}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-30"
         >
-          <Check size={12} /> 完成
+          <Check size={12} /> {t("common.complete")}
         </button>
       </div>
     </div>

@@ -118,5 +118,10 @@
       "description": "Première porcelaine du Japon — corps blanc rehaussé de l'iconique sous-glaçure cobalt 染付.",
       "problem": "De nombreux petits fours ont fermé, en concurrence avec la porcelaine importée produite en masse."
     }
+  },
+  "stages": {
+    "wajima": {
+      "completeMakie": "Saupoudrer l'or et terminer"
+    }
   }
 }

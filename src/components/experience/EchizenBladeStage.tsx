@@ -19,6 +19,7 @@ import {
   playWater,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ─────────────────────────────────────────────────────────────────────
 // Step definitions — 4 stages of Echizen blade forging.
@@ -1037,6 +1038,7 @@ function TogiStep({
   onComplete: (dataUrl: string) => void;
   finalizing: boolean;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [strokes, setStrokes] = useState(0);
   const strokesRef = useRef(0);
@@ -1193,7 +1195,7 @@ function TogiStep({
         onClick={complete}
         className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
       >
-        <Check size={12} /> <span className="font-jp tracking-wider">完成</span>
+        <Check size={12} /> <span className="font-jp tracking-wider">{t("common.complete")}</span>
       </button>
     </>
   );

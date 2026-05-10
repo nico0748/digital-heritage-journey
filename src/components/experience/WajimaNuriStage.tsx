@@ -17,6 +17,7 @@ import {
   playClick,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ────────────────────────────────────────────────────────────────────
 // Wajima-nuri (輪島塗) — 4-step experience
@@ -576,6 +577,7 @@ function KashokuStep({
   technique: Technique;
   onComplete: (dataUrl: string) => void;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointsRef = useRef<DecoPoint[]>([]);
   const flecksRef = useRef<GoldFleck[]>([]);
@@ -872,7 +874,7 @@ function KashokuStep({
       >
         <Check size={12} />
         <span className="font-jp tracking-wider">
-          {technique === "makie" ? "金粉を蒔いて完成" : "完成"}
+          {technique === "makie" ? t("stages.wajima.completeMakie") : t("common.complete")}
         </span>
       </button>
     </div>

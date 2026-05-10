@@ -19,6 +19,7 @@ import {
   playWoodCrack,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ─────────────────────────────────────────────────────────────────────
 // 4-step craft flow mirroring 大館曲げわっぱ production:
@@ -955,6 +956,7 @@ function TojiStep({
   onBack: () => void;
   onStitchesChange: (n: number) => void;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // Stitches are placed in order, 0..TOJI_STITCHES-1, so the user works
   // from one end of the seam to the other.
@@ -1228,7 +1230,7 @@ function TojiStep({
           disabled={!ready || finalizing}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          <Check size={12} /> 完成
+          <Check size={12} /> {t("common.complete")}
         </button>
       </div>
     </div>

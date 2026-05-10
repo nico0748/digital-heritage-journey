@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import clsx from "clsx";
+import { useTranslations } from "@/lib/i18n";
 
 // ─────────────────────────────────────────────────────────────────────
 // 4-step craft flow mirroring the real 京扇子 production sequence:
@@ -870,6 +871,7 @@ function ShiageStep({
   onComplete: (dataUrl: string) => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const paintImgRef = useRef<HTMLImageElement | null>(null);
   const spreadRef = useRef(0);
@@ -1145,7 +1147,7 @@ function ShiageStep({
           disabled={!done || finalizing}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          <Check size={12} /> Complete
+          <Check size={12} /> {t("common.complete")}
         </button>
       </div>
     </div>
