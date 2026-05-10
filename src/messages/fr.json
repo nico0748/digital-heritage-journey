@@ -1,0 +1,111 @@
+{
+  "common": {
+    "back": "Retour",
+    "complete": "Terminer",
+    "next": "Suivant",
+    "previous": "Précédent"
+  },
+  "archive": {
+    "title": "Choisissez une culture à transmettre.",
+    "subtitleAll": "Chacune disparaît un peu plus vite que la précédente.",
+    "subtitlePrefecture": "Artisanats et fêtes transmis depuis {prefecture}.",
+    "filterAll": "Tout",
+    "filterAria": "Filtrer par préfecture",
+    "comingSoonHeading": "Les expériences de {prefecture} arrivent bientôt.",
+    "highlightsLabel": "Artisanats et fêtes notables",
+    "browseAll": "Voir toutes les cultures"
+  },
+  "experience": {
+    "visitReal": "Rencontrer la chose même",
+    "visitRealJp": "本物に触れる",
+    "needsSuccessors": "Cette culture a besoin de successeurs.",
+    "carriedHeader": "Vous avez porté {name} un pas plus loin.",
+    "share": "Partager",
+    "seeMore": "En savoir plus"
+  },
+  "linkKind": {
+    "festival": "Festival",
+    "museum": "Musée",
+    "association": "Association",
+    "shop": "Boutique",
+    "experience": "Expérience"
+  },
+  "cultures": {
+    "kiriko": {
+      "description": "Cristal taillé qui réfracte la lumière en motifs géométriques délicats.",
+      "problem": "Il ne reste plus qu'une poignée d'ateliers."
+    },
+    "washi": {
+      "description": "Papier fait main, puisé feuille à feuille à partir des fibres du mûrier kōzo.",
+      "problem": "Dans certains villages, les artisans sont moins de vingt."
+    },
+    "bingata": {
+      "description": "Teinture au pochoir et à la réserve de la cour du royaume des Ryūkyū ; motifs tropicaux éclatants.",
+      "problem": "Peu de jeunes artisans apprennent la technique en plusieurs étapes du pochoir et de la réserve."
+    },
+    "hanabi": {
+      "description": "Feux d'artifice traditionnels japonais s'épanouissant comme des chrysanthèmes dans le ciel nocturne.",
+      "problem": "Les maîtres pyrotechniciens (花火師) vieillissent, et les communautés en déclin ne peuvent plus financer les fêtes d'été."
+    },
+    "lantern": {
+      "description": "Lanternes en papier éclairées par une flamme unique, portées dans les rues d'été.",
+      "problem": "Les lanternes en washi façonnées à la main perdent leurs artisans face aux répliques en plastique."
+    },
+    "taiko": {
+      "description": "Tambour japonais au cœur des fêtes, qui appelle les dieux et marque les saisons.",
+      "problem": "Les troupes locales de taiko perdent leurs joueurs à mesure que les villages se dépeuplent."
+    },
+    "sensu": {
+      "description": "Éventail pliant dont le washi plié déplace l'air et encadre un geste intime.",
+      "problem": "Les maîtres éventaillistes vieillissent sans successeurs."
+    },
+    "tsugaru-nuri": {
+      "description": "Laque en 48 étapes, plusieurs couches de couleurs polies pour révéler le motif moucheté karanuri.",
+      "problem": "Deux mois par pièce ; il ne reste qu'une trentaine de maîtres en activité à Hirosaki."
+    },
+    "nanbu-tekki": {
+      "description": "Théières en fonte au motif régulier de grêle 霰文 ; le fer relâché adoucit le thé.",
+      "problem": "Les fonderies ferment à mesure que le gaz et l'électricité remplacent les bouilloires traditionnelles au charbon."
+    },
+    "magewappa": {
+      "description": "Boîtes en cèdre d'Akita courbé, cousues d'écorce de cerisier ; antibactériennes et légères comme une plume.",
+      "problem": "L'approvisionnement en cèdre d'Akita s'amenuise ; il ne reste qu'une dizaine de maîtres artisans."
+    },
+    "mashiko-yaki": {
+      "description": "Poterie rustique aux quatre émaux traditionnels ; au cœur du mouvement mingei de Hamada Shōji.",
+      "problem": "Les jeunes potiers se font rares ; environ 250 fours en activité contre 600 il y a une génération."
+    },
+    "tsubame-sanjo": {
+      "description": "Une feuille de cuivre martelée des dizaines de milliers de fois en un récipient sans soudure.",
+      "problem": "Les jeunes orfèvres sont rares ; un savoir-faire de classe mondiale, mais une génération vieillissante."
+    },
+    "wajima-nuri": {
+      "description": "Laque en 124 étapes, ornée d'or au chinkin et au makie ; trésor de Noto, frappé par le séisme de 2024.",
+      "problem": "Le séisme de la péninsule de Noto en 2024 a dévasté les ateliers ; la reconstruction reste incertaine."
+    },
+    "echizen-uchihamono": {
+      "description": "Forge vieille de 700 ans ; les techniques nimaihiroge et mawashi-haganetsuke produisent des lames fines et résistantes.",
+      "problem": "Les couteaux industriels dominent le marché ; il ne reste qu'une trentaine de forges en activité."
+    },
+    "bizen-yaki": {
+      "description": "Poterie sans glaçure — quatorze jours de cuisson au feu et à la cendre dessinent des motifs uniques 景色.",
+      "problem": "Les longues cuissons ne sont pas rentables ; beaucoup de jeunes potiers passent à des styles émaillés plus rapides."
+    },
+    "kumano-fude": {
+      "description": "Pinceaux haut de gamme pour la calligraphie et le maquillage ; 80 % du marché national, fournisseur des grandes marques mondiales.",
+      "problem": "La demande de pinceaux à maquillage de moindre technicité diminue ; le marché de la calligraphie se contracte."
+    },
+    "awa-odori": {
+      "description": "Danse de fête d'été vieille de 400 ans, sur un rythme à deux temps ; environ 1,3 million de visiteurs par an.",
+      "problem": "Les jeunes ren se réduisent ; les annulations dues à la pandémie ont rompu la continuité."
+    },
+    "hakata-ningyo": {
+      "description": "Poupées en argile biscuit peintes à la main ; le 目入れ (la peinture des yeux) leur donne leur âme.",
+      "problem": "La demande dans la décoration moderne baisse ; il ne reste qu'une cinquantaine de maîtres artisans."
+    },
+    "arita-yaki": {
+      "description": "Première porcelaine du Japon — corps blanc rehaussé de l'iconique sous-glaçure cobalt 染付.",
+      "problem": "De nombreux petits fours ont fermé, en concurrence avec la porcelaine importée produite en masse."
+    }
+  }
+}
