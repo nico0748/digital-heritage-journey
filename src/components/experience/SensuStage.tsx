@@ -267,7 +267,7 @@ function WaritakeStep({ onConfirm }: { onConfirm: () => void }) {
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Scissors size={14} /> Step 1 / 4 · 竹割り
+        <Scissors size={14} /> Step 1 / 4 · {t("stages.sensu.pill1")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.sensu.step1.heading")}
@@ -305,7 +305,7 @@ function WaritakeStep({ onConfirm }: { onConfirm: () => void }) {
         disabled={!ready}
         className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
       >
-        紙折りへ
+        {t("stages.sensu.toFold")}
         <ArrowRight size={12} />
       </button>
     </div>
@@ -494,7 +494,7 @@ function OrikamiStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Layers size={14} /> Step 2 / 4 · 紙折り
+        <Layers size={14} /> Step 2 / 4 · {t("stages.sensu.pill2")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.sensu.step2.heading")}
@@ -532,7 +532,7 @@ function OrikamiStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 竹を割り直す
+          <ArrowLeft size={12} /> {t("stages.sensu.backRib")}
         </button>
         <button
           type="button"
@@ -540,7 +540,7 @@ function OrikamiStep({
           disabled={!ready}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          絵付けへ
+          {t("stages.sensu.toPaint")}
           <ArrowRight size={12} />
         </button>
       </div>
@@ -773,7 +773,7 @@ function EtsukeStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Brush size={14} /> Step 3 / 4 · 絵付け
+        <Brush size={14} /> Step 3 / 4 · {t("stages.sensu.pill3")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.sensu.step3.heading")}
@@ -843,7 +843,7 @@ function EtsukeStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 紙を折り直す
+          <ArrowLeft size={12} /> {t("stages.sensu.backFold")}
         </button>
         <button
           type="button"
@@ -851,7 +851,7 @@ function EtsukeStep({
           disabled={!hasPaint}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          仕上げへ
+          {t("stages.sensu.toFinish")}
           <ArrowRight size={12} />
         </button>
       </div>
@@ -1105,7 +1105,7 @@ function ShiageStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> Step 4 / 4 · 仕上げ
+        <Sparkles size={14} /> Step 4 / 4 · {t("stages.sensu.pill4")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.sensu.step4.heading")}
@@ -1142,7 +1142,7 @@ function ShiageStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 描き直す
+          <ArrowLeft size={12} /> {t("stages.sensu.backDraw")}
         </button>
         <button
           type="button"

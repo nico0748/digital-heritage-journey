@@ -7,7 +7,8 @@
     "previous": "前へ",
     "copied": "コピーしました",
     "comingSoon": "Coming Soon",
-    "preparing": "準備中"
+    "preparing": "準備中",
+    "previousStep": "前へ戻る"
   },
   "ending": {
     "tagline": "ひとかけらが、いま保たれた",
@@ -24,7 +25,8 @@
     "filterAria": "都道府県でしぼり込む",
     "comingSoonHeading": "{prefecture}の体験は近日公開",
     "highlightsLabel": "代表的な工芸・祭事",
-    "browseAll": "すべての文化を見る"
+    "browseAll": "すべての文化を見る",
+    "allJapan": "全国"
   },
   "experience": {
     "visitReal": "本物に触れる",
@@ -155,7 +157,17 @@
       "step4": {
         "heading": "要を打ち、扇を開く",
         "hint": "竹骨を地紙に差し、要(かなめ)で留める。最後にゆっくり開いて出来上がり。ドラッグして扇骨をひろげる。"
-      }
+      },
+      "backRib": "竹を割り直す",
+      "backFold": "紙を折り直す",
+      "backDraw": "描き直す",
+      "pill1": "竹割り",
+      "pill2": "紙折り",
+      "pill3": "絵付け",
+      "pill4": "仕上げ",
+      "toFold": "紙折りへ",
+      "toPaint": "絵付けへ",
+      "toFinish": "仕上げへ"
     },
     "hanabi": {
       "step1": {
@@ -169,7 +181,109 @@
       "step3": {
         "heading": "花火玉の大きさを決める",
         "hint": "作った星をシェルに詰め、クラフト紙を何層も巻き付ける。巻きが厚いほど大きな花火が咲く。"
-      }
+      },
+      "backDesign": "絵柄を選び直す",
+      "backHoshi": "星を作り直す",
+      "backSize": "サイズを選び直す",
+      "pill1": "絵柄を決める",
+      "pill2": "星掛け",
+      "pill3": "玉貼り",
+      "pill4": "押して溜める · 離して打ち上げる",
+      "shellSize": {
+        "3": {
+          "jp": "三号玉",
+          "cm": "約 9 cm",
+          "bloomM": "開花 50 m",
+          "heightM": "高さ 120 m",
+          "desc": "町の小さな祭りで上がる、最も親しみやすいサイズ。"
+        },
+        "5": {
+          "jp": "五号玉",
+          "cm": "約 15 cm",
+          "bloomM": "開花 170 m",
+          "heightM": "高さ 190 m",
+          "desc": "地方花火大会の主役。バランスのとれた標準サイズ。"
+        },
+        "7": {
+          "jp": "七号玉",
+          "cm": "約 21 cm",
+          "bloomM": "開花 230 m",
+          "heightM": "高さ 250 m",
+          "desc": "中規模花火大会の主役。五号と尺玉の中間、迫力と細工が両立。"
+        },
+        "10": {
+          "jp": "尺玉(十号)",
+          "cm": "約 30 cm",
+          "bloomM": "開花 320 m",
+          "heightM": "高さ 330 m",
+          "desc": "大花火大会のクライマックス。重量約 8kg、玉貼り十数層。"
+        }
+      },
+      "patternDesc": {
+        "peony": "中心から放射状に星が広がる、最も基本の型。",
+        "chrysanthemum": "尾を引きながら大輪に咲く、二重円の構造。",
+        "willow": "重力に従って垂れ下がる、しだれ柳のような花火。",
+        "senrin": "親玉が咲いた後、無数の小玉が一斉に開花する。",
+        "yashi": "南国の椰子の木のように太い幹から長い葉が垂れ下がる。",
+        "yaeshin": "外殻 → 中殻 → 内殻と三段で開く、職人技の極み。",
+        "kobana": "メイン開花の中で小さな花が次々ポッポッと咲く。",
+        "heart": "型物。星(色玉)をハート型に詰めて咲かせる、現代花火師の遊び心。",
+        "star": "型物。五芒星の形に詰めて開花。祝祭でよく上がる。",
+        "smiley": "型物。目と笑顔で空に浮かぶ、夏祭りの定番アンコール。"
+      },
+      "hue": {
+        "shu": {
+          "name": "朱",
+          "metal": "ストロンチウム"
+        },
+        "kin": {
+          "name": "金",
+          "metal": "ナトリウム"
+        },
+        "midori": {
+          "name": "緑",
+          "metal": "バリウム"
+        },
+        "ai": {
+          "name": "藍",
+          "metal": "銅"
+        },
+        "murasaki": {
+          "name": "紫",
+          "metal": "Sr+Cu"
+        },
+        "kurenai": {
+          "name": "紅",
+          "metal": "リチウム"
+        }
+      },
+      "pick": "選ぶ",
+      "wrapLayers": "玉貼り {n} 層",
+      "patternMineralAria": "色: {color} ({metal})",
+      "starLayers": "星 {n} 層",
+      "layerCount": "{n} 層",
+      "layerCounter": "{count} / {max} 層",
+      "layerHintEmpty": "色を選んで重ねる",
+      "layerHintFull": "これ以上は重ねられない",
+      "layerHintMore": "あと {n} 層追加できる",
+      "howStarsMade": "星の作り方 · How fireworks stars are made",
+      "starStep1Name": "①種 (tane)",
+      "starStep1Desc": "粟粒大の小核",
+      "starStep2Name": "②掛け (kake)",
+      "starStep2Desc": "火薬と色素を塗布",
+      "starStep3Name": "③乾燥 (kansō)",
+      "starStep3Desc": "一晩乾かす",
+      "starStep4Name": "④検品 (kenpin)",
+      "starStep4Desc": "径と重さを揃える",
+      "starProcessNote": "実物は ②③ を 30〜80 回繰り返して 1cm 弱の星に育てる。本体験では各タップが「もう一層掛ける」一回分。",
+      "center": "中心",
+      "outer": "外側",
+      "undoLayer": "1 層戻す",
+      "clearAll": "全部やり直す",
+      "toTamabari": "玉貼りへ",
+      "crossSectionAria": "星の断面図",
+      "crossSectionEmpty": "色をタップして層を重ねる",
+      "toLaunch": "打ち上げ準備"
     },
     "magewappa": {
       "step1": {
@@ -187,7 +301,14 @@
       "step4": {
         "heading": "桜皮で接合部を縫う",
         "hint": "山桜の樹皮を細く割いた紐で 5 ヶ所を縫い綴じる。秋田の桜皮も誇り高い伝統素材。"
-      }
+      },
+      "backHegi": "削ぎ直す",
+      "backNisai": "煮直す",
+      "backMage": "曲げ直す",
+      "pill1": "へぎ",
+      "pill2": "煮沸",
+      "pill3": "曲げ",
+      "pill4": "綴じ"
     },
     "mashiko": {
       "step1": {

@@ -162,6 +162,7 @@ export function KumanoFudeStage({
   onComplete: (dataUrl: string) => void;
   palette: [string, string, string];
 }) {
+  const t = useTranslations();
   const mutedRef = useMutedRef();
   const [stepIdx, setStepIdx] = useState(0);
   const [mix, setMix] = useState<Mix>(DEFAULT_MIX);
@@ -261,7 +262,7 @@ export function KumanoFudeStage({
           onClick={goPrev}
           className="inline-flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55 transition hover:text-washi-50"
         >
-          <ArrowLeft size={12} /> 前へ戻る
+          <ArrowLeft size={12} /> {t("common.previousStep")}
         </button>
       )}
     </div>

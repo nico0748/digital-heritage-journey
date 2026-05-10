@@ -7,7 +7,8 @@
     "previous": "上一步",
     "copied": "已复制",
     "comingSoon": "敬请期待",
-    "preparing": "准备中"
+    "preparing": "准备中",
+    "previousStep": "返回上一步"
   },
   "ending": {
     "tagline": "一小片,已被守住",
@@ -24,7 +25,8 @@
     "filterAria": "按都道府县筛选",
     "comingSoonHeading": "{prefecture}的体验即将开放",
     "highlightsLabel": "代表性工艺与祭典",
-    "browseAll": "浏览全部文化"
+    "browseAll": "浏览全部文化",
+    "allJapan": "全国"
   },
   "experience": {
     "visitReal": "走进真实",
@@ -155,7 +157,17 @@
       "step4": {
         "heading": "打入要,展开扇子",
         "hint": "将竹骨穿入扇面,以「要」铆钉固定。最后慢慢拖动扇骨展开,完成。"
-      }
+      },
+      "backRib": "重新剖竹",
+      "backFold": "重新折纸",
+      "backDraw": "重新作画",
+      "pill1": "剖竹",
+      "pill2": "折纸",
+      "pill3": "绘付",
+      "pill4": "仕上",
+      "toFold": "前往折纸",
+      "toPaint": "前往绘付",
+      "toFinish": "前往仕上"
     },
     "hanabi": {
       "step1": {
@@ -169,7 +181,109 @@
       "step3": {
         "heading": "决定花火球大小",
         "hint": "将做好的星塞入外壳,缠绕多层牛皮纸。缠得越厚,绽放越大。"
-      }
+      },
+      "backDesign": "重新选择图样",
+      "backHoshi": "重新制星",
+      "backSize": "重新选择尺寸",
+      "pill1": "决定图样",
+      "pill2": "掛星",
+      "pill3": "贴玉",
+      "pill4": "按住蓄力 · 松手发射",
+      "shellSize": {
+        "3": {
+          "jp": "三号玉",
+          "cm": "约 9 cm",
+          "bloomM": "开花 50 m",
+          "heightM": "高度 120 m",
+          "desc": "最小的烟花弹,小镇夏祭即可点燃。"
+        },
+        "5": {
+          "jp": "五号玉",
+          "cm": "约 15 cm",
+          "bloomM": "开花 170 m",
+          "heightM": "高度 190 m",
+          "desc": "地方烟花大会的主角,平衡标准之选。"
+        },
+        "7": {
+          "jp": "七号玉",
+          "cm": "约 21 cm",
+          "bloomM": "开花 230 m",
+          "heightM": "高度 250 m",
+          "desc": "中型烟花大会的主角,介于五号与尺玉之间,迫力与精工兼具。"
+        },
+        "10": {
+          "jp": "尺玉(十号)",
+          "cm": "约 30 cm",
+          "bloomM": "开花 320 m",
+          "heightM": "高度 330 m",
+          "desc": "大型烟花大会的高潮。约 8 公斤,玉贴十余层。"
+        }
+      },
+      "patternDesc": {
+        "peony": "从中心放射状散开,最基本的形态。",
+        "chrysanthemum": "边拖尾边盛开的大轮,二重圆结构。",
+        "willow": "随重力垂落,如垂柳般的烟花。",
+        "senrin": "亲玉绽放后,无数小玉一齐开花。",
+        "yashi": "如南国椰树,粗干长叶垂落而下。",
+        "yaeshin": "外壳 → 中壳 → 内壳,三层依次开。匠艺之极致。",
+        "kobana": "主花之中,小花相继啪啪绽放。",
+        "heart": "型物。将星(色玉)排成心形绽放,现代花火师的玩心。",
+        "star": "型物。排成五芒星之形开花。庆典常见。",
+        "smiley": "型物。眼与笑容浮于夜空,夏祭安可经典。"
+      },
+      "hue": {
+        "shu": {
+          "name": "朱",
+          "metal": "锶"
+        },
+        "kin": {
+          "name": "金",
+          "metal": "钠"
+        },
+        "midori": {
+          "name": "绿",
+          "metal": "钡"
+        },
+        "ai": {
+          "name": "藍",
+          "metal": "铜"
+        },
+        "murasaki": {
+          "name": "紫",
+          "metal": "Sr+Cu"
+        },
+        "kurenai": {
+          "name": "紅",
+          "metal": "锂"
+        }
+      },
+      "pick": "选择",
+      "wrapLayers": "玉贴 {n} 层",
+      "patternMineralAria": "颜色: {color} ({metal})",
+      "starLayers": "星 {n} 层",
+      "layerCount": "{n} 层",
+      "layerCounter": "{count} / {max} 层",
+      "layerHintEmpty": "选择颜色叠涂",
+      "layerHintFull": "已无法再叠",
+      "layerHintMore": "尚可再叠 {n} 层",
+      "howStarsMade": "星的制法 · How fireworks stars are made",
+      "starStep1Name": "①种 (tane)",
+      "starStep1Desc": "粟粒大的小核",
+      "starStep2Name": "②挂 (kake)",
+      "starStep2Desc": "涂布火药与色素",
+      "starStep3Name": "③干燥 (kansō)",
+      "starStep3Desc": "晾一晚",
+      "starStep4Name": "④检品 (kenpin)",
+      "starStep4Desc": "调齐径与重量",
+      "starProcessNote": "实际上 ②③ 重复 30〜80 次,星方育至小于 1cm。本体验中,每点击一次即「再挂一层」。",
+      "center": "中心",
+      "outer": "外侧",
+      "undoLayer": "撤回一层",
+      "clearAll": "全部重做",
+      "toTamabari": "前往贴玉",
+      "crossSectionAria": "星的剖面图",
+      "crossSectionEmpty": "点击颜色叠涂",
+      "toLaunch": "准备发射"
     },
     "magewappa": {
       "step1": {
@@ -187,7 +301,14 @@
       "step4": {
         "heading": "以樱皮缝合接缝",
         "hint": "用细劈的山樱树皮丝线缝合 5 处接点。秋田的樱皮亦是引以为豪的传统素材。"
-      }
+      },
+      "backHegi": "重新削",
+      "backNisai": "重新煮",
+      "backMage": "重新弯",
+      "pill1": "削",
+      "pill2": "煮沸",
+      "pill3": "弯",
+      "pill4": "缝"
     },
     "mashiko": {
       "step1": {

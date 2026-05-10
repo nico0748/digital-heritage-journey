@@ -685,7 +685,7 @@ function RokuroStep({
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
           <ArrowLeft size={12} />
-          <span className="font-jp">前へ戻る</span>
+          <span>{t("common.previousStep")}</span>
         </button>
         <button
           type="button"
@@ -944,7 +944,7 @@ function SeyuStep({
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
           <ArrowLeft size={12} />
-          <span className="font-jp">前へ戻る</span>
+          <span>{t("common.previousStep")}</span>
         </button>
         <button
           type="button"
@@ -1252,7 +1252,7 @@ function HonyakiStep({
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10 disabled:opacity-40"
         >
           <ArrowLeft size={12} />
-          <span className="font-jp">前へ戻る</span>
+          <span>{t("common.previousStep")}</span>
         </button>
         {phase === "ready" && (
           <button

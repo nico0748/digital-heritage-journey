@@ -202,7 +202,7 @@ export function WajimaNuriStage({
           className="inline-flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55 transition hover:text-washi-50"
         >
           <ArrowLeft size={12} />
-          <span className="font-jp tracking-wider">前へ戻る</span>
+          <span className="tracking-wider">{t("common.previousStep")}</span>
         </button>
       )}
 

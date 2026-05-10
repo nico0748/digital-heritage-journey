@@ -425,7 +425,7 @@ function DesignStep({ onPick }: { onPick: (p: Pattern) => void }) {
   return (
     <div className="flex w-full flex-col items-center gap-6 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> Step 1 / 4 · 絵柄を決める
+        <Sparkles size={14} /> Step 1 / 4 · {t("stages.hanabi.pill1")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.hanabi.step1.heading")}
@@ -452,10 +452,10 @@ function DesignStep({ onPick }: { onPick: (p: Pattern) => void }) {
               </p>
             </div>
             <p className="text-xs leading-relaxed text-washi-50/70">
-              {PATTERN_INFO[p].desc}
+              {t(`stages.hanabi.patternDesc.${p}`)}
             </p>
             <span className="mt-1 inline-flex items-center gap-1 text-[0.6rem] uppercase tracking-[0.3em] text-amber-200/80 opacity-0 transition group-hover:opacity-100">
-              選ぶ <ArrowRight size={10} />
+              {t("stages.hanabi.pick")} <ArrowRight size={10} />
             </span>
           </button>
         ))}
@@ -727,7 +727,7 @@ function HoshiStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Layers size={14} /> Step 2 / 4 · 星掛け
+        <Layers size={14} /> Step 2 / 4 · {t("stages.hanabi.pill2")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.hanabi.step2.heading", { pattern: PATTERN_INFO[pattern].jp })}
@@ -745,46 +745,60 @@ function HoshiStep({
           → inspect that real 花火師 repeat dozens of times per star. */}
       <div className="w-[min(92vw,34rem)] rounded-lg border border-amber-200/15 bg-black/30 p-3 backdrop-blur-sm">
         <p className="mb-2 flex items-center gap-2 text-[0.55rem] uppercase tracking-[0.4em] text-amber-200/80">
-          <Sparkles size={10} /> 星の作り方 · How fireworks stars are made
+          <Sparkles size={10} /> {t("stages.hanabi.howStarsMade")}
         </p>
-        <ol className="grid grid-cols-2 gap-x-4 gap-y-1 font-jp text-[0.7rem] leading-relaxed text-washi-50/80 sm:grid-cols-4">
+        <ol className="grid grid-cols-2 gap-x-4 gap-y-1 text-[0.7rem] leading-relaxed text-washi-50/80 sm:grid-cols-4">
           <li>
-            <span className="text-amber-200/85">①種 (tane)</span>
+            <span className="text-amber-200/85">
+              {t("stages.hanabi.starStep1Name")}
+            </span>
             <span className="block text-[0.6rem] text-washi-50/55">
-              粟粒大の小核
+              {t("stages.hanabi.starStep1Desc")}
             </span>
           </li>
           <li>
-            <span className="text-amber-200/85">②掛け (kake)</span>
+            <span className="text-amber-200/85">
+              {t("stages.hanabi.starStep2Name")}
+            </span>
             <span className="block text-[0.6rem] text-washi-50/55">
-              火薬と色素を塗布
+              {t("stages.hanabi.starStep2Desc")}
             </span>
           </li>
           <li>
-            <span className="text-amber-200/85">③乾燥 (kansō)</span>
+            <span className="text-amber-200/85">
+              {t("stages.hanabi.starStep3Name")}
+            </span>
             <span className="block text-[0.6rem] text-washi-50/55">
-              一晩乾かす
+              {t("stages.hanabi.starStep3Desc")}
             </span>
           </li>
           <li>
-            <span className="text-amber-200/85">④検品 (kenpin)</span>
+            <span className="text-amber-200/85">
+              {t("stages.hanabi.starStep4Name")}
+            </span>
             <span className="block text-[0.6rem] text-washi-50/55">
-              径と重さを揃える
+              {t("stages.hanabi.starStep4Desc")}
             </span>
           </li>
         </ol>
         <p className="mt-2 text-[0.6rem] leading-relaxed text-washi-50/55">
-          実物は ②③ を 30〜80 回繰り返して 1cm 弱の星に育てる。本体験では各タップが「もう一層掛ける」一回分。
+          {t("stages.hanabi.starProcessNote")}
         </p>
       </div>
 
       <div className="text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/55">
-        {layers.length} / {MAX_HOSHI_LAYERS} 層 ·{" "}
+        {t("stages.hanabi.layerCounter", {
+          count: layers.length,
+          max: MAX_HOSHI_LAYERS,
+        })}{" "}
+        ·{" "}
         {layers.length === 0
-          ? "色を選んで重ねる"
+          ? t("stages.hanabi.layerHintEmpty")
           : full
-            ? "これ以上は重ねられない"
-            : `${MAX_HOSHI_LAYERS - layers.length} 層追加できる`}
+            ? t("stages.hanabi.layerHintFull")
+            : t("stages.hanabi.layerHintMore", {
+                n: MAX_HOSHI_LAYERS - layers.length,
+              })}
       </div>
 
       {/* Colour palette — tap to ADD as next outer layer. Re-tapping
@@ -813,7 +827,7 @@ function HoshiStep({
               {count > 0 && (
                 <span
                   className="absolute right-1.5 top-1.5 grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-amber-300 px-1 font-mono text-[0.6rem] font-medium text-sumi"
-                  aria-label={`${count} 層`}
+                  aria-label={t("stages.hanabi.layerCount", { n: count })}
                 >
                   ×{count}
                 </span>
@@ -828,7 +842,9 @@ function HoshiStep({
                       : "none",
                 }}
               />
-              <span className="font-jp text-sm">{h.name}</span>
+              <span className="text-sm">
+                {t(`stages.hanabi.hue.${h.en}.name`)}
+              </span>
               <span className="mt-0.5 text-[0.5rem] tracking-[0.15em] text-amber-200/45">
                 {h.metalEn}
               </span>
@@ -840,7 +856,7 @@ function HoshiStep({
       {/* Layer history strip — shows burn order (outermost = burns first) */}
       {layers.length > 0 && (
         <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.25em] text-washi-50/55">
-          <span className="text-washi-50/40">中心</span>
+          <span className="text-washi-50/40">{t("stages.hanabi.center")}</span>
           <div className="flex items-center gap-1.5">
             {layers.map((h, i) => (
               <span
@@ -850,7 +866,7 @@ function HoshiStep({
               />
             ))}
           </div>
-          <span className="text-washi-50/40">外側</span>
+          <span className="text-washi-50/40">{t("stages.hanabi.outer")}</span>
         </div>
       )}
 
@@ -860,7 +876,7 @@ function HoshiStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 絵柄を選び直す
+          <ArrowLeft size={12} /> {t("stages.hanabi.backDesign")}
         </button>
         <button
           type="button"
@@ -868,7 +884,7 @@ function HoshiStep({
           disabled={layers.length === 0}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10 disabled:cursor-not-allowed disabled:opacity-30"
         >
-          <Undo2 size={12} /> 1 層戻す
+          <Undo2 size={12} /> {t("stages.hanabi.undoLayer")}
         </button>
         <button
           type="button"
@@ -876,7 +892,7 @@ function HoshiStep({
           disabled={layers.length === 0}
           className="text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/45 transition hover:text-washi-50/80 disabled:cursor-not-allowed disabled:opacity-30"
         >
-          全部やり直す
+          {t("stages.hanabi.clearAll")}
         </button>
         <button
           type="button"
@@ -884,7 +900,7 @@ function HoshiStep({
           disabled={!ready}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          玉貼りへ
+          {t("stages.hanabi.toTamabari")}
           <ArrowRight size={12} />
         </button>
       </div>
@@ -896,6 +912,7 @@ function HoshiStep({
 // the "tane" (seed), and each user-added layer paints a ring outward.
 // Sized so a fully-loaded 5-layer star comfortably fits inside.
 function HoshiCrossSection({ layers }: { layers: number[] }) {
+  const t = useTranslations();
   const cx = 90;
   const cy = 90;
   const seedR = 8;
@@ -906,7 +923,7 @@ function HoshiCrossSection({ layers }: { layers: number[] }) {
       height="180"
       viewBox="0 0 180 180"
       className="drop-shadow-[0_0_24px_rgba(255,200,120,0.18)]"
-      aria-label="星の断面図"
+      aria-label={t("stages.hanabi.crossSectionAria")}
     >
       {/* Outermost first (drawn behind), inner layers drawn last so
           they appear on top — but since each is a smaller circle, they
@@ -958,7 +975,7 @@ function HoshiCrossSection({ layers }: { layers: number[] }) {
           fontSize="9"
           fill="rgba(252,232,170,0.5)"
         >
-          色をタップして層を重ねる
+          {t("stages.hanabi.crossSectionEmpty")}
         </text>
       )}
     </svg>
@@ -992,7 +1009,7 @@ function TamabariStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Package size={14} /> Step 3 / 4 · 玉貼り
+        <Package size={14} /> Step 3 / 4 · {t("stages.hanabi.pill3")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.hanabi.step3.heading")}
@@ -1023,20 +1040,22 @@ function TamabariStep({
                 wrapTarget={info.wrapTarget}
               />
               <div>
-                <h3 className="font-jp text-xl tracking-wider">{info.jp}</h3>
+                <h3 className="text-xl tracking-wider">
+                  {t(`stages.hanabi.shellSize.${sz}.jp`)}
+                </h3>
                 <p className="text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/55">
-                  {info.cm}
+                  {t(`stages.hanabi.shellSize.${sz}.cm`)}
                 </p>
               </div>
               <div className="flex flex-col gap-0.5 text-[0.6rem] tracking-[0.15em] text-amber-200/65">
-                <span>{info.heightM}</span>
-                <span>{info.bloomM}</span>
+                <span>{t(`stages.hanabi.shellSize.${sz}.heightM`)}</span>
+                <span>{t(`stages.hanabi.shellSize.${sz}.bloomM`)}</span>
                 <span className="text-washi-50/40">
-                  玉貼り {info.wrapTarget} 層
+                  {t("stages.hanabi.wrapLayers", { n: info.wrapTarget })}
                 </span>
               </div>
               <p className="text-[0.65rem] leading-relaxed text-washi-50/65">
-                {info.desc}
+                {t(`stages.hanabi.shellSize.${sz}.desc`)}
               </p>
             </button>
           );
@@ -1049,7 +1068,7 @@ function TamabariStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 星を作り直す
+          <ArrowLeft size={12} /> {t("stages.hanabi.backHoshi")}
         </button>
         <button
           type="button"
@@ -1057,16 +1076,16 @@ function TamabariStep({
           disabled={!selected}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          打ち上げ準備
+          {t("stages.hanabi.toLaunch")}
           <ArrowRight size={12} />
         </button>
       </div>
 
       {/* Recipe summary */}
       <div className="mt-2 flex items-center gap-3 rounded-full bg-black/30 px-4 py-2 text-[0.65rem] tracking-[0.2em] text-washi-50/70">
-        <span className="font-jp">{PATTERN_INFO[pattern].jp}</span>
+        <span>{PATTERN_INFO[pattern].en}</span>
         <span className="text-washi-50/30">·</span>
-        <span>星 {layers.length} 層</span>
+        <span>{t("stages.hanabi.starLayers", { n: layers.length })}</span>
         <div className="flex items-center gap-1">
           {layers.map((h, i) => (
             <span
@@ -1971,7 +1990,7 @@ function LaunchStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> Step 4 / 4 · 押して溜める · 離して打ち上げる
+        <Sparkles size={14} /> Step 4 / 4 · {t("stages.hanabi.pill4")}
       </p>
 
       <div
@@ -2033,7 +2052,7 @@ function LaunchStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> サイズを選び直す
+          <ArrowLeft size={12} /> {t("stages.hanabi.backSize")}
         </button>
         <button
           type="button"

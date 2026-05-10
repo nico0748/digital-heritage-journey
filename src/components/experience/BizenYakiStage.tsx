@@ -1571,7 +1571,7 @@ export function BizenYakiStage({
             className="inline-flex items-center gap-2 rounded-full border border-washi-50/25 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/75 transition hover:border-washi-50/55 hover:text-washi-50"
           >
             <ChevronLeft size={12} />
-            <span className="font-jp">前へ戻る</span>
+            <span>{t("common.previousStep")}</span>
           </button>
         )}
 

@@ -7,7 +7,8 @@
     "previous": "Précédent",
     "copied": "Copié",
     "comingSoon": "Bientôt disponible",
-    "preparing": "En préparation"
+    "preparing": "En préparation",
+    "previousStep": "Étape précédente"
   },
   "ending": {
     "tagline": "Un petit fragment est préservé",
@@ -24,7 +25,8 @@
     "filterAria": "Filtrer par préfecture",
     "comingSoonHeading": "Les expériences de {prefecture} arrivent bientôt.",
     "highlightsLabel": "Artisanats et fêtes notables",
-    "browseAll": "Voir toutes les cultures"
+    "browseAll": "Voir toutes les cultures",
+    "allJapan": "National"
   },
   "experience": {
     "visitReal": "Rencontrer la chose même",
@@ -155,7 +157,17 @@
       "step4": {
         "heading": "Poser le rivet, ouvrir l'éventail",
         "hint": "Glissez les lattes dans le papier et fixez avec le rivet kaname. Enfin, faites glisser pour ouvrir lentement."
-      }
+      },
+      "backRib": "Refendre le bambou",
+      "backFold": "Replier le papier",
+      "backDraw": "Repeindre",
+      "pill1": "Wari-take",
+      "pill2": "Kami-ori",
+      "pill3": "Etsuke",
+      "pill4": "Shiage",
+      "toFold": "Vers le pliage",
+      "toPaint": "Vers la peinture",
+      "toFinish": "Vers la finition"
     },
     "hanabi": {
       "step1": {
@@ -169,7 +181,109 @@
       "step3": {
         "heading": "Choisissez la taille de la coque",
         "hint": "Tassez vos étoiles dans la coque et enroulez plusieurs couches de papier kraft. Plus l'enroulement est épais, plus l'éclosion est grande."
-      }
+      },
+      "backDesign": "Choisir un autre motif",
+      "backHoshi": "Refaire les étoiles",
+      "backSize": "Choisir une autre taille",
+      "pill1": "Choisir le motif",
+      "pill2": "Hoshigake",
+      "pill3": "Tamabari",
+      "pill4": "Maintenir pour charger · relâcher pour tirer",
+      "shellSize": {
+        "3": {
+          "jp": "Sango-dama (#3)",
+          "cm": "≈ 9 cm",
+          "bloomM": "Éclosion 50 m",
+          "heightM": "Apogée 120 m",
+          "desc": "La plus petite bombe — celle qu'une modeste fête d'été villageoise peut tirer."
+        },
+        "5": {
+          "jp": "Gogo-dama (#5)",
+          "cm": "≈ 15 cm",
+          "bloomM": "Éclosion 170 m",
+          "heightM": "Apogée 190 m",
+          "desc": "La star des festivals régionaux — la taille emblématique, parfaitement équilibrée."
+        },
+        "7": {
+          "jp": "Shichigo-dama (#7)",
+          "cm": "≈ 21 cm",
+          "bloomM": "Éclosion 230 m",
+          "heightM": "Apogée 250 m",
+          "desc": "Vedette des festivals moyens, entre #5 et shaku ; force et finesse."
+        },
+        "10": {
+          "jp": "Shaku-dama (#10)",
+          "cm": "≈ 30 cm",
+          "bloomM": "Éclosion 320 m",
+          "heightM": "Apogée 330 m",
+          "desc": "Le climax d'un grand festival. Environ 8 kg, douzaine de couches de papier."
+        }
+      },
+      "patternDesc": {
+        "peony": "Les étoiles s'évasent en éventail depuis un centre unique — la forme la plus fondamentale.",
+        "chrysanthemum": "Une grande fleur de chrysanthème qui s'ouvre en traînant — structure à double anneau.",
+        "willow": "Tombe sous la gravité comme un saule pleureur.",
+        "senrin": "Après l'éclosion de la coque mère, mille petites coques s'ouvrent ensemble.",
+        "yashi": "Comme un palmier tropical — un tronc épais aux longues frondes pendantes.",
+        "yaeshin": "Anneau externe → médian → interne, en trois temps. L'apogée du métier.",
+        "kobana": "Dans la grande éclosion, de minuscules fleurs secondaires éclatent en succession rapide.",
+        "heart": "Une coque katamono. Les étoiles sont disposées en cœur — la fantaisie de l'artisan moderne.",
+        "star": "Une coque katamono. Étoiles disposées en pentagramme. Favori des fêtes.",
+        "smiley": "Une coque katamono. Yeux et bouche flottent dans le ciel — le rappel canonique des fêtes d'été."
+      },
+      "hue": {
+        "shu": {
+          "name": "Shu",
+          "metal": "Strontium"
+        },
+        "kin": {
+          "name": "Kin",
+          "metal": "Sodium"
+        },
+        "midori": {
+          "name": "Midori",
+          "metal": "Baryum"
+        },
+        "ai": {
+          "name": "Ai",
+          "metal": "Cuivre"
+        },
+        "murasaki": {
+          "name": "Murasaki",
+          "metal": "Sr+Cu"
+        },
+        "kurenai": {
+          "name": "Kurenai",
+          "metal": "Lithium"
+        }
+      },
+      "pick": "Choisir",
+      "wrapLayers": "{n} couches de papier",
+      "patternMineralAria": "Couleur : {color} ({metal})",
+      "starLayers": "{n} couches d'étoile",
+      "layerCount": "{n} couches",
+      "layerCounter": "{count} / {max} couches",
+      "layerHintEmpty": "Choisissez une couleur à empiler",
+      "layerHintFull": "Impossible d'ajouter une couche",
+      "layerHintMore": "{n} couches disponibles",
+      "howStarsMade": "Comment fabriquer les étoiles de feu",
+      "starStep1Name": "① Tane (graine)",
+      "starStep1Desc": "Noyau gros comme un grain de millet",
+      "starStep2Name": "② Kake (enrobage)",
+      "starStep2Desc": "Appliquer poudre + pigment",
+      "starStep3Name": "③ Kansō (séchage)",
+      "starStep3Desc": "Sécher une nuit",
+      "starStep4Name": "④ Kenpin (contrôle)",
+      "starStep4Desc": "Égaliser diamètre et poids",
+      "starProcessNote": "En réalité, ② et ③ se répètent 30 à 80 fois pour faire grandir l'étoile à moins de 1 cm. Dans cette expérience, chaque tape équivaut à une couche d'enrobage de plus.",
+      "center": "Centre",
+      "outer": "Extérieur",
+      "undoLayer": "Annuler une couche",
+      "clearAll": "Tout effacer",
+      "toTamabari": "Vers Tamabari",
+      "crossSectionAria": "Coupe transversale de l'étoile",
+      "crossSectionEmpty": "Tapez une couleur pour empiler",
+      "toLaunch": "Prêt à lancer"
     },
     "magewappa": {
       "step1": {
@@ -187,7 +301,14 @@
       "step4": {
         "heading": "Coudre la jointure à l'écorce de cerisier",
         "hint": "Cousez cinq points avec de fines lanières d'écorce de cerisier sauvage. L'écorce de cerisier d'Akita est elle-même un matériau traditionnel de prestige."
-      }
+      },
+      "backHegi": "Retrancher",
+      "backNisai": "Réamollir",
+      "backMage": "Recourber",
+      "pill1": "Hegi",
+      "pill2": "Nisai",
+      "pill3": "Mage",
+      "pill4": "Toji"
     },
     "mashiko": {
       "step1": {

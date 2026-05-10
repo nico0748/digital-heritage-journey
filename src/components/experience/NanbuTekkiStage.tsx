@@ -518,6 +518,7 @@ function KataStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const t = useTranslations();
   const [rodKick, setRodKick] = useState(0); // increments each tamp
 
   // Deterministic sand-grain sprinkle. Generated once with a seeded
@@ -638,7 +639,7 @@ function KataStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 前へ戻る
+          <ArrowLeft size={12} /> {t("common.previousStep")}
         </button>
         <button
           type="button"
@@ -727,6 +728,7 @@ function IkomiStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const t = useTranslations();
   const pouringRef = useRef(false);
   const pourStartRef = useRef(0);
   const pourBaseRef = useRef(0);
@@ -969,7 +971,7 @@ function IkomiStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 前へ戻る
+          <ArrowLeft size={12} /> {t("common.previousStep")}
         </button>
         <button
           type="button"
@@ -1227,7 +1229,7 @@ function ShiageStep({
           disabled={finalizing}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10 disabled:opacity-30"
         >
-          <ArrowLeft size={12} /> 前へ戻る
+          <ArrowLeft size={12} /> {t("common.previousStep")}
         </button>
         <button
           type="button"

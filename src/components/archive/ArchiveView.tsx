@@ -7,7 +7,12 @@ import { cultures } from "@/content/cultures";
 import { prefectures, getPrefecture } from "@/content/prefectures";
 import { CultureCard } from "@/components/archive/CultureCard";
 import { useTranslations } from "@/lib/i18n";
-import type { PrefectureId } from "@/types/content";
+import { useLocaleStore } from "@/stores/useLocaleStore";
+import type { Prefecture, PrefectureId } from "@/types/content";
+
+function prefName(p: Prefecture, locale: string): string {
+  return locale === "ja" ? p.nameJp : p.nameEn;
+}
 
 /**
  * Client wrapper that renders the entire Archive page UI. The server
@@ -17,6 +22,7 @@ import type { PrefectureId } from "@/types/content";
  */
 export function ArchiveView({ activeId }: { activeId: PrefectureId | null }) {
   const t = useTranslations();
+  const locale = useLocaleStore((s) => s.locale);
   const activePref = activeId ? getPrefecture(activeId) : null;
   const filtered = activeId
     ? cultures.filter((c) => c.prefectures?.includes(activeId) ?? false)
@@ -35,9 +41,7 @@ export function ArchiveView({ activeId }: { activeId: PrefectureId | null }) {
         </Link>
         <p className="mt-10 text-[0.65rem] uppercase tracking-[0.5em] text-sumi/60">
           {activePref ? (
-            <>
-              Archive · <span className="font-jp">{activePref.nameJp}</span>
-            </>
+            <>Archive · {prefName(activePref, locale)}</>
           ) : (
             "Archive"
           )}
@@ -47,7 +51,9 @@ export function ArchiveView({ activeId }: { activeId: PrefectureId | null }) {
         </h1>
         <p className="mt-4 max-w-xl text-sumi/60 italic">
           {activePref
-            ? t("archive.subtitlePrefecture", { prefecture: activePref.nameJp })
+            ? t("archive.subtitlePrefecture", {
+                prefecture: prefName(activePref, locale),
+              })
             : t("archive.subtitleAll")}
         </p>
       </header>
@@ -81,7 +87,7 @@ export function ArchiveView({ activeId }: { activeId: PrefectureId | null }) {
                     : "border-sumi/15 bg-white text-sumi/70 hover:border-sumi/40 hover:text-sumi",
                 )}
               >
-                <span className="font-jp">{p.nameJp}</span>
+                {prefName(p, locale)}
               </Link>
             </li>
           ))}
@@ -98,7 +104,7 @@ export function ArchiveView({ activeId }: { activeId: PrefectureId | null }) {
         <section className="relative z-10 mx-auto max-w-3xl rounded-lg border border-sumi/10 bg-white p-10 text-center">
           <p className="text-sm text-sumi/60">
             {t("archive.comingSoonHeading", {
-              prefecture: activePref?.nameJp ?? "",
+              prefecture: activePref ? prefName(activePref, locale) : "",
             })}
           </p>
           {activePref && activePref.highlights.length > 0 && (

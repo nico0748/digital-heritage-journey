@@ -7,7 +7,8 @@
     "previous": "이전",
     "copied": "복사되었습니다",
     "comingSoon": "공개 예정",
-    "preparing": "준비 중"
+    "preparing": "준비 중",
+    "previousStep": "이전 단계로"
   },
   "ending": {
     "tagline": "작은 한 조각이 지켜졌습니다",
@@ -24,7 +25,8 @@
     "filterAria": "도도부현으로 필터",
     "comingSoonHeading": "{prefecture}의 체험은 곧 공개됩니다",
     "highlightsLabel": "대표적인 공예와 축제",
-    "browseAll": "모든 문화 둘러보기"
+    "browseAll": "모든 문화 둘러보기",
+    "allJapan": "전국"
   },
   "experience": {
     "visitReal": "진짜를 만나러",
@@ -155,7 +157,17 @@
       "step4": {
         "heading": "요를 박고 부채를 편다",
         "hint": "부챗살을 종이에 끼우고 「요(かなめ)」 못으로 고정한다. 마지막에 천천히 펼쳐 완성. 드래그하여 부챗살을 펼친다."
-      }
+      },
+      "backRib": "대나무 다시 쪼개기",
+      "backFold": "종이 다시 접기",
+      "backDraw": "다시 그리기",
+      "pill1": "와리타케",
+      "pill2": "카미오리",
+      "pill3": "에쓰케",
+      "pill4": "시아게",
+      "toFold": "카미오리로",
+      "toPaint": "에쓰케로",
+      "toFinish": "시아게로"
     },
     "hanabi": {
       "step1": {
@@ -169,7 +181,109 @@
       "step3": {
         "heading": "불꽃 구슬의 크기를 결정한다",
         "hint": "만든 별을 외피에 채우고 크라프트지를 여러 겹 감는다. 감을수록 더 큰 불꽃이 핀다."
-      }
+      },
+      "backDesign": "도안 다시 고르기",
+      "backHoshi": "별 다시 만들기",
+      "backSize": "크기 다시 고르기",
+      "pill1": "도안 정하기",
+      "pill2": "호시가케",
+      "pill3": "타마바리",
+      "pill4": "눌러 충전 · 떼어 발사",
+      "shellSize": {
+        "3": {
+          "jp": "산고다마(三号玉)",
+          "cm": "약 9 cm",
+          "bloomM": "개화 50 m",
+          "heightM": "높이 120 m",
+          "desc": "가장 작은 폭죽. 마을의 작은 여름 축제도 띄울 수 있는 크기."
+        },
+        "5": {
+          "jp": "고고다마(五号玉)",
+          "cm": "약 15 cm",
+          "bloomM": "개화 170 m",
+          "heightM": "높이 190 m",
+          "desc": "지방 불꽃놀이의 주역. 균형 잡힌 표준 사이즈."
+        },
+        "7": {
+          "jp": "시치고다마(七号玉)",
+          "cm": "약 21 cm",
+          "bloomM": "개화 230 m",
+          "heightM": "높이 250 m",
+          "desc": "중규모 불꽃놀이의 주역. 오고와 샤쿠 사이, 박력과 세공이 모두 살아 있다."
+        },
+        "10": {
+          "jp": "샤쿠다마(尺玉·十号)",
+          "cm": "약 30 cm",
+          "bloomM": "개화 320 m",
+          "heightM": "높이 330 m",
+          "desc": "대규모 불꽃놀이의 클라이맥스. 약 8 kg, 종이 감기 십여 층."
+        }
+      },
+      "patternDesc": {
+        "peony": "중심에서 방사형으로 별이 퍼지는, 가장 기본의 형.",
+        "chrysanthemum": "꼬리를 끌며 대륜으로 피는 이중원 구조.",
+        "willow": "중력에 따라 늘어지는, 수양버들 같은 불꽃.",
+        "senrin": "오야다마가 핀 뒤, 수많은 작은 구슬이 일제히 개화.",
+        "yashi": "남국의 야자수처럼, 두꺼운 줄기에서 긴 잎이 늘어진다.",
+        "yaeshin": "외각 → 중각 → 내각, 삼단으로 열린다. 장인 기예의 정수.",
+        "kobana": "메인 개화 속에서 작은 꽃이 연이어 톡톡 핀다.",
+        "heart": "형물. 별을 하트 모양으로 채워 피우는, 현대 하나비시의 장난기.",
+        "star": "형물. 오망성 모양으로 채워 핀다. 축제에서 자주 띄워진다.",
+        "smiley": "형물. 눈과 미소가 하늘에 떠오르는, 여름 축제의 단골 앙코르."
+      },
+      "hue": {
+        "shu": {
+          "name": "주(朱)",
+          "metal": "스트론튬"
+        },
+        "kin": {
+          "name": "금(金)",
+          "metal": "나트륨"
+        },
+        "midori": {
+          "name": "녹(緑)",
+          "metal": "바륨"
+        },
+        "ai": {
+          "name": "람(藍)",
+          "metal": "구리"
+        },
+        "murasaki": {
+          "name": "자(紫)",
+          "metal": "Sr+Cu"
+        },
+        "kurenai": {
+          "name": "홍(紅)",
+          "metal": "리튬"
+        }
+      },
+      "pick": "선택",
+      "wrapLayers": "종이 감기 {n}층",
+      "patternMineralAria": "색: {color} ({metal})",
+      "starLayers": "별 {n}층",
+      "layerCount": "{n}층",
+      "layerCounter": "{count} / {max}층",
+      "layerHintEmpty": "색을 골라 겹치기",
+      "layerHintFull": "더 겹칠 수 없음",
+      "layerHintMore": "{n}층 더 추가 가능",
+      "howStarsMade": "별 만드는 법 · How fireworks stars are made",
+      "starStep1Name": "①씨앗 (tane)",
+      "starStep1Desc": "좁쌀 크기의 작은 핵",
+      "starStep2Name": "②코팅 (kake)",
+      "starStep2Desc": "화약과 색소 도포",
+      "starStep3Name": "③건조 (kansō)",
+      "starStep3Desc": "하룻밤 말리기",
+      "starStep4Name": "④검품 (kenpin)",
+      "starStep4Desc": "지름과 무게를 맞춘다",
+      "starProcessNote": "실제로는 ②③을 30〜80회 반복하여 1cm 미만의 별로 키운다. 이 체험에서는 매 탭이 「한 층 더 코팅」 한 번에 해당.",
+      "center": "중심",
+      "outer": "바깥",
+      "undoLayer": "한 층 되돌리기",
+      "clearAll": "전부 다시",
+      "toTamabari": "타마바리로",
+      "crossSectionAria": "별 단면도",
+      "crossSectionEmpty": "색을 탭하여 겹치기",
+      "toLaunch": "발사 준비"
     },
     "magewappa": {
       "step1": {
@@ -187,7 +301,14 @@
       "step4": {
         "heading": "벚나무 껍질로 이음매를 잇는다",
         "hint": "산벚의 껍질을 가늘게 쪼갠 끈으로 다섯 군데를 꿰매 잇는다. 아키타의 벚나무 껍질도 자랑스러운 전통 소재."
-      }
+      },
+      "backHegi": "다시 깎기",
+      "backNisai": "다시 삶기",
+      "backMage": "다시 휘기",
+      "pill1": "헤기",
+      "pill2": "니사이",
+      "pill3": "마게",
+      "pill4": "토지"
     },
     "mashiko": {
       "step1": {
