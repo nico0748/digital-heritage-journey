@@ -164,7 +164,10 @@
       "pill1": "剖竹",
       "pill2": "折纸",
       "pill3": "绘付",
-      "pill4": "仕上"
+      "pill4": "仕上",
+      "toFold": "前往折纸",
+      "toPaint": "前往绘付",
+      "toFinish": "前往仕上"
     },
     "hanabi": {
       "step1": {

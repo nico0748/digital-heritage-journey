@@ -305,7 +305,7 @@ function WaritakeStep({ onConfirm }: { onConfirm: () => void }) {
         disabled={!ready}
         className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
       >
-        紙折りへ
+        {t("stages.sensu.toFold")}
         <ArrowRight size={12} />
       </button>
     </div>
@@ -540,7 +540,7 @@ function OrikamiStep({
           disabled={!ready}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          絵付けへ
+          {t("stages.sensu.toPaint")}
           <ArrowRight size={12} />
         </button>
       </div>
@@ -851,7 +851,7 @@ function EtsukeStep({
           disabled={!hasPaint}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          仕上げへ
+          {t("stages.sensu.toFinish")}
           <ArrowRight size={12} />
         </button>
       </div>

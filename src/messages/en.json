@@ -164,7 +164,10 @@
       "pill1": "Wari-take",
       "pill2": "Kami-ori",
       "pill3": "Etsuke",
-      "pill4": "Shiage"
+      "pill4": "Shiage",
+      "toFold": "On to folding",
+      "toPaint": "On to painting",
+      "toFinish": "On to finishing"
     },
     "hanabi": {
       "step1": {
