@@ -142,13 +142,12 @@ function StepHeader({
   step,
   jp,
   romaji,
-  hint,
 }: {
   step: number;
   jp: string;
   romaji: string;
-  hint: string;
 }) {
+  const t = useTranslations();
   return (
     <div className="flex w-full max-w-xl flex-col items-center gap-2 text-center">
       <p className="text-[0.6rem] uppercase tracking-[0.5em] text-washi-50/70">
@@ -156,7 +155,9 @@ function StepHeader({
         <span className="font-jp tracking-[0.2em] text-washi-50">{jp}</span>
         <span className="ml-2 text-washi-50/45">{romaji}</span>
       </p>
-      <p className="font-jp text-sm leading-relaxed text-washi-50/85">{hint}</p>
+      <p className="text-sm leading-relaxed text-washi-50/85">
+        {t(`stages.tsuiki.step${step}.hint`)}
+      </p>
     </div>
   );
 }
@@ -489,7 +490,6 @@ function TsuchimeStep({
         step={1}
         jp="鎚目"
         romaji="Tsuchime"
-        hint="一枚の銅板を5万回以上叩いて成形。鎚目が銅を硬化させる"
       />
 
       <div className="relative h-[min(56vh,28rem)] w-[min(92vw,28rem)] overflow-hidden rounded-sm border border-washi-50/10 bg-[#1a0e06] shadow-2xl shadow-black/60">
@@ -692,7 +692,6 @@ function ShiboriStep({
         step={2}
         jp="絞り"
         romaji="Shibori"
-        hint="鎚目で銅を縮め、平面を立体に。これが鎚起の核心"
       />
 
       <div className="relative h-[min(56vh,28rem)] w-[min(92vw,28rem)] overflow-hidden rounded-sm border border-washi-50/10 bg-[#1a0e06] shadow-2xl shadow-black/60">
@@ -798,7 +797,6 @@ function YakinamashiStep({
         step={3}
         jp="焼鈍"
         romaji="Yakinamashi"
-        hint="800℃で焼鈍し、銅を柔らかく戻す。冷ます → 叩くを繰り返す"
       />
 
       <div className="relative h-[min(56vh,28rem)] w-[min(92vw,28rem)] overflow-hidden rounded-sm border border-washi-50/10 bg-[#0e0604] shadow-2xl shadow-black/60">
@@ -913,7 +911,6 @@ function ChakushokuStep({
         step={4}
         jp="着色"
         romaji="Chakushoku"
-        hint="硫黄や煮色で銅と化学反応 → 発色。同じ素材でも全く違う色合い"
       />
 
       <div className="relative h-[min(56vh,28rem)] w-[min(92vw,28rem)] overflow-hidden rounded-sm border border-washi-50/10 bg-[#0e0604] shadow-2xl shadow-black/60">

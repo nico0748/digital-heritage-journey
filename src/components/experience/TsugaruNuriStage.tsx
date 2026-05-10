@@ -182,6 +182,7 @@ function ShikakeStep({
   setSeeds: (s: Seed[]) => void;
   onNext: () => void;
 }) {
+  const t = useTranslations();
   const muted = useMutedRef();
   const svgRef = useRef<SVGSVGElement>(null);
   const idRef = useRef(seeds.length);
@@ -228,8 +229,8 @@ function ShikakeStep({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <p className="font-jp max-w-md text-center text-sm leading-relaxed text-washi-50/80">
-        漆と種粉(たねこ)を混ぜて木地に置く。これが唐塗の模様の核になる。
+      <p className="max-w-md text-center text-sm leading-relaxed text-washi-50/80">
+        {t("stages.tsugaru.shikake.hint")}
       </p>
 
       <div
@@ -336,6 +337,7 @@ function NurikasaneStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const t = useTranslations();
   const muted = useMutedRef();
   const topColor = layers[layers.length - 1]?.color ?? WOOD_COLOR;
   const atMax = layers.length >= MAX_LAYERS;
@@ -354,8 +356,8 @@ function NurikasaneStep({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <p className="font-jp max-w-md text-center text-sm leading-relaxed text-washi-50/80">
-        色違いの漆を順番に塗り重ねていく。後で研ぐと下層が見えてくる。
+      <p className="max-w-md text-center text-sm leading-relaxed text-washi-50/80">
+        {t("stages.tsugaru.nurikasane.hint")}
       </p>
 
       <div className="flex items-center gap-4">
@@ -495,6 +497,7 @@ function KansoStep({
   onBack: () => void;
   onDone: () => void;
 }) {
+  const t = useTranslations();
   const muted = useMutedRef();
   const [progress, setProgress] = useState(0);
   const mountedRef = useRef(true);
@@ -530,8 +533,8 @@ function KansoStep({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <p className="font-jp max-w-md text-center text-sm leading-relaxed text-washi-50/80">
-        漆風呂(うるしぶろ)で温度湿度管理して乾かす。実物では数日。
+      <p className="max-w-md text-center text-sm leading-relaxed text-washi-50/80">
+        {t("stages.tsugaru.kanso.hint")}
       </p>
 
       <div
@@ -892,8 +895,8 @@ function TogidashiStep({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <p className="font-jp max-w-md text-center text-sm leading-relaxed text-washi-50/80">
-        砥石で研ぎ、塗り重ねた色を斑紋として浮かび上がらせる。
+      <p className="max-w-md text-center text-sm leading-relaxed text-washi-50/80">
+        {t("stages.tsugaru.togidashi.hint")}
       </p>
 
       <div

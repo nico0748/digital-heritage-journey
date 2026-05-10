@@ -216,6 +216,7 @@ export function BingataStage({
   palette: [string, string, string];
 }) {
   const muted = useMutedRef();
+  const t = useTranslations();
   const [step, setStep] = useState(0);
   const [pattern, setPattern] = useState<PatternId | null>(null);
   const [paste, setPaste] = useState<Set<number>>(new Set());
@@ -363,8 +364,8 @@ export function BingataStage({
       </p>
 
       {/* Educational sub-text */}
-      <p className="max-w-md text-center font-jp text-[0.7rem] tracking-wider text-washi-50/65">
-        {STEP_HINT[step]}
+      <p className="max-w-md text-center text-[0.7rem] tracking-wider text-washi-50/65">
+        {t(`stages.bingata.step${step + 1}.hint`)}
       </p>
 
       {step === 0 && <KatagamiStep onPick={pickPattern} mutedRef={muted} />}

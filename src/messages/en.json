@@ -121,7 +121,23 @@
   },
   "stages": {
     "wajima": {
-      "completeMakie": "Sprinkle gold and complete"
+      "completeMakie": "Sprinkle gold and complete",
+      "step1": {
+        "desc": "Build a hard substrate from 3 coats of jinoko-clay lacquer",
+        "hint": "The diatomaceous-clay + lacquer base is Wajima's lifeline. Even the shattered bowl can return to its form."
+      },
+      "step2": {
+        "desc": "Layer 5-7 coats of black lacquer, deepening the gloss in the urushi-buro",
+        "hint": "Build mid-coat → top-coat → finishing top-coat, drying each in a humidity-controlled urushi chamber."
+      },
+      "step3": {
+        "desc": "Choose your decoration school — chinkin or makie",
+        "hint": "Chinkin is line work — gold inlaid into knife-cut grooves. Makie is surface work — gold dust sprinkled onto wet lacquer drawings."
+      },
+      "step4": {
+        "desc": "Bring the bowl to life with gold",
+        "hint": "Some pieces use 60 g of 24K gold. The hand's movement becomes the bowl's spirit."
+      }
     },
     "sensu": {
       "step1": {
@@ -251,6 +267,76 @@
       "togi": {
         "desc": "Sharpen on natural whetstone",
         "hint": "Sharpen on natural stone. The hamon pattern is co-authored by the quench and the sharpening."
+      }
+    },
+    "tsugaru": {
+      "shikake": {
+        "hint": "Mix lacquer with seed grains and place them on the wood. These will become the cores of the karanuri pattern."
+      },
+      "nurikasane": {
+        "hint": "Lay down successive coats of differently coloured lacquer. Polishing later will reveal the under-layers."
+      },
+      "kanso": {
+        "hint": "Cure inside the urushi-buro chamber with controlled temperature and humidity. In real life, this takes several days."
+      },
+      "togidashi": {
+        "hint": "Polish with a whetstone — the layered colours surface as the speckled karanuri pattern."
+      }
+    },
+    "nanbu": {
+      "step1": {
+        "hint": "Carve the arare hail-pattern into the wooden mold. Even spacing and tidy rows decide a kettle's grade."
+      },
+      "step2": {
+        "hint": "Mix sand and clay and tamp the mold. The casting's precision is determined here."
+      },
+      "step3": {
+        "hint": "Pour iron heated to 1500°C in the furnace, in one go. A single chance."
+      },
+      "step4": {
+        "hint": "Release from the mold; polish and lacquer it into the black iron vessel."
+      }
+    },
+    "bingata": {
+      "step1": {
+        "hint": "A separate craftsman carves the stencil (kataborishi). Each stencil takes hundreds of hours."
+      },
+      "step2": {
+        "hint": "Pack the stencil openings with paste made from glutinous rice and rice bran. The paste resists the dye."
+      },
+      "step3": {
+        "hint": "Apply 5-7 colours plus kumadori shading for depth — the colours of the Okinawan sun."
+      },
+      "step4": {
+        "hint": "Wash off the paste in a river or basin. The resist areas reveal the white motif beneath."
+      }
+    },
+    "hakata": {
+      "step1": {
+        "hint": "Hakata-ningyō has 400 years of history. Princess, warlord, Noh, child — each archetype has its own dignity."
+      },
+      "step2": {
+        "hint": "Paint the kimono with gofun (oyster-shell white) and iwa-enogu mineral pigments. Layered coats build depth."
+      },
+      "step3": {
+        "hint": "Cherry, fletching, hemp-leaf, arabesque — patterns express auspice and season."
+      },
+      "step4": {
+        "hint": "Me-ire — the final step. The moment the doll receives its soul."
+      }
+    },
+    "tsuiki": {
+      "step1": {
+        "hint": "A single copper sheet, hammered 50,000+ times into form. The tsuchime (hammer marks) work-harden the metal."
+      },
+      "step2": {
+        "hint": "Hammer marks shrink the copper, lifting flat into form. This is the core of tsuiki."
+      },
+      "step3": {
+        "hint": "Anneal at 800°C to soften the copper again. Cool → hammer → repeat."
+      },
+      "step4": {
+        "hint": "React copper with sulphur or boiled-colour baths to develop hue. Same material, completely different colour."
       }
     }
   }
