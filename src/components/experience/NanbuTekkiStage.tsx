@@ -102,6 +102,7 @@ export function NanbuTekkiStage({
   palette: [string, string, string];
 }) {
   const muted = useMutedRef();
+  const t = useTranslations();
   const [step, setStep] = useState(1);
   const [dots, setDots] = useState<Dot[]>([]);
   const [tamps, setTamps] = useState(0);
@@ -178,7 +179,7 @@ export function NanbuTekkiStage({
       )}
 
       <p className="max-w-[28rem] text-center text-[0.65rem] leading-relaxed tracking-wide text-washi-50/55">
-        {STEP_HINTS[step - 1]}
+        {t(`stages.nanbu.step${step}.hint`)}
       </p>
 
       <div className="mt-1 inline-flex flex-wrap items-center justify-center gap-2 rounded-full bg-black/35 px-4 py-1.5 text-[0.55rem] uppercase tracking-[0.4em] text-washi-50/70 backdrop-blur">

@@ -83,6 +83,7 @@ export function WajimaNuriStage({
   palette: [string, string, string];
 }) {
   const mutedRef = useMutedRef();
+  const t = useTranslations();
   const [stepIdx, setStepIdx] = useState(0);
   const [shitajiLayers, setShitajiLayers] = useState(0);
   const [lacquerLayers, setLacquerLayers] = useState(0);
@@ -138,8 +139,8 @@ export function WajimaNuriStage({
       </div>
 
       {/* Process description */}
-      <p className="font-jp max-w-md text-center text-sm leading-relaxed tracking-wider text-washi-50/85">
-        {STEP_DESC[stepIdx]}
+      <p className="max-w-md text-center text-sm leading-relaxed tracking-wider text-washi-50/85">
+        {t(`stages.wajima.step${stepIdx + 1}.desc`)}
       </p>
 
       {/* Active step body */}
@@ -189,8 +190,8 @@ export function WajimaNuriStage({
       )}
 
       {/* Educational sub-text */}
-      <p className="font-jp mt-1 max-w-md text-center text-[0.65rem] leading-relaxed tracking-wider text-washi-50/55">
-        {STEP_HINT[stepIdx]}
+      <p className="mt-1 max-w-md text-center text-[0.65rem] leading-relaxed tracking-wider text-washi-50/55">
+        {t(`stages.wajima.step${stepIdx + 1}.hint`)}
       </p>
 
       {/* Back button (every step except first) */}

@@ -121,7 +121,245 @@
   },
   "stages": {
     "wajima": {
-      "completeMakie": "Saupoudrer l'or et terminer"
+      "completeMakie": "Saupoudrer l'or et terminer",
+      "step1": {
+        "desc": "Bâtir un substrat dur en 3 couches de laque jinoko",
+        "hint": "Le fond d'argile diatomée + laque est l'épine dorsale du Wajima-nuri. Le bol fendu peut être ramené à sa forme."
+      },
+      "step2": {
+        "desc": "Superposer 5 à 7 couches de laque noire, sécher en urushi-buro pour un éclat profond",
+        "hint": "Mi-couche → couche supérieure → finition, en séchant chaque couche à humidité contrôlée."
+      },
+      "step3": {
+        "desc": "Choisir l'école d'ornement — chinkin ou makie",
+        "hint": "Le chinkin est un travail de ligne — or incrusté dans des sillons gravés. Le makie est un travail de surface — poudre d'or saupoudrée sur la laque humide."
+      },
+      "step4": {
+        "desc": "Donner vie au bol par l'or",
+        "hint": "Certaines pièces utilisent 60 g d'or 24 carats. Le mouvement de la main devient l'âme du bol."
+      }
+    },
+    "sensu": {
+      "step1": {
+        "heading": "Fendre le bambou en lattes du fan",
+        "hint": "Fendez un bambou unique en 13 lattes fines et égales. Tapez pour cliver brin par brin."
+      },
+      "step2": {
+        "heading": "Plier le washi en montagne-et-vallée",
+        "hint": "Alternez plis montagne et vallée. Chaque tape ajoute le pli suivant. Une fois plissé en accordéon, le papier devient la face de l'éventail."
+      },
+      "step3": {
+        "heading": "Peindre la face de l'éventail",
+        "hint": "Peignez librement à l'encre ou en couleur sur le washi plié. Suivez les plis ou ignorez-les — au choix."
+      },
+      "step4": {
+        "heading": "Poser le rivet, ouvrir l'éventail",
+        "hint": "Glissez les lattes dans le papier et fixez avec le rivet kaname. Enfin, faites glisser pour ouvrir lentement."
+      }
+    },
+    "hanabi": {
+      "step1": {
+        "heading": "Quel motif warimono ?",
+        "hint": "Le pyrotechnicien décide d'abord ce qui va éclore. Étoiles et coque sont façonnées autour de ce motif."
+      },
+      "step2": {
+        "heading": "Superposer les couleurs sur les étoiles {pattern}",
+        "hint": "Enrobez de minuscules graines en couches successives de poudre + pigments. Elles brûlent de l'extérieur, donc la dernière couleur posée éclôt en premier. Empilez deux fois pour qu'elle brûle plus longtemps."
+      },
+      "step3": {
+        "heading": "Choisissez la taille de la coque",
+        "hint": "Tassez vos étoiles dans la coque et enroulez plusieurs couches de papier kraft. Plus l'enroulement est épais, plus l'éclosion est grande."
+      }
+    },
+    "magewappa": {
+      "step1": {
+        "heading": "Trancher le cèdre d'Akita à 0,7 mm",
+        "hint": "Faites glisser le rabot latéralement le long du fil. Les copeaux montent, et une fine planche apparaît."
+      },
+      "step2": {
+        "heading": "Assouplir les fibres à l'eau chaude",
+        "hint": "30 minutes à 90 °C. Sous la vapeur, le cèdre se prépare à plier. Tapez pour avancer le temps."
+      },
+      "step3": {
+        "heading": "Enrouler autour du moule à chaud",
+        "hint": "Tirez les deux extrémités vers le moule central. Une fois refroidie, la forme est fixée."
+      },
+      "step4": {
+        "heading": "Coudre la jointure à l'écorce de cerisier",
+        "hint": "Cousez cinq points avec de fines lanières d'écorce de cerisier sauvage. L'écorce de cerisier d'Akita est elle-même un matériau traditionnel de prestige."
+      }
+    },
+    "mashiko": {
+      "step1": {
+        "heading": "Pétrir l'argile, créer la 'koshi'",
+        "hint": "Le pétrissage chasse les bulles et homogénéise les particules. La qualité de l'argile décide celle du vase."
+      },
+      "step2": {
+        "heading": "Tourner la forme au tour",
+        "hint": "Soulevez la forme avec les doigts pendant que le tour tourne. Une fois centré, le reste est un dialogue."
+      },
+      "step3": {
+        "heading": "Choisir parmi les quatre émaux traditionnels",
+        "hint": "Trempez l'émail. Le four en révèle la couleur par chimie."
+      },
+      "step4": {
+        "heading": "Cuire dans le four grimpant",
+        "hint": "24 heures dans le noborigama. Le hasard du feu et de la cendre peint le keshiki."
+      }
+    },
+    "washi": {
+      "stir": {
+        "hint": "Tracez des cercles dans l'eau pour défaire les fibres de kōzo.",
+        "en": "Défaire les fibres"
+      },
+      "beat": {
+        "hint": "Battez le faisceau au pilon en bois.",
+        "en": "Battre le faisceau"
+      },
+      "scoop": {
+        "hint": "Balancez l'écran de bambou de gauche à droite pour superposer les fibres.",
+        "en": "Sukikiri"
+      },
+      "press": {
+        "hint": "Appuyez et maintenez pour faire sortir l'eau.",
+        "en": "Presser l'eau"
+      },
+      "dry": {
+        "hint": "Laissez sécher au soleil.",
+        "en": "Sécher sur la planche"
+      },
+      "done": {
+        "hint": "Votre washi est terminé.",
+        "en": "Terminé"
+      }
+    },
+    "bizen": {
+      "rokuro": {
+        "hint": "Tournez l'argile hiyose au tour — sa teneur en fer donne la couleur signature de Bizen après cuisson.",
+        "en": "Rokuro"
+      },
+      "kamaire": {
+        "hint": "Selon l'emplacement dans le four, le keshiki change. La position fait partie de l'œuvre.",
+        "en": "Kama-ire"
+      },
+      "shosei": {
+        "hint": "10 à 14 jours de cuisson. Les hasards de la cendre, de la flamme et de la chaleur composent le keshiki.",
+        "en": "Shōsei"
+      },
+      "kashoku": {
+        "hint": "Contemplez le keshiki achevé. La même pièce ne peut jamais être refaite.",
+        "en": "Keshiki"
+      }
+    },
+    "echizen": {
+      "kashitsu": {
+        "desc": "Chauffer l'acier au charbon",
+        "hint": "Chauffez la forge kashitsu jusqu'à 1100 °C. Quand l'acier rougit à blanc, c'est le signal de frapper."
+      },
+      "tanzo": {
+        "desc": "Marteler l'acier blanc",
+        "hint": "Martelez pour étirer. Le double-écrasement nimaihiroge est la marque de la lignée Chiyozuru."
+      },
+      "yakiire": {
+        "desc": "Trempe à l'eau — fixe le hamon",
+        "hint": "Trempe à l'eau → l'acier durcit au revenu. Le hamon ondoyant d'une lame de maître naît ici."
+      },
+      "togi": {
+        "desc": "Affûter sur pierre naturelle",
+        "hint": "Affûtez sur pierre naturelle. La vague du hamon est co-écrite par la trempe et l'aiguisage."
+      }
+    },
+    "tsugaru": {
+      "shikake": {
+        "hint": "Mélangez la laque aux grains de semence et déposez-les sur le bois. Ils formeront les cœurs du motif karanuri."
+      },
+      "nurikasane": {
+        "hint": "Posez successivement des couches de laque de couleurs différentes. Le polissage révèlera les couches inférieures."
+      },
+      "kanso": {
+        "hint": "Faites sécher dans la chambre urushi-buro à température et humidité contrôlées. En vrai, cela prend plusieurs jours."
+      },
+      "togidashi": {
+        "hint": "Polissez à la pierre — les couches de couleur affleurent en motif moucheté karanuri."
+      }
+    },
+    "nanbu": {
+      "step1": {
+        "hint": "Gravez le motif arare (grêlons) dans le moule en bois. L'espacement régulier et l'ordre des lignes déterminent le rang de la théière."
+      },
+      "step2": {
+        "hint": "Mélangez sable et argile, tassez le moule. La précision de la fonte se joue ici."
+      },
+      "step3": {
+        "hint": "Coulez en une fois le fer chauffé à 1500 °C dans la fournaise. Un seul essai."
+      },
+      "step4": {
+        "hint": "Démoulez, polissez et laquez pour obtenir le récipient en fer noir."
+      }
+    },
+    "bingata": {
+      "step1": {
+        "hint": "Le pochoir est gravé par un autre artisan (kataborishi). Chaque pochoir demande des centaines d'heures."
+      },
+      "step2": {
+        "hint": "Bourrez les ouvertures du pochoir avec une pâte de riz gluant et de son. La pâte fait la réserve."
+      },
+      "step3": {
+        "hint": "Appliquez 5 à 7 couleurs + l'ombrage kumadori pour la profondeur — les couleurs du soleil d'Okinawa."
+      },
+      "step4": {
+        "hint": "Rincez la pâte dans une rivière ou une bassine. Les zones réservées laissent apparaître le motif en blanc."
+      }
+    },
+    "hakata": {
+      "step1": {
+        "hint": "Hakata-ningyō a 400 ans d'histoire. Princesse, samouraï, Nô, enfant — chaque archétype a sa propre dignité."
+      },
+      "step2": {
+        "hint": "Peignez le kimono au gofun (blanc de coquille d'huître) et aux pigments iwa-enogu. Les couches successives construisent la profondeur."
+      },
+      "step3": {
+        "hint": "Cerisier, plume de flèche, feuille de chanvre, arabesque — les motifs expriment l'augure et la saison."
+      },
+      "step4": {
+        "hint": "Me-ire — la peinture des yeux. L'étape finale du maître. L'instant où la poupée reçoit son âme."
+      }
+    },
+    "tsuiki": {
+      "step1": {
+        "hint": "Une seule feuille de cuivre, martelée plus de 50 000 fois. Les marques de marteau (tsuchime) durcissent le métal."
+      },
+      "step2": {
+        "hint": "Les marques de marteau resserrent le cuivre, élèvent le plat en volume. C'est le cœur du tsuiki."
+      },
+      "step3": {
+        "hint": "Recuit à 800 °C pour réassouplir le cuivre. Refroidir → marteler → répéter."
+      },
+      "step4": {
+        "hint": "Faites réagir le cuivre au soufre ou au bain de couleur cuite pour développer la teinte. Même matière, couleur radicalement différente."
+      }
+    },
+    "lantern": {
+      "light": {
+        "hint": "Tapez sur la lanterne à plusieurs reprises, comme pour en allumer la flamme.",
+        "en": "Tapez pour allumer la flamme"
+      },
+      "draw": {
+        "hint": "Tracez d'un seul trait un blason familial ou un caractère sur le washi.",
+        "en": "Glisser pour pinceauter"
+      },
+      "done": {
+        "hint": "Dans la nuit, la lanterne allumée flotte doucement.",
+        "en": "Allumée"
+      }
+    },
+    "taiko": {
+      "tagline": "Frapper le tambour · au rythme du temps",
+      "feedback": {
+        "perfect": "Magnifique",
+        "good": "Bien",
+        "miss": "Manqué"
+      }
     }
   }
 }

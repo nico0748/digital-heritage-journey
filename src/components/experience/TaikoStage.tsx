@@ -419,8 +419,7 @@ export function TaikoStage({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Drum size={14} />{" "}
-        <span className="font-jp tracking-[0.3em]">鼓を打つ</span> · タイミングを合わせて
+        <Drum size={14} /> {t("stages.taiko.tagline")}
       </p>
 
       <div
@@ -443,12 +442,8 @@ export function TaikoStage({
                   : "bg-black/40 text-washi-50/55"
             }`}
           >
-            <span className="font-jp tracking-wider">
-              {feedback === "perfect"
-                ? "見事"
-                : feedback === "good"
-                  ? "良し"
-                  : "外し"}
+            <span className="tracking-wider">
+              {t(`stages.taiko.feedback.${feedback}`)}
             </span>
           </div>
         )}

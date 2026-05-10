@@ -389,6 +389,7 @@ export function HakataNingyoStage({
   palette: [string, string, string];
 }) {
   const mutedRef = useMutedRef();
+  const t = useTranslations();
   const [stepIdx, setStepIdx] = useState(0);
   const [kata, setKata] = useState<KataKey | null>(null);
   const [zoneColors, setZoneColors] = useState<Partial<Record<ZoneId, ColorKey>>>(
@@ -606,11 +607,8 @@ export function HakataNingyoStage({
       </div>
 
       {/* Educational sub-text */}
-      <p className="max-w-[min(92vw,38rem)] text-center font-jp text-sm tracking-wider text-washi-50/85">
-        {stepIdx === 0 && "博多人形は約400年の歴史。姫・武将・能・童, 各々の格がある"}
-        {stepIdx === 1 && "胡粉(ごふん)と岩絵具で着物を彩色。重ね塗りで深みを出す"}
-        {stepIdx === 2 && "桜・矢羽根・麻の葉・唐草。縁起と季節を文様で表す"}
-        {stepIdx === 3 && "目入れ — 博多人形師の最終工程。人形に魂が宿る瞬間"}
+      <p className="max-w-[min(92vw,38rem)] text-center text-sm tracking-wider text-washi-50/85">
+        {t(`stages.hakata.step${stepIdx + 1}.hint`)}
       </p>
 
       {/* Per-step status pills */}
