@@ -122,6 +122,74 @@
   "stages": {
     "wajima": {
       "completeMakie": "Saupoudrer l'or et terminer"
+    },
+    "sensu": {
+      "step1": {
+        "heading": "Fendre le bambou en lattes du fan",
+        "hint": "Fendez un bambou unique en 13 lattes fines et égales. Tapez pour cliver brin par brin."
+      },
+      "step2": {
+        "heading": "Plier le washi en montagne-et-vallée",
+        "hint": "Alternez plis montagne et vallée. Chaque tape ajoute le pli suivant. Une fois plissé en accordéon, le papier devient la face de l'éventail."
+      },
+      "step3": {
+        "heading": "Peindre la face de l'éventail",
+        "hint": "Peignez librement à l'encre ou en couleur sur le washi plié. Suivez les plis ou ignorez-les — au choix."
+      },
+      "step4": {
+        "heading": "Poser le rivet, ouvrir l'éventail",
+        "hint": "Glissez les lattes dans le papier et fixez avec le rivet kaname. Enfin, faites glisser pour ouvrir lentement."
+      }
+    },
+    "hanabi": {
+      "step1": {
+        "heading": "Quel motif warimono ?",
+        "hint": "Le pyrotechnicien décide d'abord ce qui va éclore. Étoiles et coque sont façonnées autour de ce motif."
+      },
+      "step2": {
+        "heading": "Superposer les couleurs sur les étoiles {pattern}",
+        "hint": "Enrobez de minuscules graines en couches successives de poudre + pigments. Elles brûlent de l'extérieur, donc la dernière couleur posée éclôt en premier. Empilez deux fois pour qu'elle brûle plus longtemps."
+      },
+      "step3": {
+        "heading": "Choisissez la taille de la coque",
+        "hint": "Tassez vos étoiles dans la coque et enroulez plusieurs couches de papier kraft. Plus l'enroulement est épais, plus l'éclosion est grande."
+      }
+    },
+    "magewappa": {
+      "step1": {
+        "heading": "Trancher le cèdre d'Akita à 0,7 mm",
+        "hint": "Faites glisser le rabot latéralement le long du fil. Les copeaux montent, et une fine planche apparaît."
+      },
+      "step2": {
+        "heading": "Assouplir les fibres à l'eau chaude",
+        "hint": "30 minutes à 90 °C. Sous la vapeur, le cèdre se prépare à plier. Tapez pour avancer le temps."
+      },
+      "step3": {
+        "heading": "Enrouler autour du moule à chaud",
+        "hint": "Tirez les deux extrémités vers le moule central. Une fois refroidie, la forme est fixée."
+      },
+      "step4": {
+        "heading": "Coudre la jointure à l'écorce de cerisier",
+        "hint": "Cousez cinq points avec de fines lanières d'écorce de cerisier sauvage. L'écorce de cerisier d'Akita est elle-même un matériau traditionnel de prestige."
+      }
+    },
+    "mashiko": {
+      "step1": {
+        "heading": "Pétrir l'argile, créer la 'koshi'",
+        "hint": "Le pétrissage chasse les bulles et homogénéise les particules. La qualité de l'argile décide celle du vase."
+      },
+      "step2": {
+        "heading": "Tourner la forme au tour",
+        "hint": "Soulevez la forme avec les doigts pendant que le tour tourne. Une fois centré, le reste est un dialogue."
+      },
+      "step3": {
+        "heading": "Choisir parmi les quatre émaux traditionnels",
+        "hint": "Trempez l'émail. Le four en révèle la couleur par chimie."
+      },
+      "step4": {
+        "heading": "Cuire dans le four grimpant",
+        "hint": "24 heures dans le noborigama. Le hasard du feu et de la cendre peint le keshiki."
+      }
     }
   }
 }

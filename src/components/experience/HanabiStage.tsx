@@ -421,16 +421,17 @@ export function HanabiStage({
 // Step 1 — Design (pattern selection)
 // ═════════════════════════════════════════════════════════════════════
 function DesignStep({ onPick }: { onPick: (p: Pattern) => void }) {
+  const t = useTranslations();
   return (
     <div className="flex w-full flex-col items-center gap-6 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
         <Sparkles size={14} /> Step 1 / 4 · 絵柄を決める
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        どの割物にする？
+        {t("stages.hanabi.step1.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        花火師はまず「何を咲かせるか」を決める。星(色玉)もシェルもこの絵柄に合わせて作る。
+        {t("stages.hanabi.step1.hint")}
       </p>
 
       <div className="grid w-[min(92vw,42rem)] grid-cols-1 gap-3 sm:grid-cols-2">
@@ -720,6 +721,7 @@ function HoshiStep({
   onConfirm: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const ready = layers.length >= MIN_HOSHI_LAYERS;
   const full = layers.length >= MAX_HOSHI_LAYERS;
   return (
@@ -728,10 +730,10 @@ function HoshiStep({
         <Layers size={14} /> Step 2 / 4 · 星掛け
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        {PATTERN_INFO[pattern].jp}の星に色を重ねる
+        {t("stages.hanabi.step2.heading", { pattern: PATTERN_INFO[pattern].jp })}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        小さな種に火薬と色素を何層も塗り重ねる。外側から燃えるので、最後に重ねた色が一番先に咲く。同じ色を続けて重ねると、その色がより長く燃える。
+        {t("stages.hanabi.step2.hint")}
       </p>
 
       {/* Cross-section visualization of the star being built. */}
@@ -985,6 +987,7 @@ function TamabariStep({
   onConfirm: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const SIZES = SELECTABLE_SHELL_SIZES;
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
@@ -992,10 +995,10 @@ function TamabariStep({
         <Package size={14} /> Step 3 / 4 · 玉貼り
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        花火玉の大きさを決める
+        {t("stages.hanabi.step3.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        作った星をシェルに詰め、クラフト紙を何層も巻き付ける。巻きが厚いほど大きな花火が咲く。
+        {t("stages.hanabi.step3.hint")}
       </p>
 
       <div className="grid w-[min(92vw,52rem)] grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">

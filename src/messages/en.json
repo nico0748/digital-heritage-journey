@@ -122,6 +122,74 @@
   "stages": {
     "wajima": {
       "completeMakie": "Sprinkle gold and complete"
+    },
+    "sensu": {
+      "step1": {
+        "heading": "Split bamboo into fan ribs",
+        "hint": "Split a single bamboo evenly into 13 thin ribs. Tap to cleave one strand at a time."
+      },
+      "step2": {
+        "heading": "Fold the washi mountain-and-valley",
+        "hint": "Alternate mountain and valley folds. Each tap adds the next crease. Once accordioned, the paper becomes the fan face."
+      },
+      "step3": {
+        "heading": "Paint the fan paper",
+        "hint": "Paint freely with ink or colour on the folded washi. Follow the creases or ignore them — your choice."
+      },
+      "step4": {
+        "heading": "Set the rivet, open the fan",
+        "hint": "Slide the bamboo ribs into the paper and lock with the kaname rivet. Finally, drag to open the fan slowly."
+      }
+    },
+    "hanabi": {
+      "step1": {
+        "heading": "Which warimono pattern?",
+        "hint": "A pyrotechnician first decides what to bloom. Both the stars and the shell are crafted around this pattern."
+      },
+      "step2": {
+        "heading": "Layer colours onto the {pattern} stars",
+        "hint": "Coat tiny seeds with layered gunpowder + pigments. They burn outermost-first, so the last colour you add blooms first. Stack a colour twice to make it burn longer."
+      },
+      "step3": {
+        "heading": "Pick the shell size",
+        "hint": "Pack your stars into a shell and wrap kraft paper around it. Thicker wrap = larger bloom."
+      }
+    },
+    "magewappa": {
+      "step1": {
+        "heading": "Slice Akita cedar to 0.7mm",
+        "hint": "Glide the plane sideways along the grain. Shavings rise and a thin sheet emerges."
+      },
+      "step2": {
+        "heading": "Soften fibres in hot water",
+        "hint": "30 minutes at 90°C. The cedar prepares to bend in the steam. Tap to fast-forward."
+      },
+      "step3": {
+        "heading": "Wrap around the form while warm",
+        "hint": "Pull both ends to meet the central form. Once cooled the shape locks in."
+      },
+      "step4": {
+        "heading": "Stitch the seam with cherry bark",
+        "hint": "Thread thin strips of mountain-cherry bark through 5 stitch points. Akita's cherry bark is a proud traditional material in itself."
+      }
+    },
+    "mashiko": {
+      "step1": {
+        "heading": "Knead the clay, build koshi",
+        "hint": "Kneading expels air and evens grain. The clay's quality decides the vessel's."
+      },
+      "step2": {
+        "heading": "Throw the form on the wheel",
+        "hint": "Lift the form with your fingers as the wheel turns. Centre it and the rest is dialogue."
+      },
+      "step3": {
+        "heading": "Pick from the four traditional glazes",
+        "hint": "Dip the glaze. The kiln's chemistry then reveals its colour."
+      },
+      "step4": {
+        "heading": "Fire in the climbing kiln",
+        "hint": "24 hours in the noborigama. Fire and ash collide to paint the keshiki landscape."
+      }
     }
   }
 }

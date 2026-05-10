@@ -118,6 +118,7 @@ export function SensuStage({
 // the log visibly fans out into individual ribs.
 // ═════════════════════════════════════════════════════════════════════
 function WaritakeStep({ onConfirm }: { onConfirm: () => void }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [splits, setSplits] = useState(0);
   const splitsRef = useRef(0);
@@ -269,10 +270,10 @@ function WaritakeStep({ onConfirm }: { onConfirm: () => void }) {
         <Scissors size={14} /> Step 1 / 4 · 竹割り
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        竹を割って扇骨を作る
+        {t("stages.sensu.step1.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        一本の竹を細く均等に裂いて 13 本の扇骨に。タップで一筋ずつ割いていく。
+        {t("stages.sensu.step1.hint")}
       </p>
 
       <canvas
@@ -328,6 +329,7 @@ function OrikamiStep({
   onConfirm: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [folds, setFolds] = useState(0);
   const foldsRef = useRef(0);
@@ -495,10 +497,10 @@ function OrikamiStep({
         <Layers size={14} /> Step 2 / 4 · 紙折り
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        和紙を山折り・谷折りで畳む
+        {t("stages.sensu.step2.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        山折りと谷折りを交互に。タップごとに次の折り筋が入る。蛇腹に畳まれた紙が扇の地紙になる。
+        {t("stages.sensu.step2.hint")}
       </p>
 
       <canvas
@@ -568,6 +570,7 @@ function EtsukeStep({
   onConfirm: (paintDataUrl: string) => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const paintRef = useRef<HTMLCanvasElement | null>(null);
   const ink = INKS.find((i) => i.id === inkId) ?? INKS[0]!;
@@ -773,10 +776,10 @@ function EtsukeStep({
         <Brush size={14} /> Step 3 / 4 · 絵付け
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        地紙に絵を描く
+        {t("stages.sensu.step3.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        畳んだ和紙の上に、墨や色で自由に描く。折り筋を活かしても、無視しても良い。
+        {t("stages.sensu.step3.hint")}
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-4">
@@ -1105,10 +1108,10 @@ function ShiageStep({
         <Sparkles size={14} /> Step 4 / 4 · 仕上げ
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        要を打ち、扇を開く
+        {t("stages.sensu.step4.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        竹骨を地紙に差し、要(かなめ)で留める。最後にゆっくり開いて出来上がり。ドラッグして扇骨をひろげる。
+        {t("stages.sensu.step4.hint")}
       </p>
 
       <canvas

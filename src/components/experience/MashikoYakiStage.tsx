@@ -210,6 +210,7 @@ export function MashikoYakiStage({
 // (コシ) you build by working the clay.
 // ═════════════════════════════════════════════════════════════════════
 function TsuchimomiStep({ onConfirm }: { onConfirm: () => void }) {
+  const t = useTranslations();
   const mutedRef = useMutedRef();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [taps, setTaps] = useState(0);
@@ -375,10 +376,10 @@ function TsuchimomiStep({ onConfirm }: { onConfirm: () => void }) {
         <span className="font-jp">Step 1 / {TOTAL_STEPS} · 土練り</span>
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        粘土を練り、コシを出す
+        {t("stages.mashiko.step1.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        練りで気泡を抜き、粒子を均一にする。土の質が器の質を決める。
+        {t("stages.mashiko.step1.hint")}
       </p>
 
       <canvas
@@ -438,6 +439,7 @@ function RokuroStep({
   onConfirm: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const mutedRef = useMutedRef();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const heightRef = useRef(initialHeight);
@@ -651,10 +653,10 @@ function RokuroStep({
         <span className="font-jp">Step 2 / {TOTAL_STEPS} · 轆轤</span>
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        轆轤を回し、形を引き上げる
+        {t("stages.mashiko.step2.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        轆轤を回しながら指で形を引き上げる。中心が決まれば後は対話。
+        {t("stages.mashiko.step2.hint")}
       </p>
 
       <canvas
@@ -721,6 +723,7 @@ function SeyuStep({
   onConfirm: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const mutedRef = useMutedRef();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pourStartRef = useRef<number | null>(null);
@@ -895,10 +898,10 @@ function SeyuStep({
         <span className="font-jp">Step 3 / {TOTAL_STEPS} · 施釉</span>
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        伝統四釉から選ぶ
+        {t("stages.mashiko.step3.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        釉薬を浸けがけ。焼くと化学変化で発色する。
+        {t("stages.mashiko.step3.hint")}
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
@@ -1221,10 +1224,10 @@ function HonyakiStep({
         <span className="font-jp">Step 4 / {TOTAL_STEPS} · 本焼き</span>
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        登り窯で焼き上げる
+        {t("stages.mashiko.step4.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        登り窯で 24 時間焼成。火と灰の偶然が景色を作る。
+        {t("stages.mashiko.step4.hint")}
       </p>
 
       <canvas

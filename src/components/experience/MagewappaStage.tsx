@@ -147,6 +147,7 @@ function RecipeBadge({
 // each time, and warm-coloured shavings curl off the cut.
 // ═════════════════════════════════════════════════════════════════════
 function HegiStep({ onConfirm }: { onConfirm: (layers: number) => void }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [layers, setLayers] = useState(0);
   const layersRef = useRef(0);
@@ -358,10 +359,10 @@ function HegiStep({ onConfirm }: { onConfirm: (layers: number) => void }) {
         <Hammer size={14} /> Step 1 / 4 · へぎ
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        秋田杉を 0.7mm に削ぐ
+        {t("stages.magewappa.step1.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        鉋(かんな)を木目に沿って横に滑らせる。木屑が舞い、薄板が現れる。
+        {t("stages.magewappa.step1.hint")}
       </p>
 
       <canvas
@@ -420,6 +421,7 @@ function NisaiStep({
   onConfirm: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const steam = useRef<Steam[]>([]);
   // Elapsed soak time, in ms. Time accumulates from rAF deltas; taps
@@ -633,10 +635,10 @@ function NisaiStep({
         <Flame size={14} /> Step 2 / 4 · 煮沸
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        熱湯で繊維を柔らかく
+        {t("stages.magewappa.step2.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        90°C で 30 分。湯気の中で杉が曲がる準備を整える。タップで時間を早送り。
+        {t("stages.magewappa.step2.hint")}
       </p>
 
       <canvas
@@ -697,6 +699,7 @@ function MageStep({
   onConfirm: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bendRef = useRef(0);
   const [bend, setBend] = useState(0);
@@ -888,10 +891,10 @@ function MageStep({
         <Layers size={14} /> Step 3 / 4 · 曲げ
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        熱いうちに型へ巻きつける
+        {t("stages.magewappa.step3.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        中央の型に合わせて、両端を引き寄せる。冷めたら形が固定される。
+        {t("stages.magewappa.step3.hint")}
       </p>
 
       <canvas
@@ -1185,10 +1188,10 @@ function TojiStep({
         <Sparkles size={14} /> Step 4 / 4 · 綴じ
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
-        桜皮で接合部を縫う
+        {t("stages.magewappa.step4.heading")}
       </h2>
       <p className="max-w-md text-center text-sm italic text-washi-50/70">
-        山桜の樹皮を細く割いた紐で 5 ヶ所を縫い綴じる。秋田の桜皮も誇り高い伝統素材。
+        {t("stages.magewappa.step4.hint")}
       </p>
 
       <canvas
