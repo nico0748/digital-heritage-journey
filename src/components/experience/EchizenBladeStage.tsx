@@ -240,7 +240,7 @@ export function EchizenBladeStage({
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/25 px-3 py-1.5 text-[0.55rem] uppercase tracking-[0.3em] text-washi-50/75 transition hover:bg-washi-50/10 disabled:opacity-30"
         >
           <ArrowLeft size={11} />{" "}
-          <span className="font-jp tracking-wider">前へ戻る</span>
+          <span className="tracking-wider">{t("common.previousStep")}</span>
         </button>
       )}
     </div>

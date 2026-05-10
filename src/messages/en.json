@@ -7,7 +7,8 @@
     "previous": "Previous",
     "copied": "Copied",
     "comingSoon": "Coming Soon",
-    "preparing": "Preparing"
+    "preparing": "Preparing",
+    "previousStep": "Back a step"
   },
   "ending": {
     "tagline": "A small piece is preserved",
@@ -155,7 +156,14 @@
       "step4": {
         "heading": "Set the rivet, open the fan",
         "hint": "Slide the bamboo ribs into the paper and lock with the kaname rivet. Finally, drag to open the fan slowly."
-      }
+      },
+      "backRib": "Re-split the bamboo",
+      "backFold": "Re-fold the paper",
+      "backDraw": "Re-paint",
+      "pill1": "Wari-take",
+      "pill2": "Kami-ori",
+      "pill3": "Etsuke",
+      "pill4": "Shiage"
     },
     "hanabi": {
       "step1": {
@@ -169,7 +177,14 @@
       "step3": {
         "heading": "Pick the shell size",
         "hint": "Pack your stars into a shell and wrap kraft paper around it. Thicker wrap = larger bloom."
-      }
+      },
+      "backDesign": "Pick a different pattern",
+      "backHoshi": "Re-make the stars",
+      "backSize": "Pick a different size",
+      "pill1": "Pick the pattern",
+      "pill2": "Hoshigake",
+      "pill3": "Tamabari",
+      "pill4": "Hold to charge · release to launch"
     },
     "magewappa": {
       "step1": {
@@ -187,7 +202,14 @@
       "step4": {
         "heading": "Stitch the seam with cherry bark",
         "hint": "Thread thin strips of mountain-cherry bark through 5 stitch points. Akita's cherry bark is a proud traditional material in itself."
-      }
+      },
+      "backHegi": "Re-slice",
+      "backNisai": "Re-soften",
+      "backMage": "Re-bend",
+      "pill1": "Hegi",
+      "pill2": "Nisai",
+      "pill3": "Mage",
+      "pill4": "Toji"
     },
     "mashiko": {
       "step1": {

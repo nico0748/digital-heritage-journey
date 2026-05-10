@@ -356,7 +356,7 @@ function HegiStep({ onConfirm }: { onConfirm: (layers: number) => void }) {
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Hammer size={14} /> Step 1 / 4 · へぎ
+        <Hammer size={14} /> Step 1 / 4 · {t("stages.magewappa.pill1")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.magewappa.step1.heading")}
@@ -632,7 +632,7 @@ function NisaiStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Flame size={14} /> Step 2 / 4 · 煮沸
+        <Flame size={14} /> Step 2 / 4 · {t("stages.magewappa.pill2")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.magewappa.step2.heading")}
@@ -665,7 +665,7 @@ function NisaiStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 削ぎ直す
+          <ArrowLeft size={12} /> {t("stages.magewappa.backHegi")}
         </button>
         <button
           type="button"
@@ -888,7 +888,7 @@ function MageStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Layers size={14} /> Step 3 / 4 · 曲げ
+        <Layers size={14} /> Step 3 / 4 · {t("stages.magewappa.pill3")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.magewappa.step3.heading")}
@@ -925,7 +925,7 @@ function MageStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 煮直す
+          <ArrowLeft size={12} /> {t("stages.magewappa.backNisai")}
         </button>
         <button
           type="button"
@@ -1185,7 +1185,7 @@ function TojiStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> Step 4 / 4 · 綴じ
+        <Sparkles size={14} /> Step 4 / 4 · {t("stages.magewappa.pill4")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.magewappa.step4.heading")}
@@ -1225,7 +1225,7 @@ function TojiStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 曲げ直す
+          <ArrowLeft size={12} /> {t("stages.magewappa.backMage")}
         </button>
         <button
           type="button"

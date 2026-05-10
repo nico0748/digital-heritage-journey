@@ -7,7 +7,8 @@
     "previous": "Précédent",
     "copied": "Copié",
     "comingSoon": "Bientôt disponible",
-    "preparing": "En préparation"
+    "preparing": "En préparation",
+    "previousStep": "Étape précédente"
   },
   "ending": {
     "tagline": "Un petit fragment est préservé",
@@ -155,7 +156,14 @@
       "step4": {
         "heading": "Poser le rivet, ouvrir l'éventail",
         "hint": "Glissez les lattes dans le papier et fixez avec le rivet kaname. Enfin, faites glisser pour ouvrir lentement."
-      }
+      },
+      "backRib": "Refendre le bambou",
+      "backFold": "Replier le papier",
+      "backDraw": "Repeindre",
+      "pill1": "Wari-take",
+      "pill2": "Kami-ori",
+      "pill3": "Etsuke",
+      "pill4": "Shiage"
     },
     "hanabi": {
       "step1": {
@@ -169,7 +177,14 @@
       "step3": {
         "heading": "Choisissez la taille de la coque",
         "hint": "Tassez vos étoiles dans la coque et enroulez plusieurs couches de papier kraft. Plus l'enroulement est épais, plus l'éclosion est grande."
-      }
+      },
+      "backDesign": "Choisir un autre motif",
+      "backHoshi": "Refaire les étoiles",
+      "backSize": "Choisir une autre taille",
+      "pill1": "Choisir le motif",
+      "pill2": "Hoshigake",
+      "pill3": "Tamabari",
+      "pill4": "Maintenir pour charger · relâcher pour tirer"
     },
     "magewappa": {
       "step1": {
@@ -187,7 +202,14 @@
       "step4": {
         "heading": "Coudre la jointure à l'écorce de cerisier",
         "hint": "Cousez cinq points avec de fines lanières d'écorce de cerisier sauvage. L'écorce de cerisier d'Akita est elle-même un matériau traditionnel de prestige."
-      }
+      },
+      "backHegi": "Retrancher",
+      "backNisai": "Réamollir",
+      "backMage": "Recourber",
+      "pill1": "Hegi",
+      "pill2": "Nisai",
+      "pill3": "Mage",
+      "pill4": "Toji"
     },
     "mashiko": {
       "step1": {

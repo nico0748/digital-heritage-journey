@@ -634,7 +634,7 @@ export function HakataNingyoStage({
             disabled={finalizing}
             className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10 disabled:opacity-40"
           >
-            <ArrowLeft size={12} /> 前へ戻る
+            <ArrowLeft size={12} /> {t("common.previousStep")}
           </button>
         )}
         {stepIdx < TOTAL - 1 && (

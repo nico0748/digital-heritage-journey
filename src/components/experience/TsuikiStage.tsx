@@ -191,6 +191,7 @@ function BackButton({
   onClick: () => void;
   disabled?: boolean;
 }) {
+  const t = useTranslations();
   return (
     <button
       type="button"
@@ -198,7 +199,7 @@ function BackButton({
       disabled={disabled}
       className="inline-flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/60 transition hover:text-washi-50 disabled:opacity-30"
     >
-      <ArrowLeft size={12} /> 前へ戻る
+      <ArrowLeft size={12} /> {t("common.previousStep")}
     </button>
   );
 }

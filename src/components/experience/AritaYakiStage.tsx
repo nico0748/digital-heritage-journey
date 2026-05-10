@@ -715,7 +715,7 @@ export function AritaYakiStage({
             onClick={goBack}
             className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.55rem] uppercase tracking-[0.36em] text-washi-50/80 transition hover:border-washi-50/60 hover:text-washi-50"
           >
-            <ArrowLeft size={12} /> 前へ戻る
+            <ArrowLeft size={12} /> {t("common.previousStep")}
           </button>
         )}
         {step.id === "shitae" && strokes.length > 0 && (
@@ -753,7 +753,7 @@ export function AritaYakiStage({
               onClick={goBack}
               className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.55rem] uppercase tracking-[0.36em] text-washi-50/80 transition hover:border-washi-50/60 hover:text-washi-50"
             >
-              <ArrowLeft size={12} /> 前へ戻る
+              <ArrowLeft size={12} /> {t("common.previousStep")}
             </button>
             <button
               type="button"

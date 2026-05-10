@@ -7,7 +7,8 @@
     "previous": "上一步",
     "copied": "已复制",
     "comingSoon": "敬请期待",
-    "preparing": "准备中"
+    "preparing": "准备中",
+    "previousStep": "返回上一步"
   },
   "ending": {
     "tagline": "一小片,已被守住",
@@ -155,7 +156,14 @@
       "step4": {
         "heading": "打入要,展开扇子",
         "hint": "将竹骨穿入扇面,以「要」铆钉固定。最后慢慢拖动扇骨展开,完成。"
-      }
+      },
+      "backRib": "重新剖竹",
+      "backFold": "重新折纸",
+      "backDraw": "重新作画",
+      "pill1": "剖竹",
+      "pill2": "折纸",
+      "pill3": "绘付",
+      "pill4": "仕上"
     },
     "hanabi": {
       "step1": {
@@ -169,7 +177,14 @@
       "step3": {
         "heading": "决定花火球大小",
         "hint": "将做好的星塞入外壳,缠绕多层牛皮纸。缠得越厚,绽放越大。"
-      }
+      },
+      "backDesign": "重新选择图样",
+      "backHoshi": "重新制星",
+      "backSize": "重新选择尺寸",
+      "pill1": "决定图样",
+      "pill2": "掛星",
+      "pill3": "贴玉",
+      "pill4": "按住蓄力 · 松手发射"
     },
     "magewappa": {
       "step1": {
@@ -187,7 +202,14 @@
       "step4": {
         "heading": "以樱皮缝合接缝",
         "hint": "用细劈的山樱树皮丝线缝合 5 处接点。秋田的樱皮亦是引以为豪的传统素材。"
-      }
+      },
+      "backHegi": "重新削",
+      "backNisai": "重新煮",
+      "backMage": "重新弯",
+      "pill1": "削",
+      "pill2": "煮沸",
+      "pill3": "弯",
+      "pill4": "缝"
     },
     "mashiko": {
       "step1": {

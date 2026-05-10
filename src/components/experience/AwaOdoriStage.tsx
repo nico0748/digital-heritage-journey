@@ -518,6 +518,7 @@ function TaikoStep({
   onBack: () => void;
   onAdvance: (stats: { perfect: number; good: number; miss: number }) => void;
 }) {
+  const t = useTranslations();
   const [stats, setStats] = useState({ perfect: 0, good: 0, miss: 0 });
   const [hits, setHits] = useState<Hit[]>([]);
   const [lastJudgement, setLastJudgement] = useState<Hit | null>(null);
@@ -768,7 +769,7 @@ function TaikoStep({
           }}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 前へ戻る
+          <ArrowLeft size={12} /> {t("common.previousStep")}
         </button>
         <button
           type="button"
@@ -819,6 +820,7 @@ function OdoriStep({
   onBack: () => void;
   onAdvance: () => void;
 }) {
+  const t = useTranslations();
   const [taps, setTaps] = useState(0);
   const [beat, setBeat] = useState(0);
 
@@ -924,7 +926,7 @@ function OdoriStep({
           }}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 前へ戻る
+          <ArrowLeft size={12} /> {t("common.previousStep")}
         </button>
         <button
           type="button"
@@ -1338,7 +1340,7 @@ function RenStep({
           }}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 前へ戻る
+          <ArrowLeft size={12} /> {t("common.previousStep")}
         </button>
         <button
           type="button"

@@ -425,7 +425,7 @@ function DesignStep({ onPick }: { onPick: (p: Pattern) => void }) {
   return (
     <div className="flex w-full flex-col items-center gap-6 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> Step 1 / 4 · 絵柄を決める
+        <Sparkles size={14} /> Step 1 / 4 · {t("stages.hanabi.pill1")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.hanabi.step1.heading")}
@@ -727,7 +727,7 @@ function HoshiStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Layers size={14} /> Step 2 / 4 · 星掛け
+        <Layers size={14} /> Step 2 / 4 · {t("stages.hanabi.pill2")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.hanabi.step2.heading", { pattern: PATTERN_INFO[pattern].jp })}
@@ -860,7 +860,7 @@ function HoshiStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 絵柄を選び直す
+          <ArrowLeft size={12} /> {t("stages.hanabi.backDesign")}
         </button>
         <button
           type="button"
@@ -992,7 +992,7 @@ function TamabariStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Package size={14} /> Step 3 / 4 · 玉貼り
+        <Package size={14} /> Step 3 / 4 · {t("stages.hanabi.pill3")}
       </p>
       <h2 className="text-center font-serif text-3xl font-light leading-tight">
         {t("stages.hanabi.step3.heading")}
@@ -1049,7 +1049,7 @@ function TamabariStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> 星を作り直す
+          <ArrowLeft size={12} /> {t("stages.hanabi.backHoshi")}
         </button>
         <button
           type="button"
@@ -1971,7 +1971,7 @@ function LaunchStep({
   return (
     <div className="flex w-full flex-col items-center gap-5 text-washi-50">
       <p className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.4em] text-washi-50/80">
-        <Sparkles size={14} /> Step 4 / 4 · 押して溜める · 離して打ち上げる
+        <Sparkles size={14} /> Step 4 / 4 · {t("stages.hanabi.pill4")}
       </p>
 
       <div
@@ -2033,7 +2033,7 @@ function LaunchStep({
           onClick={onBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/30 px-4 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10"
         >
-          <ArrowLeft size={12} /> サイズを選び直す
+          <ArrowLeft size={12} /> {t("stages.hanabi.backSize")}
         </button>
         <button
           type="button"

@@ -403,7 +403,7 @@ export function BingataStage({
           onClick={goBack}
           className="inline-flex items-center gap-2 rounded-full border border-washi-50/25 px-4 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-washi-50/75 transition hover:border-washi-50/55 hover:text-washi-50"
         >
-          <ArrowLeft size={12} /> 前へ戻る
+          <ArrowLeft size={12} /> {t("common.previousStep")}
         </button>
       )}
     </div>
