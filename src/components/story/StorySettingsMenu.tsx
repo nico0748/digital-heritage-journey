@@ -14,9 +14,9 @@ const OPTIONS: ReadonlyArray<{
   label: string;
   desc: string;
 }> = [
-  { value: "auto", label: "自動", desc: "デバイスに合わせて切替" },
-  { value: "continuous", label: "横スクロール", desc: "ホイールで右→左に流れる" },
-  { value: "paginated", label: "紙芝居", desc: "ボタン・スワイプでめくる" },
+  { value: "auto", label: "Auto", desc: "Match device defaults" },
+  { value: "continuous", label: "Continuous", desc: "Scroll right to left" },
+  { value: "paginated", label: "Kamishibai", desc: "Tap or swipe to flip pages" },
 ];
 
 /**
@@ -48,7 +48,7 @@ export function StorySettingsMenu() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label={open ? "設定メニューを閉じる" : "設定メニューを開く"}
+        aria-label={open ? "Close settings menu" : "Open settings menu"}
         aria-expanded={open}
         aria-controls="story-settings-panel"
         className={clsx(
@@ -70,7 +70,7 @@ export function StorySettingsMenu() {
       <aside
         id="story-settings-panel"
         role="dialog"
-        aria-label="表示設定"
+        aria-label="Settings panel"
         aria-hidden={!open}
         // `inert` is the modern way to take a subtree fully out of the
         // accessibility / focus / hit-test tree. With only
@@ -90,7 +90,7 @@ export function StorySettingsMenu() {
         <h2 className="text-[0.65rem] font-medium uppercase tracking-[0.4em] text-sumi/80">
           Settings
         </h2>
-        <p className="mb-4 mt-1 text-xs text-sumi/60">表示モード</p>
+        <p className="mb-4 mt-1 text-xs text-sumi/60">View Mode</p>
         <div className="flex flex-col gap-2">
           {OPTIONS.map((opt) => {
             const active = viewMode === opt.value;
