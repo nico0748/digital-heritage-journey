@@ -6,9 +6,11 @@ import { ArrowRight } from "lucide-react";
 import type { Culture } from "@/types/content";
 import { getPrefecture } from "@/content/prefectures";
 import { useTranslations } from "@/lib/i18n";
+import { useLocaleStore } from "@/stores/useLocaleStore";
 
 export function CultureCard({ culture }: { culture: Culture }) {
   const t = useTranslations();
+  const locale = useLocaleStore((s) => s.locale);
   const [c1, c2, c3] = culture.palette;
   // Show the primary prefecture as a top-corner pill. Cultures with no
   // attached prefecture (nationwide festivals or pre-taxonomy entries)
@@ -34,8 +36,12 @@ export function CultureCard({ culture }: { culture: Culture }) {
       </span>
 
       <span className="absolute left-4 top-4 inline-flex items-center rounded-full border border-washi-50/30 bg-sumi/30 px-3 py-1 text-[0.55rem] uppercase tracking-[0.3em] text-washi-50/85 backdrop-blur">
-        <span className="font-jp tracking-wider">
-          {primaryPref?.nameJp ?? "全国"}
+        <span className="tracking-wider">
+          {primaryPref
+            ? locale === "ja"
+              ? primaryPref.nameJp
+              : primaryPref.nameEn
+            : t("archive.allJapan")}
         </span>
       </span>
 
@@ -60,8 +66,8 @@ export function CultureCard({ culture }: { culture: Culture }) {
           "this culture exists, just not yet playable". */}
       {culture.comingSoon && (
         <div className="absolute inset-0 flex items-center justify-center bg-sumi/55 backdrop-blur-[2px]">
-          <span className="rounded-full border border-washi-50/40 bg-sumi/60 px-5 py-2 font-jp text-sm tracking-[0.4em] text-washi-50/95">
-            準備中
+          <span className="rounded-full border border-washi-50/40 bg-sumi/60 px-5 py-2 text-sm tracking-[0.4em] text-washi-50/95">
+            {t("common.preparing")}
           </span>
         </div>
       )}
@@ -71,7 +77,7 @@ export function CultureCard({ culture }: { culture: Culture }) {
   if (culture.comingSoon) {
     return (
       <div
-        aria-label={`${culture.name} (準備中, coming soon)`}
+        aria-label={`${culture.name} (${t("common.preparing")})`}
         className="group relative block cursor-not-allowed"
       >
         {inner}

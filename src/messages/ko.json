@@ -25,7 +25,8 @@
     "filterAria": "도도부현으로 필터",
     "comingSoonHeading": "{prefecture}의 체험은 곧 공개됩니다",
     "highlightsLabel": "대표적인 공예와 축제",
-    "browseAll": "모든 문화 둘러보기"
+    "browseAll": "모든 문화 둘러보기",
+    "allJapan": "전국"
   },
   "experience": {
     "visitReal": "진짜를 만나러",
@@ -184,7 +185,102 @@
       "pill1": "도안 정하기",
       "pill2": "호시가케",
       "pill3": "타마바리",
-      "pill4": "눌러 충전 · 떼어 발사"
+      "pill4": "눌러 충전 · 떼어 발사",
+      "shellSize": {
+        "3": {
+          "jp": "산고다마(三号玉)",
+          "cm": "약 9 cm",
+          "bloomM": "개화 50 m",
+          "heightM": "높이 120 m",
+          "desc": "가장 작은 폭죽. 마을의 작은 여름 축제도 띄울 수 있는 크기."
+        },
+        "5": {
+          "jp": "고고다마(五号玉)",
+          "cm": "약 15 cm",
+          "bloomM": "개화 170 m",
+          "heightM": "높이 190 m",
+          "desc": "지방 불꽃놀이의 주역. 균형 잡힌 표준 사이즈."
+        },
+        "7": {
+          "jp": "시치고다마(七号玉)",
+          "cm": "약 21 cm",
+          "bloomM": "개화 230 m",
+          "heightM": "높이 250 m",
+          "desc": "중규모 불꽃놀이의 주역. 오고와 샤쿠 사이, 박력과 세공이 모두 살아 있다."
+        },
+        "10": {
+          "jp": "샤쿠다마(尺玉·十号)",
+          "cm": "약 30 cm",
+          "bloomM": "개화 320 m",
+          "heightM": "높이 330 m",
+          "desc": "대규모 불꽃놀이의 클라이맥스. 약 8 kg, 종이 감기 십여 층."
+        }
+      },
+      "patternDesc": {
+        "peony": "중심에서 방사형으로 별이 퍼지는, 가장 기본의 형.",
+        "chrysanthemum": "꼬리를 끌며 대륜으로 피는 이중원 구조.",
+        "willow": "중력에 따라 늘어지는, 수양버들 같은 불꽃.",
+        "senrin": "오야다마가 핀 뒤, 수많은 작은 구슬이 일제히 개화.",
+        "yashi": "남국의 야자수처럼, 두꺼운 줄기에서 긴 잎이 늘어진다.",
+        "yaeshin": "외각 → 중각 → 내각, 삼단으로 열린다. 장인 기예의 정수.",
+        "kobana": "메인 개화 속에서 작은 꽃이 연이어 톡톡 핀다.",
+        "heart": "형물. 별을 하트 모양으로 채워 피우는, 현대 하나비시의 장난기.",
+        "star": "형물. 오망성 모양으로 채워 핀다. 축제에서 자주 띄워진다.",
+        "smiley": "형물. 눈과 미소가 하늘에 떠오르는, 여름 축제의 단골 앙코르."
+      },
+      "hue": {
+        "shu": {
+          "name": "주(朱)",
+          "metal": "스트론튬"
+        },
+        "kin": {
+          "name": "금(金)",
+          "metal": "나트륨"
+        },
+        "midori": {
+          "name": "녹(緑)",
+          "metal": "바륨"
+        },
+        "ai": {
+          "name": "람(藍)",
+          "metal": "구리"
+        },
+        "murasaki": {
+          "name": "자(紫)",
+          "metal": "Sr+Cu"
+        },
+        "kurenai": {
+          "name": "홍(紅)",
+          "metal": "리튬"
+        }
+      },
+      "pick": "선택",
+      "wrapLayers": "종이 감기 {n}층",
+      "patternMineralAria": "색: {color} ({metal})",
+      "starLayers": "별 {n}층",
+      "layerCount": "{n}층",
+      "layerCounter": "{count} / {max}층",
+      "layerHintEmpty": "색을 골라 겹치기",
+      "layerHintFull": "더 겹칠 수 없음",
+      "layerHintMore": "{n}층 더 추가 가능",
+      "howStarsMade": "별 만드는 법 · How fireworks stars are made",
+      "starStep1Name": "①씨앗 (tane)",
+      "starStep1Desc": "좁쌀 크기의 작은 핵",
+      "starStep2Name": "②코팅 (kake)",
+      "starStep2Desc": "화약과 색소 도포",
+      "starStep3Name": "③건조 (kansō)",
+      "starStep3Desc": "하룻밤 말리기",
+      "starStep4Name": "④검품 (kenpin)",
+      "starStep4Desc": "지름과 무게를 맞춘다",
+      "starProcessNote": "실제로는 ②③을 30〜80회 반복하여 1cm 미만의 별로 키운다. 이 체험에서는 매 탭이 「한 층 더 코팅」 한 번에 해당.",
+      "center": "중심",
+      "outer": "바깥",
+      "undoLayer": "한 층 되돌리기",
+      "clearAll": "전부 다시",
+      "toTamabari": "타마바리로",
+      "crossSectionAria": "별 단면도",
+      "crossSectionEmpty": "색을 탭하여 겹치기",
+      "toLaunch": "발사 준비"
     },
     "magewappa": {
       "step1": {

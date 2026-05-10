@@ -25,7 +25,8 @@
     "filterAria": "Filter by prefecture",
     "comingSoonHeading": "Experiences in {prefecture} coming soon.",
     "highlightsLabel": "Notable crafts and festivals",
-    "browseAll": "Browse all cultures"
+    "browseAll": "Browse all cultures",
+    "allJapan": "Nationwide"
   },
   "experience": {
     "visitReal": "Visit the real thing",
@@ -184,7 +185,102 @@
       "pill1": "Pick the pattern",
       "pill2": "Hoshigake",
       "pill3": "Tamabari",
-      "pill4": "Hold to charge · release to launch"
+      "pill4": "Hold to charge · release to launch",
+      "shellSize": {
+        "3": {
+          "jp": "Sango-dama (#3)",
+          "cm": "≈ 9 cm",
+          "bloomM": "50 m bloom",
+          "heightM": "120 m apex",
+          "desc": "The smallest shell, the kind a town's modest summer festival can launch."
+        },
+        "5": {
+          "jp": "Gogo-dama (#5)",
+          "cm": "≈ 15 cm",
+          "bloomM": "170 m bloom",
+          "heightM": "190 m apex",
+          "desc": "The workhorse of regional firework festivals — a balanced, signature size."
+        },
+        "7": {
+          "jp": "Shichigo-dama (#7)",
+          "cm": "≈ 21 cm",
+          "bloomM": "230 m bloom",
+          "heightM": "250 m apex",
+          "desc": "The hero of mid-size festivals; between #5 and shaku, both forceful and finely worked."
+        },
+        "10": {
+          "jp": "Shaku-dama (#10)",
+          "cm": "≈ 30 cm",
+          "bloomM": "320 m bloom",
+          "heightM": "330 m apex",
+          "desc": "The climax of a great firework festival. Around 8 kg; a dozen+ paper wraps."
+        }
+      },
+      "patternDesc": {
+        "peony": "Stars fan out radially from a single centre — the most fundamental form.",
+        "chrysanthemum": "A great chrysanthemum bloom that trails as it opens — a double-ring structure.",
+        "willow": "Falls under gravity like a weeping willow.",
+        "senrin": "After the parent shell blooms, a thousand tiny shells open at once.",
+        "yashi": "Like a tropical palm — a thick trunk with long fronds drooping outward.",
+        "yaeshin": "Outer ring → middle → inner, opening in three tiers. The artisan's pinnacle.",
+        "kobana": "Inside the main bloom, tiny secondary blossoms pop in rapid succession.",
+        "heart": "A katamono shape shell. The stars are packed into a heart silhouette — modern artisan whimsy.",
+        "star": "A katamono shape shell. Stars packed into a five-pointed silhouette. Festival favourite.",
+        "smiley": "A katamono shape shell. Eyes + arc mouth float in the sky — the staple summer-festival encore."
+      },
+      "hue": {
+        "shu": {
+          "name": "Shu",
+          "metal": "Strontium"
+        },
+        "kin": {
+          "name": "Kin",
+          "metal": "Sodium"
+        },
+        "midori": {
+          "name": "Midori",
+          "metal": "Barium"
+        },
+        "ai": {
+          "name": "Ai",
+          "metal": "Copper"
+        },
+        "murasaki": {
+          "name": "Murasaki",
+          "metal": "Sr+Cu"
+        },
+        "kurenai": {
+          "name": "Kurenai",
+          "metal": "Lithium"
+        }
+      },
+      "pick": "Pick",
+      "wrapLayers": "{n} wrapping layers",
+      "patternMineralAria": "Colour: {color} ({metal})",
+      "starLayers": "{n} star layers",
+      "layerCount": "{n} layers",
+      "layerCounter": "{count} / {max} layers",
+      "layerHintEmpty": "Pick a colour to layer",
+      "layerHintFull": "Can't add another layer",
+      "layerHintMore": "{n} more layers available",
+      "howStarsMade": "How fireworks stars are made",
+      "starStep1Name": "① Tane (seed)",
+      "starStep1Desc": "Millet-grain core",
+      "starStep2Name": "② Kake (coat)",
+      "starStep2Desc": "Apply gunpowder + pigment",
+      "starStep3Name": "③ Kansō (dry)",
+      "starStep3Desc": "Dry overnight",
+      "starStep4Name": "④ Kenpin (inspect)",
+      "starStep4Desc": "Match diameter + weight",
+      "starProcessNote": "In real life, ② and ③ repeat 30-80 times to grow a star to under 1 cm. In this experience, each tap is one more 'kake' coat.",
+      "center": "Centre",
+      "outer": "Outer",
+      "undoLayer": "Undo a layer",
+      "clearAll": "Clear all",
+      "toTamabari": "On to Tamabari",
+      "crossSectionAria": "Star cross-section",
+      "crossSectionEmpty": "Tap a colour to layer",
+      "toLaunch": "Ready to launch"
     },
     "magewappa": {
       "step1": {
