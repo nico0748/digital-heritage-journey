@@ -2,8 +2,19 @@
   "common": {
     "back": "戻る",
     "complete": "完成",
+    "finale": "フィナーレ",
     "next": "次へ",
-    "previous": "前へ"
+    "previous": "前へ",
+    "copied": "コピーしました",
+    "comingSoon": "Coming Soon",
+    "preparing": "準備中"
+  },
+  "ending": {
+    "tagline": "ひとかけらが、いま保たれた",
+    "backToArchive": "アーカイブに戻る"
+  },
+  "comingSoonShell": {
+    "body": "この体験は丁寧に仕立てている最中です。\nまた会いに来てください。"
   },
   "archive": {
     "title": "受け継ぐ文化を、ひとつ選ぶ。",

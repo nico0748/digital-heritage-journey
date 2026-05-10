@@ -16,6 +16,7 @@ import {
   Store,
 } from "lucide-react";
 import { useAppStore } from "@/stores/useAppStore";
+import { useTranslations } from "@/lib/i18n";
 import type { Culture, RealWorldKind } from "@/types/content";
 
 function RealWorldKindIcon({ kind }: { kind: RealWorldKind }) {
@@ -31,6 +32,7 @@ function RealWorldKindIcon({ kind }: { kind: RealWorldKind }) {
 }
 
 export function EndingView({ culture }: { culture: Culture }) {
+  const t = useTranslations();
   const dataUrl = useAppStore((s) => s.completedWorks[culture.id]);
   const [mounted, setMounted] = useState(false);
   const [shareState, setShareState] = useState<"idle" | "copied">("idle");
@@ -59,16 +61,16 @@ export function EndingView({ culture }: { culture: Culture }) {
             {culture.accentKanji}
           </span>
           <p className="-mt-8 font-jp text-2xl tracking-[0.5em] text-washi-50/85">
-            準備中
+            {t("common.preparing")}
           </p>
           <p className="mt-3 text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55">
-            Coming Soon · {culture.name} ({culture.jp})
+            {t("common.comingSoon")} · {culture.name} ({culture.jp})
           </p>
           <Link
             href="/archive"
             className="mt-10 inline-flex items-center gap-2 rounded-full border border-washi-50/40 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10 hover:text-washi-50"
           >
-            ← Back to Archive
+            ← {t("ending.backToArchive")}
           </Link>
         </div>
       </main>
@@ -106,7 +108,7 @@ export function EndingView({ culture }: { culture: Culture }) {
           transition={{ duration: 0.8 }}
           className="inline-flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.5em] text-washi-50/70"
         >
-          <Sparkles size={12} /> A small piece is preserved
+          <Sparkles size={12} /> {t("ending.tagline")}
         </motion.p>
 
         <motion.h1
@@ -115,9 +117,7 @@ export function EndingView({ culture }: { culture: Culture }) {
           transition={{ duration: 1, delay: 0.1 }}
           className="mt-6 font-serif text-5xl font-light leading-tight md:text-6xl"
         >
-          You carried {culture.name}
-          <br />
-          one step further.
+          {t("experience.carriedHeader", { name: culture.name })}
         </motion.h1>
 
         <motion.div
@@ -129,7 +129,7 @@ export function EndingView({ culture }: { culture: Culture }) {
           {mounted && dataUrl ? (
             <Image
               src={dataUrl}
-              alt={`Your ${culture.name}`}
+              alt={culture.name}
               fill
               unoptimized
               className="object-cover"
@@ -147,9 +147,11 @@ export function EndingView({ culture }: { culture: Culture }) {
           transition={{ duration: 1, delay: 0.6 }}
           className="mt-10 max-w-md text-sm italic leading-relaxed text-washi-50/80"
         >
-          {culture.problem}
+          {t(`cultures.${culture.id}.problem`)}
           <br />
-          <span className="text-washi-50">This culture needs successors.</span>
+          <span className="text-washi-50">
+            {t("experience.needsSuccessors")}
+          </span>
         </motion.p>
 
         {(() => {
@@ -169,7 +171,7 @@ export function EndingView({ culture }: { culture: Culture }) {
               className="mt-10 flex flex-col items-center gap-3"
             >
               <p className="text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55">
-                Visit the real thing · 本物に触れる
+                {t("experience.visitReal")} · 本物に触れる
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {links.map((link) => (
@@ -210,13 +212,15 @@ export function EndingView({ culture }: { culture: Culture }) {
             className="inline-flex items-center gap-2 rounded-full border border-washi-50/40 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50 transition hover:bg-washi-50/10"
           >
             <Share2 size={12} />
-            {shareState === "copied" ? "Copied" : "Share"}
+            {shareState === "copied"
+              ? t("common.copied")
+              : t("experience.share")}
           </button>
           <Link
             href="/archive"
             className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100"
           >
-            See more
+            {t("experience.seeMore")}
             <ArrowRight size={12} />
           </Link>
         </motion.div>
