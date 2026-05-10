@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import type { Culture } from "@/types/content";
 import { getPrefecture } from "@/content/prefectures";
+import { useTranslations } from "@/lib/i18n";
 
 export function CultureCard({ culture }: { culture: Culture }) {
+  const t = useTranslations();
   const [c1, c2, c3] = culture.palette;
   // Show the primary prefecture as a top-corner pill. Cultures with no
   // attached prefecture (nationwide festivals or pre-taxonomy entries)
@@ -44,7 +46,7 @@ export function CultureCard({ culture }: { culture: Culture }) {
         <h3 className="mt-2 font-serif text-3xl font-light">{culture.name}</h3>
         <p className="font-jp text-sm text-washi-50/70">{culture.jp}</p>
         <p className="mt-3 text-xs italic text-washi-50/70">
-          {culture.description}
+          {t(`cultures.${culture.id}.description`)}
         </p>
         {!culture.comingSoon && (
           <span className="mt-5 inline-flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.3em] opacity-0 transition group-hover:opacity-100">

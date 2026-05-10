@@ -1,0 +1,111 @@
+{
+  "common": {
+    "back": "返回",
+    "complete": "完成",
+    "next": "下一步",
+    "previous": "上一步"
+  },
+  "archive": {
+    "title": "选择一项你愿意承接的文化。",
+    "subtitleAll": "每一个,都在以更快的速度消失。",
+    "subtitlePrefecture": "从{prefecture}流传下来的工艺与祭典中选择。",
+    "filterAll": "全部",
+    "filterAria": "按都道府县筛选",
+    "comingSoonHeading": "{prefecture}的体验即将开放",
+    "highlightsLabel": "代表性工艺与祭典",
+    "browseAll": "浏览全部文化"
+  },
+  "experience": {
+    "visitReal": "走进真实",
+    "visitRealJp": "本物に触れる",
+    "needsSuccessors": "这项文化,正等待新的传承者。",
+    "carriedHeader": "你将{name}向前推进了一步。",
+    "share": "分享",
+    "seeMore": "了解更多"
+  },
+  "linkKind": {
+    "festival": "祭典",
+    "museum": "博物馆",
+    "association": "协会",
+    "shop": "店铺",
+    "experience": "体验"
+  },
+  "cultures": {
+    "kiriko": {
+      "description": "将光线折射成精致几何纹样的切子玻璃工艺。",
+      "problem": "现存的工坊已屈指可数。"
+    },
+    "washi": {
+      "description": "以楮树纤维一张张抄制的手工和纸。",
+      "problem": "在某些村落,工匠已不足二十人。"
+    },
+    "bingata": {
+      "description": "琉球王朝时代的型染工艺,以鲜艳热带纹样染布。",
+      "problem": "愿意学习多道型染与防染工序的年轻工匠极为稀少。"
+    },
+    "hanabi": {
+      "description": "在夜空中如菊花般绽放的传统日本烟花。"  ,
+      "problem": "花火师老龄化,人口缩减的地区已无力支撑夏季祭典。"
+    },
+    "lantern": {
+      "description": "由一支烛火点亮、夏夜街道上摇曳的和纸提灯。",
+      "problem": "塑料量产品挤压,手作和纸提灯的匠人正在消失。"
+    },
+    "taiko": {
+      "description": "祭典中心、迎神召季的日本和太鼓。",
+      "problem": "村落人口流失,地方太鼓队的鼓手日益减少。"
+    },
+    "sensu": {
+      "description": "折叠的和纸搬运空气、在举手投足间生出余韵的折扇。",
+      "problem": "扇骨与扇面的名匠老去,继承人寥寥无几。"
+    },
+    "tsugaru-nuri": {
+      "description": "经历48道工序的漆艺,层层叠彩后研磨而出的斑驳唐涂纹样。",
+      "problem": "一件耗时两个月,弘前现役名匠仅剩约30人。"
+    },
+    "nanbu-tekki": {
+      "description": "表面凸起霰纹的铸铁茶釜,铁分溶入热水使茶味更柔。",
+      "problem": "燃气与电炉普及,传统炭釜铸造工坊接连关闭。"
+    },
+    "magewappa": {
+      "description": "以秋田杉弯曲、樱皮缝合的便当盒,抗菌且轻如羽。",
+      "problem": "秋田杉供应紧缩,现役名匠仅约11人。"
+    },
+    "mashiko-yaki": {
+      "description": "以四种传统釉彩烧制的质朴陶器,滨田庄司民艺运动的核心。",
+      "problem": "年轻陶工稀少,现役窑场约250座,仅为一代人前的600座的一半以下。"
+    },
+    "tsubame-sanjo": {
+      "description": "一片铜板,经数万次锤打,化为无缝的器物。",
+      "problem": "年轻金工稀缺,世界一流技艺却由老一代支撑。"
+    },
+    "wajima-nuri": {
+      "description": "124道工序的漆器,沉金与莳绘描金,能登的宝物。背负着2024年震灾之痛。",
+      "problem": "2024年能登半岛地震,工坊遭受毁灭性打击,重建前景未明。"
+    },
+    "echizen-uchihamono": {
+      "description": "700年传承的锻刀,二枚广与回钢锻接造就薄而坚韧的刀刃。",
+      "problem": "工业刀具占领市场,现役锻冶场仅余约30家。"
+    },
+    "bizen-yaki": {
+      "description": "不施釉的烧締陶器,14日柴烧让火与灰描出独一无二的「景色」。",
+      "problem": "长时间烧成无利可图,年轻陶工纷纷转向更快的施釉技法。"
+    },
+    "kumano-fude": {
+      "description": "高品质的书道笔与化妆笔,占国内市场80%,供应世界知名品牌。",
+      "problem": "低技术化妆笔需求下降,书道市场亦持续萎缩。"
+    },
+    "awa-odori": {
+      "description": "400年历史的两拍夏季祭舞,每年观众约130万人。",
+      "problem": "年轻团体规模缩小,疫情期间的中断切断了传承链。"
+    },
+    "hakata-ningyo": {
+      "description": "素烧黏土上手绘的人形,「点睛」赋予人形灵魂。",
+      "problem": "现代家居需求下降,现役名匠仅约50人。"
+    },
+    "arita-yaki": {
+      "description": "日本最早的瓷器,白胎之上钴蓝「染付」分外鲜明。",
+      "problem": "小窑接连关闭,与海外量产瓷器持续竞争。"
+    }
+  }
+}

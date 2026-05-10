@@ -1,0 +1,111 @@
+{
+  "common": {
+    "back": "Back",
+    "complete": "Complete",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "archive": {
+    "title": "Choose a culture to carry.",
+    "subtitleAll": "Each one is disappearing a little faster than the last.",
+    "subtitlePrefecture": "Crafts and festivals from {prefecture}.",
+    "filterAll": "All",
+    "filterAria": "Filter by prefecture",
+    "comingSoonHeading": "Experiences in {prefecture} coming soon.",
+    "highlightsLabel": "Notable crafts and festivals",
+    "browseAll": "Browse all cultures"
+  },
+  "experience": {
+    "visitReal": "Visit the real thing",
+    "visitRealJp": "本物に触れる",
+    "needsSuccessors": "This culture needs successors.",
+    "carriedHeader": "You carried {name} one step further.",
+    "share": "Share",
+    "seeMore": "See more"
+  },
+  "linkKind": {
+    "festival": "Festival",
+    "museum": "Museum",
+    "association": "Association",
+    "shop": "Shop",
+    "experience": "Experience"
+  },
+  "cultures": {
+    "kiriko": {
+      "description": "Cut glass craft refracting light into delicate geometric patterns.",
+      "problem": "Only a handful of workshops remain."
+    },
+    "washi": {
+      "description": "Handmade paper scooped from fibres of the kōzo tree.",
+      "problem": "Fewer than twenty artisans remain in some villages."
+    },
+    "bingata": {
+      "description": "Stencil-and-resist dye craft of the Ryūkyū court; vivid tropical motifs.",
+      "problem": "Few young craftsmen are learning the multi-stage stencil and resist technique."
+    },
+    "hanabi": {
+      "description": "Traditional Japanese fireworks blooming as chrysanthemums in the night sky.",
+      "problem": "Master pyrotechnicians (花火師) are aging, and shrinking communities can no longer fund summer festivals."
+    },
+    "lantern": {
+      "description": "Paper lanterns lit with a single flame, carried through summer streets.",
+      "problem": "Hand-shaped washi lanterns are losing makers as plastic replicas spread."
+    },
+    "taiko": {
+      "description": "Japanese drum at the heart of festivals, signalling gods and seasons.",
+      "problem": "Local taiko troupes are losing players as villages depopulate."
+    },
+    "sensu": {
+      "description": "Folding fan whose pleated washi cools the air and frames a private gesture.",
+      "problem": "Master fan-makers are aging without successors."
+    },
+    "tsugaru-nuri": {
+      "description": "48-step lacquer with multi-color layers polished to reveal speckled 唐塗 patterns.",
+      "problem": "Two-month process per piece; only about 30 active masters remain in Hirosaki."
+    },
+    "nanbu-tekki": {
+      "description": "Cast-iron kettles with regular 霰文 raised pattern; iron leaching mellows the tea.",
+      "problem": "Foundries are closing as gas and electric stoves replace traditional charcoal kettles."
+    },
+    "magewappa": {
+      "description": "Bent Akita cedar boxes stitched with cherry-bark thread; antibacterial and feather-light.",
+      "problem": "Akita cedar supply is dwindling; only about eleven master craftsmen remain."
+    },
+    "mashiko-yaki": {
+      "description": "Rustic pottery with four traditional glazes; central to Hamada Shōji's mingei movement.",
+      "problem": "Younger potters are scarce; only about 250 kilns remain active versus around 600 a generation ago."
+    },
+    "tsubame-sanjo": {
+      "description": "One copper sheet hammered tens of thousands of times into a seamless vessel.",
+      "problem": "Younger metalsmiths are rare; world-class work, but the master pool is aging."
+    },
+    "wajima-nuri": {
+      "description": "124-step lacquerware with 沈金 and 蒔絵 gold decoration; Noto's earthquake-stricken treasure.",
+      "problem": "The 2024 Noto Peninsula earthquake devastated workshops; recovery remains uncertain."
+    },
+    "echizen-uchihamono": {
+      "description": "700-year forging tradition; 二枚広げ + 廻し鋼着け produces thin, resilient blades.",
+      "problem": "Industrial knives dominate the market; only about 30 active forges remain."
+    },
+    "bizen-yaki": {
+      "description": "Unglazed pottery — fire and ash from 14-day firings create unique 景色 patterns.",
+      "problem": "Long firing cycles are unprofitable; many young potters move to faster glazed styles."
+    },
+    "kumano-fude": {
+      "description": "Premium calligraphy and makeup brushes; 80% domestic share, world brand-supplier.",
+      "problem": "Demand for lower-skill makeup brushes is falling; the calligraphy market is shrinking."
+    },
+    "awa-odori": {
+      "description": "400-year-old summer festival dance with a two-beat rhythm; about 1.3 million visitors a year.",
+      "problem": "Younger ren are shrinking; pandemic-era cancellations broke continuity."
+    },
+    "hakata-ningyo": {
+      "description": "Hand-painted bisque clay dolls; 目入れ (eye-painting) gives them their soul.",
+      "problem": "Modern decor demand is falling; only about 50 master craftsmen remain."
+    },
+    "arita-yaki": {
+      "description": "Japan's first porcelain — white body with iconic cobalt 染付 underglaze.",
+      "problem": "Many small kilns have closed, competing with mass-produced imports."
+    }
+  }
+}
