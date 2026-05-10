@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import type { Culture } from "@/types/content";
 import { useAppStore } from "@/stores/useAppStore";
+import { useTranslations } from "@/lib/i18n";
 import { WashiCanvas } from "./WashiCanvas";
 import { HanabiStage } from "./HanabiStage";
 import { LanternStage } from "./LanternStage";
@@ -41,6 +42,7 @@ const KirikoCanvas = dynamic(
 export function ExperienceShell({ culture }: { culture: Culture }) {
   const router = useRouter();
   const saveWork = useAppStore((s) => s.saveWork);
+  const t = useTranslations();
   const [c1, c2, c3] = culture.palette;
 
   const handleComplete = (dataUrl: string) => {
@@ -87,22 +89,20 @@ export function ExperienceShell({ culture }: { culture: Culture }) {
             {culture.accentKanji}
           </span>
           <p className="-mt-8 font-jp text-2xl tracking-[0.5em] text-washi-50/85">
-            準備中
+            {t("common.preparing")}
           </p>
           <p className="mt-3 text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/55">
-            Coming Soon
+            {t("common.comingSoon")}
           </p>
-          <p className="mt-8 max-w-md text-sm italic leading-relaxed text-washi-50/70">
-            この体験は丁寧に仕立てている最中です。
-            <br />
-            また会いに来てください。
+          <p className="mt-8 max-w-md text-sm italic leading-relaxed whitespace-pre-line text-washi-50/70">
+            {t("comingSoonShell.body")}
           </p>
           <Link
             href="/archive"
             className="mt-10 inline-flex items-center gap-2 rounded-full border border-washi-50/40 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-washi-50/80 transition hover:bg-washi-50/10 hover:text-washi-50"
           >
             <ArrowLeft size={12} />
-            Back to Archive
+            {t("ending.backToArchive")}
           </Link>
         </section>
       </main>

@@ -2,8 +2,19 @@
   "common": {
     "back": "뒤로",
     "complete": "완성",
+    "finale": "피날레",
     "next": "다음",
-    "previous": "이전"
+    "previous": "이전",
+    "copied": "복사되었습니다",
+    "comingSoon": "공개 예정",
+    "preparing": "준비 중"
+  },
+  "ending": {
+    "tagline": "작은 한 조각이 지켜졌습니다",
+    "backToArchive": "아카이브로 돌아가기"
+  },
+  "comingSoonShell": {
+    "body": "이 체험은 정성껏 다듬는 중입니다.\n다시 만나러 와 주세요."
   },
   "archive": {
     "title": "이어받을 문화를 하나 고르세요.",

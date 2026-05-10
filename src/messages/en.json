@@ -2,8 +2,19 @@
   "common": {
     "back": "Back",
     "complete": "Complete",
+    "finale": "Finale",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "copied": "Copied",
+    "comingSoon": "Coming Soon",
+    "preparing": "Preparing"
+  },
+  "ending": {
+    "tagline": "A small piece is preserved",
+    "backToArchive": "Back to Archive"
+  },
+  "comingSoonShell": {
+    "body": "This experience is being carefully prepared.\nPlease come back to visit."
   },
   "archive": {
     "title": "Choose a culture to carry.",

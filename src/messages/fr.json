@@ -2,8 +2,19 @@
   "common": {
     "back": "Retour",
     "complete": "Terminer",
+    "finale": "Finale",
     "next": "Suivant",
-    "previous": "Précédent"
+    "previous": "Précédent",
+    "copied": "Copié",
+    "comingSoon": "Bientôt disponible",
+    "preparing": "En préparation"
+  },
+  "ending": {
+    "tagline": "Un petit fragment est préservé",
+    "backToArchive": "Retour aux archives"
+  },
+  "comingSoonShell": {
+    "body": "Cette expérience est en cours de préparation soignée.\nRevenez nous voir bientôt."
   },
   "archive": {
     "title": "Choisissez une culture à transmettre.",
