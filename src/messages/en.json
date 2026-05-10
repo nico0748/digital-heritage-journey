@@ -118,5 +118,10 @@
       "description": "Japan's first porcelain — white body with iconic cobalt 染付 underglaze.",
       "problem": "Many small kilns have closed, competing with mass-produced imports."
     }
+  },
+  "stages": {
+    "wajima": {
+      "completeMakie": "Sprinkle gold and complete"
+    }
   }
 }

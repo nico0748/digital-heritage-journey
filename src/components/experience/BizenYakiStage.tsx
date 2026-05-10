@@ -25,6 +25,7 @@ import {
   playThud,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ─────────────────────────────────────────────────────────────────────
 // Types
@@ -1434,6 +1435,7 @@ export function BizenYakiStage({
   palette: [string, string, string];
 }) {
   const mutedRef = useMutedRef();
+  const t = useTranslations();
   const [stepIdx, setStepIdx] = useState(0);
   const [shape, setShape] = useState<Shape>(DEFAULT_SHAPE);
   const [position, setPosition] = useState<KamairePos | null>(null);
@@ -1592,7 +1594,7 @@ export function BizenYakiStage({
             disabled={finalizing || !recipeReady}
             className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-35"
           >
-            <Check size={12} /> Complete
+            <Check size={12} /> {t("common.complete")}
           </button>
         )}
       </div>

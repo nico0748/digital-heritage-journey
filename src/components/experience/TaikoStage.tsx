@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Drum } from "lucide-react";
 import { useAppStore } from "@/stores/useAppStore";
+import { useTranslations } from "@/lib/i18n";
 
 const TARGET_HITS = 8;
 // Rhythm-game cadence — sub-second spawn so the experience reads as a
@@ -47,6 +48,7 @@ export function TaikoStage({
   onComplete: (dataUrl: string) => void;
   palette: [string, string, string];
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const targetsRef = useRef<BeatTarget[]>([]);
   const ripplesRef = useRef<Ripple[]>([]);
@@ -469,7 +471,7 @@ export function TaikoStage({
         disabled={hits < TARGET_HITS}
         className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
       >
-        <Check size={12} /> Finale
+        <Check size={12} /> {t("common.finale")}
       </button>
     </div>
   );

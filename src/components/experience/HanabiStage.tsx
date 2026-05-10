@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { playBoom, playWhistle, useMutedRef } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 type Pattern =
   | "peony"
@@ -1174,6 +1175,7 @@ function LaunchStep({
 }) {
   const sizeInfo = SHELL_SIZE_INFO[shellSize];
   const mutedRef = useMutedRef();
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
   const rockets = useRef<Rocket[]>([]);
@@ -2036,7 +2038,7 @@ function LaunchStep({
           disabled={bursts < TARGET_BURSTS || finalizing}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          <Check size={12} /> Finale
+          <Check size={12} /> {t("common.finale")}
         </button>
       </div>
     </div>

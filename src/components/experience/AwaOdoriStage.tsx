@@ -23,6 +23,7 @@ import {
   playWhistle,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ─────────────────────────────────────────────────────────────────────
 // 阿波踊り — 4-step rhythm experience.
@@ -1187,6 +1188,7 @@ function RenStep({
   onBack: () => void;
   onFinish: (dataUrl: string) => void;
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [running, setRunning] = useState(false);
   const [frozen, setFrozen] = useState(false);
@@ -1348,7 +1350,7 @@ function RenStep({
           }}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          <Check size={12} /> 完成
+          <Check size={12} /> {t("common.complete")}
         </button>
       </div>
     </>

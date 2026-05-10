@@ -22,6 +22,7 @@ import {
   playClick,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // ─────────────────────────────────────────────────────────────────────
 // Types & data

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Brush, Check, Flame } from "lucide-react";
 import clsx from "clsx";
+import { useTranslations } from "@/lib/i18n";
 
 type StepId = "light" | "draw" | "done";
 
@@ -46,6 +47,7 @@ export function LanternStage({
   onComplete: (dataUrl: string) => void;
   palette: [string, string, string];
 }) {
+  const t = useTranslations();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [step, setStep] = useState<StepId>("light");
   const [lights, setLights] = useState(0);
@@ -697,7 +699,7 @@ export function LanternStage({
           onClick={complete}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100"
         >
-          <Check size={12} /> Complete
+          <Check size={12} /> {t("common.complete")}
         </button>
       )}
     </div>

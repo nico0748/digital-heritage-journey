@@ -18,6 +18,7 @@ import {
   playFire,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // Arita-yaki — Japan's first porcelain (Saga, 1610s-).
 // Four-step process: 下絵 (Shitae) → 染め (Some) → 本焼 (Honyaki) → 完成 (Kansei)
@@ -305,6 +306,7 @@ export function AritaYakiStage({
   onComplete: (dataUrl: string) => void;
   palette: [string, string, string];
 }) {
+  const t = useTranslations();
   const muted = useMutedRef();
   const [stepIdx, setStepIdx] = useState(0);
   const step = STEPS[stepIdx];
@@ -759,7 +761,7 @@ export function AritaYakiStage({
               disabled={finalizing}
               className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
             >
-              <Check size={12} /> 完成
+              <Check size={12} /> {t("common.complete")}
             </button>
           </>
         )}

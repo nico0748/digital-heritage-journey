@@ -16,6 +16,7 @@ import {
   playWater,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 type PatternId = "kacho" | "hato" | "karakusa" | "nettai";
 

@@ -15,6 +15,7 @@ import {
   playMetalRing,
   useMutedRef,
 } from "@/lib/craftAudio";
+import { useTranslations } from "@/lib/i18n";
 
 // 4 steps: 鎚目 → 絞り → 焼鈍 → 着色.
 const TOTAL = 4;
@@ -872,6 +873,7 @@ function ChakushokuStep({
   onBack: () => void;
   mutedRef: React.RefObject<boolean>;
 }) {
+  const t = useTranslations();
   const [reacting, setReacting] = useState(false);
   const reactingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef(true);
@@ -974,7 +976,7 @@ function ChakushokuStep({
           disabled={!ready || finalizing}
           className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
         >
-          <Check size={12} /> 完成
+          <Check size={12} /> {t("common.complete")}
         </button>
       </div>
     </div>

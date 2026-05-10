@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import clsx from "clsx";
+import { useTranslations } from "@/lib/i18n";
 
 import {
   playChime,
@@ -140,6 +141,7 @@ export function MashikoYakiStage({
   onComplete: (dataUrl: string) => void;
   palette: [string, string, string];
 }) {
+  const t = useTranslations();
   const [step, setStep] = useState<Step>("tsuchi");
   // Form silhouette is shared across steps so glaze + firing operate on
   // the actual shape the user threw on the wheel.
@@ -980,6 +982,7 @@ function HonyakiStep({
   onComplete: (dataUrl: string) => void;
   onBack: () => void;
 }) {
+  const t = useTranslations();
   const mutedRef = useMutedRef();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const phaseRef = useRef<FirePhase>("ready");
@@ -1275,7 +1278,7 @@ function HonyakiStep({
             disabled={finalizing}
             className="inline-flex items-center gap-2 rounded-full bg-washi-50 px-5 py-2 text-[0.65rem] uppercase tracking-[0.3em] text-sumi transition hover:bg-washi-100 disabled:opacity-40"
           >
-            <Check size={12} /> Complete
+            <Check size={12} /> {t("common.complete")}
           </button>
         )}
       </div>
