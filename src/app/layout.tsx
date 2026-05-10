@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AudioToggle } from "@/components/layout/AudioToggle";
+import { GlobalSettingsMenu } from "@/components/layout/GlobalSettingsMenu";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
       <body className="font-serif" suppressHydrationWarning>
         <SmoothScroll>{children}</SmoothScroll>
         <AudioToggle />
+        <GlobalSettingsMenu />
       </body>
     </html>
   );

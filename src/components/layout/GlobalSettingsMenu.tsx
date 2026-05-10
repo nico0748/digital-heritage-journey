@@ -1,37 +1,51 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import clsx from "clsx";
 import {
-  useStorySettingsStore,
-  type StoryViewMode,
-} from "@/stores/useStorySettingsStore";
+  useLocaleStore,
+  detectInitialLocale,
+  LOCALES,
+} from "@/stores/useLocaleStore";
 import { useChromeVisibility } from "@/hooks/useChromeVisibility";
 
-const OPTIONS: ReadonlyArray<{
-  value: StoryViewMode;
-  label: string;
-  desc: string;
-}> = [
-  { value: "auto", label: "Auto", desc: "Match device defaults" },
-  { value: "continuous", label: "Continuous", desc: "Scroll right to left" },
-  { value: "paginated", label: "Kamishibai", desc: "Tap or swipe to flip pages" },
-];
-
 /**
- * Floating hamburger that opens a settings panel for choosing the story
- * view mode. Persists via the zustand store (localStorage backed).
+ * Global hamburger that mounts everywhere except the story page (which
+ * has its own StorySettingsMenu carrying View Mode). Currently houses
+ * the language picker; future global settings (theme, motion, etc.)
+ * can land here too.
+ *
+ * Mirrors StorySettingsMenu's a11y pattern (aria-expanded/controls,
+ * role=dialog, inert, Escape) so keyboard / SR users get a consistent
+ * experience between the two menus that share the same screen slot.
  */
-export function StorySettingsMenu() {
+export function GlobalSettingsMenu() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const viewMode = useStorySettingsStore((s) => s.viewMode);
-  const setViewMode = useStorySettingsStore((s) => s.setViewMode);
+  const locale = useLocaleStore((s) => s.locale);
+  const setLocale = useLocaleStore((s) => s.setLocale);
+  const userPicked = useLocaleStore((s) => s.userPicked);
   const chromeVisible = useChromeVisibility();
-  // Keep the hamburger visible while the panel is open even if the
-  // user has been still long enough to hide other chrome — otherwise
-  // they couldn't easily close it.
   const showButton = chromeVisible || open;
+
+  // First-visit auto-detect — runs once if the user has never chosen.
+  // The store's persisted `userPicked` flag prevents this from ever
+  // stomping a deliberate later choice.
+  useEffect(() => {
+    if (userPicked) return;
+    const detected = detectInitialLocale();
+    if (detected !== locale) setLocale(detected);
+    // Mark that the auto-detect has run by NOT setting userPicked here —
+    // we only want userPicked to flip when the user actively clicks.
+    // Re-running detect on subsequent mounts is harmless because it's
+    // deterministic for the same browser.
+  }, [userPicked, locale, setLocale]);
+
+  // Story page has its own menu in the same screen slot — hide ours
+  // there so they don't stack.
+  const isStoryRoute = pathname?.startsWith("/story") ?? false;
 
   // Close on Escape.
   useEffect(() => {
@@ -43,6 +57,8 @@ export function StorySettingsMenu() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  if (isStoryRoute) return null;
+
   return (
     <>
       <button
@@ -50,7 +66,7 @@ export function StorySettingsMenu() {
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "Close settings menu" : "Open settings menu"}
         aria-expanded={open}
-        aria-controls="story-settings-panel"
+        aria-controls="global-settings-panel"
         className={clsx(
           "fixed right-[4.5rem] top-5 z-[300] grid h-11 w-11 place-items-center rounded-full bg-sumi/80 text-washi-50 shadow-lg backdrop-blur transition-opacity duration-300 hover:bg-sumi",
           showButton ? "opacity-100" : "pointer-events-none opacity-0",
@@ -68,17 +84,13 @@ export function StorySettingsMenu() {
       )}
 
       <aside
-        id="story-settings-panel"
+        id="global-settings-panel"
         role="dialog"
         aria-label="Settings panel"
         aria-hidden={!open}
-        // `inert` is the modern way to take a subtree fully out of the
-        // accessibility / focus / hit-test tree. With only
-        // `pointer-events-none` + `aria-hidden`, the mode buttons inside
-        // were still tabbable when the panel was visually hidden, so
-        // keyboard users could land on (and activate!) invisible options
-        // and silently switch story modes. React 19 supports `inert` as
-        // a native boolean prop.
+        // `inert` keeps the panel out of the keyboard / focus / hit-test
+        // tree when hidden — without this, the language buttons remain
+        // tabbable and silently switch locale via keyboard.
         inert={!open}
         className={clsx(
           "fixed right-4 top-20 z-[300] w-72 max-w-[calc(100vw-2rem)] origin-top-right rounded-2xl bg-washi-50 p-5 shadow-2xl ring-1 ring-sumi/10 transition",
@@ -90,32 +102,24 @@ export function StorySettingsMenu() {
         <h2 className="text-[0.65rem] font-medium uppercase tracking-[0.4em] text-sumi/80">
           Settings
         </h2>
-        <p className="mb-4 mt-1 text-xs text-sumi/60">View Mode</p>
+        <p className="mb-4 mt-1 text-xs text-sumi/60">Language</p>
         <div className="flex flex-col gap-2">
-          {OPTIONS.map((opt) => {
-            const active = viewMode === opt.value;
+          {LOCALES.map((opt) => {
+            const active = locale === opt.value;
             return (
               <button
                 key={opt.value}
                 type="button"
-                onClick={() => setViewMode(opt.value)}
+                onClick={() => setLocale(opt.value)}
                 aria-pressed={active}
                 className={clsx(
-                  "rounded-xl border px-4 py-3 text-left transition",
+                  "rounded-xl border px-4 py-3 text-left text-sm font-medium transition",
                   active
                     ? "border-sumi bg-sumi text-washi-50"
                     : "border-sumi/15 bg-white text-sumi hover:border-sumi/40",
                 )}
               >
-                <div className="text-sm font-medium">{opt.label}</div>
-                <div
-                  className={clsx(
-                    "mt-0.5 text-[0.7rem] leading-relaxed",
-                    active ? "text-washi-50/70" : "text-sumi/60",
-                  )}
-                >
-                  {opt.desc}
-                </div>
+                {opt.label}
               </button>
             );
           })}
