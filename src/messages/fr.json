@@ -338,6 +338,28 @@
       "step4": {
         "hint": "Faites réagir le cuivre au soufre ou au bain de couleur cuite pour développer la teinte. Même matière, couleur radicalement différente."
       }
+    },
+    "lantern": {
+      "light": {
+        "hint": "Tapez sur la lanterne à plusieurs reprises, comme pour en allumer la flamme.",
+        "en": "Tapez pour allumer la flamme"
+      },
+      "draw": {
+        "hint": "Tracez d'un seul trait un blason familial ou un caractère sur le washi.",
+        "en": "Glisser pour pinceauter"
+      },
+      "done": {
+        "hint": "Dans la nuit, la lanterne allumée flotte doucement.",
+        "en": "Allumée"
+      }
+    },
+    "taiko": {
+      "tagline": "Frapper le tambour · au rythme du temps",
+      "feedback": {
+        "perfect": "Magnifique",
+        "good": "Bien",
+        "miss": "Manqué"
+      }
     }
   }
 }

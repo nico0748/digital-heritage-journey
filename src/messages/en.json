@@ -338,6 +338,28 @@
       "step4": {
         "hint": "React copper with sulphur or boiled-colour baths to develop hue. Same material, completely different colour."
       }
+    },
+    "lantern": {
+      "light": {
+        "hint": "Tap the lantern repeatedly, as if kindling its flame.",
+        "en": "Tap to light the flame"
+      },
+      "draw": {
+        "hint": "Brush a family crest or character onto the washi in a single stroke.",
+        "en": "Drag to brush a mark"
+      },
+      "done": {
+        "hint": "Into the night, the lit lantern floats gently.",
+        "en": "Lit"
+      }
+    },
+    "taiko": {
+      "tagline": "Strike the drum · in time with the beat",
+      "feedback": {
+        "perfect": "Magnificent",
+        "good": "Good",
+        "miss": "Miss"
+      }
     }
   }
 }

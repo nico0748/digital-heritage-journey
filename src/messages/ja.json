@@ -338,6 +338,28 @@
       "step4": {
         "hint": "硫黄や煮色で銅と化学反応 → 発色。同じ素材でも全く違う色合い"
       }
+    },
+    "lantern": {
+      "light": {
+        "hint": "火を灯すように、提灯に繰り返し触れる",
+        "en": "Tap to light the flame"
+      },
+      "draw": {
+        "hint": "和紙の上に、家紋や文字を一筆で描く",
+        "en": "Drag to brush a mark"
+      },
+      "done": {
+        "hint": "夜の中、灯った提灯がやさしく浮かぶ",
+        "en": "Lit"
+      }
+    },
+    "taiko": {
+      "tagline": "鼓を打つ · タイミングを合わせて",
+      "feedback": {
+        "perfect": "見事",
+        "good": "良し",
+        "miss": "外し"
+      }
     }
   }
 }

@@ -633,15 +633,11 @@ export function LanternStage({
       </div>
 
       <div className="text-center">
-        <p className="font-jp text-sm tracking-wider text-washi-50/90">
-          {step === "light" && "火を灯すように、提灯に繰り返し触れる"}
-          {step === "draw" && "和紙の上に、家紋や文字を一筆で描く"}
-          {step === "done" && "夜の中、灯った提灯がやさしく浮かぶ"}
+        <p className="text-sm tracking-wider text-washi-50/90">
+          {t(`stages.lantern.${step}.hint`)}
         </p>
         <p className="mt-1 text-[0.6rem] uppercase tracking-[0.4em] text-washi-50/45">
-          {step === "light" && "Tap to light the flame"}
-          {step === "draw" && "Drag to brush a mark"}
-          {step === "done" && "Lit"}
+          {t(`stages.lantern.${step}.en`)}
         </p>
       </div>
 
